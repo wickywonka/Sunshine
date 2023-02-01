@@ -1021,7 +1021,7 @@ int parse(int argc, char *argv[]) {
     std::ofstream { config::sunshine.config_file }; // create empty config file
   }
 
-  auto vars = parse_config(read_file(sunshine.config_file.c_str()));
+  auto vars = parse_config(read_file(config::sunshine.config_file.c_str()));
 
   for(auto &[name, value] : cmd_vars) {
     vars.insert_or_assign(std::move(name), std::move(value));
