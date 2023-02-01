@@ -383,6 +383,7 @@ sunshine_t sunshine {
   platf::appdata().string() + "/sunshine.conf", // config file
   {},                                           // cmd args
   47989,
+  "ipv4"
   platf::appdata().string() + "/sunshine.log", // log file
 };
 
@@ -903,6 +904,8 @@ void apply_config(std::unordered_map<std::string, std::string> &&vars) {
   int port = sunshine.port;
   int_f(vars, "port"s, port);
   sunshine.port = (std::uint16_t)port;
+
+  string_restricted_f(vars, "address_family", sunshine.address_family, { "ipv4"sv, "both"sv });
 
   bool upnp = false;
   bool_f(vars, "upnp"s, upnp);
