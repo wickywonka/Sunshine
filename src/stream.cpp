@@ -1259,7 +1259,7 @@ int start_broadcast(broadcast_ctx_t &ctx) {
     return -1;
   }
 
-  ctx.audio_sock.open(protocol, ec);
+  ctx.audio_sock.bind(udp::endpoint(protocol, audio_port), ec);
   if(ec) {
     BOOST_LOG(fatal) << "Couldn't bind Audio server to port ["sv << audio_port << "]: "sv << ec.message();
 
