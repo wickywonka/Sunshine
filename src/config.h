@@ -17,6 +17,7 @@ namespace config {
     int qp;  // higher == more compression and less quality
 
     int hevc_mode;
+    int av1_mode;
 
     int min_threads;  // Minimum number of threads/slices for CPU encoding
     struct {
@@ -39,10 +40,13 @@ namespace config {
     struct {
       std::optional<int> amd_quality_h264;
       std::optional<int> amd_quality_hevc;
+      std::optional<int> amd_quality_av1;
       std::optional<int> amd_rc_h264;
       std::optional<int> amd_rc_hevc;
+      std::optional<int> amd_rc_av1;
       std::optional<int> amd_usage_h264;
       std::optional<int> amd_usage_hevc;
+      std::optional<int> amd_usage_av1;
       std::optional<int> amd_preanalysis;
       std::optional<int> amd_vbaq;
       int amd_coder;
