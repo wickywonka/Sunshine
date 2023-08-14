@@ -257,8 +257,8 @@ namespace stream {
   class control_server_t {
   public:
     int
-    bind(std::uint16_t port) {
-      _host = net::host_create(_addr, config::stream.channels, port);
+    bind(net::af_e address_family, std::uint16_t port) {
+      _host = net::host_create(address_family, _addr, config::stream.channels, port);
 
       return !(bool) _host;
     }
@@ -1407,11 +1407,13 @@ namespace stream {
 
   int
   start_broadcast(broadcast_ctx_t &ctx) {
+    auto address_family = net::af_from_enum_string(config::sunshine.address_family);
+    auto protocol       = address_family == net::IPV4 ? udp::v4() : udp::v6();
     auto control_port = map_port(CONTROL_PORT);
     auto video_port = map_port(VIDEO_STREAM_PORT);
     auto audio_port = map_port(AUDIO_STREAM_PORT);
 
-    if (ctx.control_server.bind(control_port)) {
+    if (ctx.control_server.bind(address_family, control_port)) {
       BOOST_LOG(error) << "Couldn't bind Control server to port ["sv << control_port << "], likely another process already bound to the port"sv;
 
       return -1;
