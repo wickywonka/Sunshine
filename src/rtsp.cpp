@@ -766,7 +766,7 @@ namespace rtsp_stream {
     server.map("PLAY"sv, &cmd_play);
 
     boost::system::error_code ec;
-    if (server.bind(map_port(rtsp_stream::RTSP_SETUP_PORT), ec)) {
+    if(server.bind(net::af_from_enum_string(config::sunshine.address_family), map_port(RTSP_SETUP_PORT), ec)) {
       BOOST_LOG(fatal) << "Couldn't bind RTSP server to port ["sv << map_port(rtsp_stream::RTSP_SETUP_PORT) << "], " << ec.message();
       shutdown_event->raise(true);
 
