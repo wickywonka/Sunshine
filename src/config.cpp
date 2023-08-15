@@ -968,6 +968,7 @@ namespace config {
     int_f(vars, "qp", video.qp);
     int_f(vars, "min_threads", video.min_threads);
     int_between_f(vars, "hevc_mode", video.hevc_mode, { 0, 3 });
+    int_between_f(vars, "av1_mode", video.av1_mode, { 0, 3 });
     string_f(vars, "sw_preset", video.sw.sw_preset);
     string_f(vars, "sw_tune", video.sw.sw_tune);
     int_f(vars, "nv_preset", video.nv.nv_preset, nv::preset_from_view);
