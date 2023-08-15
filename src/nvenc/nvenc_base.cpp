@@ -305,6 +305,7 @@ namespace nvenc {
         format_config.repeatSeqHdr = 1;
         format_config.idrPeriod = NVENC_INFINITE_GOPLENGTH;
         format_config.chromaFormatIDC = 1;  // YUV444 not supported by NVENC yet
+        format_config.enableBitstreamPadding = config.insert_filler_data;
         if (buffer_is_10bit()) {
           format_config.inputPixelBitDepthMinus8 = 2;
           format_config.pixelBitDepthMinus8 = 2;
@@ -313,12 +314,14 @@ namespace nvenc {
         format_config.transferCharacteristics = colorspace.tranfer_function;
         format_config.matrixCoefficients = colorspace.matrix;
         format_config.colorRange = colorspace.full_range;
-        set_ref_frames(format_config.maxNumRefFramesInDPB, format_config.numBwdRefs, 8);
+        set_ref_frames(format_config.maxNumRefFramesInDPB, format_config.numFwdRefs, 8);
         set_minqp_if_enabled(config.min_qp_av1);
 
         if (client_config.slicesPerFrame > 1) {
-          // FIXME: Not supported yet
-          BOOST_LOG(warning) << "Client-controlled slicing is not yet supported by NVENC for AV1";
+          // NVENC only supports slice counts that are powers of two, so we'll pick powers of two
+          // with bias to rows due to hopefully more similar macroblocks with a row vs a column.
+          format_config.numTileRows = std::pow(2, std::ceil(std::log2(client_config.slicesPerFrame) / 2));
+          format_config.numTileColumns = std::pow(2, std::floor(std::log2(client_config.slicesPerFrame) / 2));
         }
         break;
       }
