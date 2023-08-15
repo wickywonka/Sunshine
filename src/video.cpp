@@ -820,10 +820,13 @@ namespace video {
       AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV420P10,
       nullptr),
     {
+      // libsvtav1 takes different presets than libx264/libx265.
+      // We set an infinite GOP length, use a low delay prediction structure,
+      // force I frames to be key frames, and set max bitrate to default to work
+      // around a FFmpeg bug with CBR mode.
       {
-        { "svtav1-params"s, "keyint=-1"s },
-        { "preset"s, &config::video.sw.sw_preset },
-        { "tune"s, &config::video.sw.sw_tune },
+        { "svtav1-params"s, "keyint=-1:pred-struct=1:force-key-frames=1:mbr=0"s },
+        { "preset"s, &config::video.sw.svtav1_preset },
       },
       {},  // SDR-specific options
       {},  // HDR-specific options

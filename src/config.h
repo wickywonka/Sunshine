@@ -23,6 +23,7 @@ namespace config {
     struct {
       std::string sw_preset;
       std::string sw_tune;
+      std::optional<int> svtav1_preset;
     } sw;
 
     struct {
