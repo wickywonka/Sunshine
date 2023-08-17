@@ -153,6 +153,8 @@ namespace config {
   #define AMF_VIDEO_ENCODER_RATE_CONTROL_METHOD_LATENCY_CONSTRAINED_VBR 3
   #define AMF_VIDEO_ENCODER_AV1_USAGE_TRANSCODING 0
   #define AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY 1
+  #define AMF_VIDEO_ENCODER_AV1_USAGE_ULTRA_LOW_LATENCY 2
+  #define AMF_VIDEO_ENCODER_AV1_USAGE_WEBCAM 3
   #define AMF_VIDEO_ENCODER_HEVC_USAGE_TRANSCONDING 0
   #define AMF_VIDEO_ENCODER_HEVC_USAGE_ULTRA_LOW_LATENCY 1
   #define AMF_VIDEO_ENCODER_HEVC_USAGE_LOW_LATENCY 2
@@ -168,13 +170,6 @@ namespace config {
   #include <AMF/components/VideoEncoderAV1.h>
   #include <AMF/components/VideoEncoderHEVC.h>
   #include <AMF/components/VideoEncoderVCE.h>
-
-  // TODO: Temporary check to remind us to update the AV1 stuff below when we bump FFmpeg and AMF
-  #if AMF_VERSION_RELEASE >= 30
-    #error Update usage_av1_e enum below with new AMF 1.4.30 usages values!
-    #error Ensure amfenc_av1.c in FFmpeg is patched to accept the new values!
-  #endif
-
 #endif
 
     enum class quality_av1_e : int {
@@ -218,9 +213,9 @@ namespace config {
 
     enum class usage_av1_e : int {
       transcoding = AMF_VIDEO_ENCODER_AV1_USAGE_TRANSCODING,
-      webcam = AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY,  // TODO: Not defined until AMF 1.4.30
+      webcam = AMF_VIDEO_ENCODER_AV1_USAGE_WEBCAM,
       lowlatency = AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY,
-      ultralowlatency = AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY  // TODO: Not defined until AMF 1.4.30
+      ultralowlatency = AMF_VIDEO_ENCODER_AV1_USAGE_ULTRA_LOW_LATENCY
     };
 
     enum class usage_hevc_e : int {
