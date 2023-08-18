@@ -153,6 +153,8 @@ namespace config {
   #define AMF_VIDEO_ENCODER_RATE_CONTROL_METHOD_LATENCY_CONSTRAINED_VBR 3
   #define AMF_VIDEO_ENCODER_AV1_USAGE_TRANSCODING 0
   #define AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY 1
+  #define AMF_VIDEO_ENCODER_AV1_USAGE_ULTRA_LOW_LATENCY 2
+  #define AMF_VIDEO_ENCODER_AV1_USAGE_WEBCAM 3
   #define AMF_VIDEO_ENCODER_HEVC_USAGE_TRANSCONDING 0
   #define AMF_VIDEO_ENCODER_HEVC_USAGE_ULTRA_LOW_LATENCY 1
   #define AMF_VIDEO_ENCODER_HEVC_USAGE_LOW_LATENCY 2
@@ -218,9 +220,9 @@ namespace config {
 
     enum class usage_av1_e : int {
       transcoding = AMF_VIDEO_ENCODER_AV1_USAGE_TRANSCODING,
-      webcam = AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY,  // TODO: Not defined until AMF 1.4.30
+      webcam = AMF_VIDEO_ENCODER_AV1_USAGE_WEBCAM,
       lowlatency = AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY,
-      ultralowlatency = AMF_VIDEO_ENCODER_AV1_USAGE_LOW_LATENCY  // TODO: Not defined until AMF 1.4.30
+      ultralowlatency = AMF_VIDEO_ENCODER_AV1_USAGE_ULTRA_LOW_LATENCY
     };
 
     enum class usage_hevc_e : int {
@@ -373,6 +375,25 @@ namespace config {
 
   }  // namespace vt
 
+  namespace sw {
+    int
+    svtav1_preset_from_view(const std::string_view &preset) {
+#define _CONVERT_(x, y) \
+  if (preset == #x##sv) return y
+      _CONVERT_(veryslow, 1);
+      _CONVERT_(slower, 2);
+      _CONVERT_(slow, 4);
+      _CONVERT_(medium, 5);
+      _CONVERT_(fast, 7);
+      _CONVERT_(faster, 9);
+      _CONVERT_(veryfast, 10);
+      _CONVERT_(superfast, 11);
+      _CONVERT_(ultrafast, 12);
+#undef _CONVERT_
+      return 11;  // Default to superfast
+    }
+  }  // namespace sw
+
   video_t video {
     28,  // qp
 
@@ -383,6 +404,7 @@ namespace config {
     {
       "superfast"s,  // preset
       "zerolatency"s,  // tune
+      11,  // superfast
     },  // software
 
     {
@@ -968,7 +990,11 @@ namespace config {
     int_f(vars, "qp", video.qp);
     int_f(vars, "min_threads", video.min_threads);
     int_between_f(vars, "hevc_mode", video.hevc_mode, { 0, 3 });
+    int_between_f(vars, "av1_mode", video.av1_mode, { 0, 3 });
     string_f(vars, "sw_preset", video.sw.sw_preset);
+    if (!video.sw.sw_preset.empty()) {
+      video.sw.svtav1_preset = sw::svtav1_preset_from_view(video.sw.sw_preset);
+    }
     string_f(vars, "sw_tune", video.sw.sw_tune);
     int_f(vars, "nv_preset", video.nv.nv_preset, nv::preset_from_view);
     int_f(vars, "nv_tune", video.nv.nv_tune, nv::tune_from_view);
