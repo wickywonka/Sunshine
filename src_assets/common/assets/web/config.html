@@ -420,14 +420,20 @@
 
         <!-- Output Name -->
         <div class="mb-3" v-if="platform === 'windows'">
-          <label for="output_name" class="form-label">Output Name</label>
-          <input type="text" class="form-control" id="output_name" placeholder="\\.\DISPLAY1"
+          <label for="output_name" class="form-label">Display Device Id</label>
+          <input type="text" class="form-control" id="output_name"
+            placeholder="{de9bb7e2-186e-505b-9e93-f48793333810}"
             v-model="config.output_name" />
           <div class="form-text">
-            Manually specify a display to use for capture. If unset, the primary display is captured.<br>
+            Manually specify a display device id to use for capture. If unset, the primary display is captured.<br>
             Note: If you specified a GPU above, this display must be connected to that GPU.<br>
-            The appropriate values can be found using the following command:<br>
-            tools\dxgi-info.exe<br>
+            <br>
+            During Sunshine startup, you should see the list of detected display devices and their ids, e.g.:<br>
+            <b>&nbsp;&nbsp;&nbsp;&nbsp;DEVICE ID: {de9bb7e2-186e-505b-9e93-f48793333810}</b><br>
+            <b>&nbsp;&nbsp;&nbsp;&nbsp;DISPLAY NAME: \\.\DISPLAY1</b><br>
+            <b>&nbsp;&nbsp;&nbsp;&nbsp;FRIENDLY NAME: ROG PG279Q</b><br>
+            <b>&nbsp;&nbsp;&nbsp;&nbsp;DEVICE STATE: PRIMARY</b><br>
+            <b>&nbsp;&nbsp;&nbsp;&nbsp;HDR STATE: UNKNOWN</b>
           </div>
         </div>
         <div class="mb-3" v-if="platform === 'linux'">
@@ -445,6 +451,211 @@
             Info: Detected monitor 4: DVI-D-1, connected: false
           </pre>
             You need to use the value before the colon in the output, e.g. <b>1</b>.
+          </div>
+        </div>
+
+        <!-- Display device options -->
+        <div class="mb-3 accordion" v-if="platform === 'windows'">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseOne">
+                Display device options
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+              aria-labelledby="panelsStayOpen-headingOne">
+              <div class="accordion-body">
+                <div class="mb-3">
+                  <label class="form-label">
+                    Note about how settings are applied
+                  </label>
+                  <div class="form-text">
+                    Windows saves various display settings for each combination of currently active displays.<br>
+                    Sunshine applies changes to a display(-s) belonging to such a display combination.<br>
+                    If you disconnect a device which was active when Sunshine applied the settings, the changes will not be<br>
+                    reverted back unless the combination is active again by the time Sunshine tries to revert changes!<br>
+                    The same is true if you connect a new device and Windows decides to activate it, which will change<br>
+                    the active display combination.
+                  </div>
+                </div>
+                
+                <!-- Device display preparation -->
+                <div class="mb-3">
+                  <label for="display_device_prep" class="form-label">
+                    Display preparation
+                  </label>
+                  <select id="display_device_prep" class="form-select" v-model="config.display_device_prep">
+                    <option value="no_operation">Disabled</option>
+                    <option value="ensure_active">Activate the display automatically</option>
+                    <option value="ensure_primary">Activate the display automatically and make it a primary display</option>
+                    <option value="ensure_only_display">Deactivate other displays and activate only the specified display</option>
+                  </select>
+                </div>
+
+                <!-- Resolution change -->
+                <div class="mb-3">
+                  <label for="resolution_change" class="form-label">
+                    Resolution change
+                  </label>
+                  <select id="resolution_change" class="form-select" v-model="config.resolution_change">
+                    <option value="no_operation">Disabled</option>
+                    <option value="automatic">Use resolution provided by the client</option>
+                    <option value="manual">Use manually entered resolution</option>
+                  </select>
+                  <div class="form-text" v-if="config.resolution_change === 'automatic' || config.resolution_change === 'manual'">
+                    "Optimize game settings" option must be enabled on the Moonlight client for this to work.
+                  </div>
+
+                  <!-- Manual resolution -->
+                  <div class="mt-2 ps-4" v-if="config.resolution_change === 'manual'">
+                    <div class="form-text">
+                      Enter the resolution to be used
+                    </div>
+                    <input type="text" class="form-control" id="manual_resolution" placeholder="2560x1440" v-model="config.manual_resolution" />
+                  </div>
+                </div>
+
+                <!-- Refresh rate change -->
+                <div class="mb-3">
+                  <label for="refresh_rate_change" class="form-label">
+                    Refresh rate change
+                  </label>
+                  <select id="refresh_rate_change" class="form-select" v-model="config.refresh_rate_change">
+                    <option value="no_operation">Disabled</option>
+                    <option value="automatic">Use FPS value provided by the client</option>
+                    <option value="manual">Use manually entered refresh rate</option>
+                  </select>
+
+                  <!-- Manual refresh rate -->
+                  <div class="mt-2 ps-4" v-if="config.refresh_rate_change === 'manual'">
+                    <div class="form-text">
+                      Enter the refresh rate to be used
+                    </div>
+                    <input type="text" class="form-control" id="manual_refresh_rate" placeholder="59.95 or 60" v-model="config.manual_refresh_rate" />
+                  </div>
+                </div>
+
+                <!-- HDR preparation -->
+                <div class="mb-3">
+                  <label for="hdr_prep" class="form-label">
+                    HDR state change
+                  </label>
+                  <select id="hdr_prep" class="form-select" v-model="config.hdr_prep">
+                    <option value="no_operation">Disabled</option>
+                    <option value="automatic">Switch on/off the HDR mode as requested by the client</option>
+                  </select>
+                </div>
+
+                <!-- Display mode remapping -->
+                <div class="mb-3" v-if="config.resolution_change === 'automatic' || config.refresh_rate_change === 'automatic'">
+                  <label for="display_mode_remapping" class="form-label">
+                    Remap display modes
+                  </label>
+                  <div id="display_mode_remapping" class="d-flex flex-column">
+                    <div class="form-text">
+                      Specify how a specific resolution and/or refresh rate should be remapped to other values.<br>
+                      You can stream at lower resolution, while rendering at higher resolution on host for a supersampling effect.<br>
+                      Or you can stream at higher FPS while limiting the host to the lower refresh rate.<br>
+                      Matching is performed top to bottom. Once the entry is matched, others are no longer checked, but still validated.
+                      <template v-if="get_display_mode_remapping_type() === ''">
+                        <br>
+                        <br>
+                        At least one "received" and one "final" value must be specified.<br>
+                        Empty field in "received" section means "match any". Empty field in "final" section means "keep received value".<br>
+                        You can match specific FPS value to specific resolution if you wish so...<br>
+                        <br>
+                        Note: if "Optimize game settings" option is not enabled on the Moonlight client, the rows containing resolution value(-s) are ignored.
+                      </template>
+                      <template v-if="get_display_mode_remapping_type() === 'resolution_only'">
+                        <br>
+                        <br>
+                        Note: if "Optimize game settings" option is not enabled on the Moonlight client, the remapping is disabled.
+                      </template>
+                    </div>
+
+                    <!--
+                    Note: this 3-way persistence below may seem stupid, but is necessary, because if you have something like:
+
+                    WIDTH_1xHEIGHT_1x60 -> OTHER_WIDTHxOTHER_HEIGHTx120
+                    WIDTH_2xHEIGHT_2x60 -> OTHER_WIDTHxOTHER_HEIGHTx90
+                    WIDTH_1xHEIGHT_1x30 -> OTHER_WIDTHxOTHER_HEIGHTx60
+                    
+                    after removing 1 component it becomes nonsense:
+
+                    60 -> 120
+                    60 -> 90
+                    30 -> 60
+
+                    and if the user want the second entry, he would have to remove the first one, which would be valid in other config combination.
+                    -->
+                    <table class="table" v-if="display_mode_remapping.filter((value) => value.type === get_display_mode_remapping_type()).length > 0">
+                      <thead>
+                        <tr>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">Received resolution</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">Received FPS</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">Final resolution</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">Final refresh rate</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(c, i) in display_mode_remapping">
+                          <template v-if="c.type === '' && c.type === get_display_mode_remapping_type()">
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.received_resolution" placeholder="1920x1080 (optional)" />
+                            </td>
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.received_fps" placeholder="60 (optional)" />
+                            </td>
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.final_resolution" placeholder="2560x1440 (optional)" />
+                            </td>
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" placeholder="119.95 or 120 (optional)" />
+                            </td>
+                            <td>
+                              <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </td>
+                          </template>
+                          <template v-if="c.type === 'resolution_only' && c.type === get_display_mode_remapping_type()">
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.received_resolution" placeholder="1920x1080" />
+                            </td>
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.final_resolution" placeholder="2560x1440" />
+                            </td>
+                            <td>
+                              <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </td>
+                          </template>
+                          <template v-if="c.type === 'refresh_rate_only' && c.type === get_display_mode_remapping_type()">
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.received_fps" placeholder="60" />
+                            </td>
+                            <td>
+                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" placeholder="119.95 or 120" />
+                            </td>
+                            <td>
+                              <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </td>
+                          </template>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button class="ms-0 mt-2 btn btn-success" style="margin: 0 auto" @click="add_display_mode_remapping(get_display_mode_remapping_type())">
+                      &plus; Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1194,6 +1405,7 @@
         resIn: "",
         fpsIn: "",
         global_prep_cmd: [],
+        display_mode_remapping: [],
         tabs: [
           {
             id: "general",
@@ -1234,6 +1446,13 @@
               "install_steam_audio_drivers": "enabled",
               "adapter_name": "",
               "output_name": "",
+              "display_device_prep": "no_operation",
+              "resolution_change": "automatic",
+              "manual_resolution": "",
+              "display_mode_remapping": "[]",
+              "refresh_rate_change": "automatic",
+              "manual_refresh_rate": "",
+              "hdr_prep": "automatic",
               "resolutions": "[352x240,480x360,858x480,1280x720,1920x1080,2560x1080,2560x1440,3440x1440,1920x1200,3840x2160,3840x1600]",
               "fps": "[10,30,60,90,120]",
             },
@@ -1383,6 +1602,9 @@
 
           this.config.global_prep_cmd = this.config.global_prep_cmd || [];
           this.global_prep_cmd = JSON.parse(this.config.global_prep_cmd);
+
+          this.config.display_mode_remapping = this.config.display_mode_remapping || [];
+          this.display_mode_remapping = JSON.parse(this.config.display_mode_remapping);
         });
     },
     methods: {
@@ -1401,6 +1623,7 @@
         // remove quotes from values in fps
         this.config.fps = JSON.stringify(this.fps).replace(/"/g, "");
         this.config.global_prep_cmd = JSON.stringify(this.global_prep_cmd);
+        this.config.display_mode_remapping = JSON.stringify(this.display_mode_remapping);
       },
       save() {
         this.saved = false;
@@ -1415,7 +1638,7 @@
           Object.keys(tab.options).forEach(optionKey => {
             let delete_value = false
 
-            if (["resolutions", "fps", "global_prep_cmd"].includes(optionKey)) {
+            if (["resolutions", "fps", "global_prep_cmd", "display_mode_remapping"].includes(optionKey)) {
               let config_value, default_value
 
               if (optionKey === "resolutions") {
@@ -1485,6 +1708,28 @@
         }
         this.global_prep_cmd.push(template);
       },
+      get_display_mode_remapping_type()
+      {
+        // Assuming here that at least one setting is set to "automatic"
+        if (this.config.resolution_change !== 'automatic') {
+          return "refresh_rate_only";
+        }
+        if (this.config.refresh_rate_change !== 'automatic') {
+          return "resolution_only";
+        }
+        return "";
+      },
+      add_display_mode_remapping(type) {
+        let template = {
+          type: type,
+          received_resolution: "",
+          received_fps: "",
+          final_resolution: "",
+          final_refresh_rate: "",
+        };
+
+        this.display_mode_remapping.push(template);
+      }
     },
     computed: {
       effectivePort() {
