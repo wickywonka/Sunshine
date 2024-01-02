@@ -23,6 +23,7 @@
 #include "rtsp.h"
 #include "utility.h"
 
+#include "display_device/parsed_config.h"
 #include "platform/common.h"
 
 #ifdef _WIN32
@@ -367,7 +368,15 @@ namespace config {
     {},  // capture
     {},  // encoder
     {},  // adapter_name
+
     {},  // output_name
+    (int) display_device::parsed_config_t::device_prep_e::no_operation,  // display_device_prep
+    (int) display_device::parsed_config_t::resolution_change_e::automatic,  // resolution_change
+    {},  // manual_resolution
+    {}, // auto_resolution_remapping
+    (int) display_device::parsed_config_t::refresh_rate_change_e::automatic,  // refresh_rate_change
+    {},  // manual_refresh_rate
+    (int) display_device::parsed_config_t::hdr_prep_e::automatic  // hdr_prep
   };
 
   audio_t audio {
@@ -818,6 +827,32 @@ namespace config {
   }
 
   void
+  list_auto_resolution_remapping_f(std::unordered_map<std::string, std::string> &vars, const std::string &name, std::vector<video_t::auto_resolution_remapping_t> &input) {
+    std::string string;
+    string_f(vars, name, string);
+
+    std::stringstream jsonStream;
+
+    // check if string is empty, i.e. when the value doesn't exist in the config file
+    if (string.empty()) {
+      return;
+    }
+
+    // We need to add a wrapping object to make it valid JSON, otherwise ptree cannot parse it.
+    jsonStream << "{\"auto_resolution_remapping\":" << string << "}";
+
+    boost::property_tree::ptree jsonTree;
+    boost::property_tree::read_json(jsonStream, jsonTree);
+
+    for (auto &[_, entry] : jsonTree.get_child("auto_resolution_remapping"s)) {
+      auto received = entry.get_optional<std::string>("received"s);
+      auto final = entry.get_optional<std::string>("final"s);
+
+      input.push_back(video_t::auto_resolution_remapping_t{received.value_or(""), final.value_or("")});
+    }
+  }
+
+  void
   list_prep_cmd_f(std::unordered_map<std::string, std::string> &vars, const std::string &name, std::vector<prep_cmd_t> &input) {
     std::string string;
     string_f(vars, name, string);
@@ -1006,7 +1041,15 @@ namespace config {
     string_f(vars, "capture", video.capture);
     string_f(vars, "encoder", video.encoder);
     string_f(vars, "adapter_name", video.adapter_name);
+
     string_f(vars, "output_name", video.output_name);
+    int_f(vars, "display_device_prep", video.display_device_prep, display_device::parsed_config_t::device_prep_from_view);
+    int_f(vars, "resolution_change", video.resolution_change, display_device::parsed_config_t::resolution_change_from_view);
+    string_f(vars, "manual_resolution", video.manual_resolution);
+    list_auto_resolution_remapping_f(vars, "auto_resolution_remapping", video.auto_resolution_remapping);
+    int_f(vars, "refresh_rate_change", video.refresh_rate_change, display_device::parsed_config_t::refresh_rate_change_from_view);
+    string_f(vars, "manual_refresh_rate", video.manual_refresh_rate);
+    int_f(vars, "hdr_prep", video.hdr_prep, display_device::parsed_config_t::hdr_prep_from_view);
 
     path_f(vars, "pkey", nvhttp.pkey);
     path_f(vars, "cert", nvhttp.cert);
