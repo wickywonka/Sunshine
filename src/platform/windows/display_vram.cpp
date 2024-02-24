@@ -1458,8 +1458,13 @@ namespace platf::dxgi {
 
     HRESULT status;
     if (dummy) {
-      auto dummy_data = std::make_unique<std::uint8_t[]>(img->row_pitch * img->height);
-      std::fill_n(dummy_data.get(), img->row_pitch * img->height, 0);
+      // To avoid crashing with RTX HDR enabled on version 551.61 of the Nvidia drivers, we double the
+      // size of the dummy data allocation. The driver appears to be internally adjusting our texture
+      // to be FP16 (probably due to D3D11_BIND_RENDER_TARGET), but it forgets that the amount of data
+      // we provided corresponds to the original texture format, not the new one it upconverted to.
+      auto dummy_data_size = img->row_pitch * img->height * 2;
+      auto dummy_data = std::make_unique<std::uint8_t[]>(dummy_data_size);
+      std::fill_n(dummy_data.get(), dummy_data_size, 0);
       D3D11_SUBRESOURCE_DATA initial_data {
         dummy_data.get(),
         (UINT) img->row_pitch,
