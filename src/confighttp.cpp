@@ -108,6 +108,10 @@ namespace confighttp {
       return false;
     }
 
+    if (ip_type == net::LAN || ip_type == net::PC) {
+      return true;
+    }
+
     // If credentials are shown, redirect the user to a /welcome page
     if (config::sunshine.username.empty()) {
       send_redirect(response, request, "/welcome");
