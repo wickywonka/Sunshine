@@ -1085,6 +1085,35 @@ namespace nvhttp {
   }
 
   void
+  sleep(resp_https_t response, req_https_t request) {
+    print_req<SimpleWeb::HTTPS>(request);
+
+    boost::process::environment _env = boost::this_process::environment();
+    auto working_dir = boost::filesystem::path();
+    std::error_code ec;
+    std::string cmd = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
+
+    auto child = platf::run_command(false, true, cmd, working_dir, _env, nullptr, ec, nullptr);
+    if (ec) {
+      BOOST_LOG(warning) << "Couldn't run cmd ["sv << cmd << "]: System: "sv << ec.message();
+    }
+    else {
+      BOOST_LOG(info) << "Executing sleep cmd ["sv << cmd << "]"sv;
+      child.detach();
+    }
+    
+    pt::ptree tree;
+    tree.put("root.pcsleep", 1);
+    tree.put("root.<xmlattr>.status_code", 200);
+
+    std::ostringstream data;
+
+    pt::write_xml(data, tree);
+    response->write(data.str());
+    response->close_connection_after_response = true;
+  }
+
+  void
   appasset(resp_https_t response, req_https_t request) {
     print_req<SimpleWeb::HTTPS>(request);
 
@@ -1204,6 +1233,7 @@ namespace nvhttp {
     https_server.resource["^/launch$"]["GET"] = [&host_audio](auto resp, auto req) { launch(host_audio, resp, req); };
     https_server.resource["^/resume$"]["GET"] = [&host_audio](auto resp, auto req) { resume(host_audio, resp, req); };
     https_server.resource["^/cancel$"]["GET"] = cancel;
+    https_server.resource["^/pcsleep$"]["GET"] = sleep;
 
     https_server.config.reuse_address = true;
     https_server.config.address = net::af_to_any_address_string(address_family);
