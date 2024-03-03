@@ -125,6 +125,12 @@ set(CPACK_COMPONENT_AUTOSTART_DISPLAY_NAME "Launch on Startup")
 set(CPACK_COMPONENT_AUTOSTART_DESCRIPTION "If enabled, launches Sunshine automatically on system startup.")
 set(CPACK_COMPONENT_AUTOSTART_GROUP "Core")
 
+# control panel
+set(CPACK_COMPONENT_GUI_DISPLAY_NAME "21面板")
+set(CPACK_COMPONENT_GUI_DESCRIPTION "Control panel for config")
+set(CPACK_COMPONENT_GUI_GROUP "Core")
+set(CPACK_COMPONENT_GUI_REQUIRED true)
+
 # assets
 set(CPACK_COMPONENT_ASSETS_DISPLAY_NAME "Required Assets")
 set(CPACK_COMPONENT_ASSETS_DESCRIPTION "Shaders, default box art, and web UI.")
