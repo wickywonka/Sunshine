@@ -64,6 +64,16 @@
           </div>
         </div>
 
+        <!-- Maximum Connected Clients -->
+        <div class="mb-3">
+          <label for="channels" class="form-label">Maximum Connected Clients</label>
+          <input type="text" class="form-control" id="channels" placeholder="1" v-model="config.channels" />
+          <div class="form-text">
+            Sunshine can allow a single streaming session to be shared with multiple clients simultaneously.<br>
+            Note: Some hardware encoders may have limitations that reduce performance with multiple streams.
+          </div>
+        </div>
+
         <!-- Global Prep Commands -->
         <div id="global_prep_cmd" class="mb-3 d-flex flex-column">
           <label class="form-label">Command Preparations</label>
@@ -122,65 +132,6 @@
         </div>
       </div>
 
-      <!-- Files Tab -->
-      <div id="files" v-if="currentTab === 'files'" class="config-page">
-        <!-- Apps File -->
-        <div class="mb-3">
-          <label for="file_apps" class="form-label">Apps File</label>
-          <input type="text" class="form-control" id="file_apps" placeholder="apps.json" v-model="config.file_apps" />
-          <div class="form-text">
-            The file where current apps of Sunshine are stored
-          </div>
-        </div>
-
-        <!-- Credentials File -->
-        <div class="mb-3">
-          <label for="credentials_file" class="form-label">Credentials File</label>
-          <input type="text" class="form-control" id="credentials_file" placeholder="sunshine_state.json" v-model="config.credentials_file" />
-          <div class="form-text">
-            Store Username/Password separately from Sunshine's state file.
-          </div>
-        </div>
-
-        <!-- Log Path -->
-        <div class="mb-3">
-          <label for="log_path" class="form-label">Logfile Path</label>
-          <input type="text" class="form-control" id="log_path" placeholder="sunshine.log" v-model="config.log_path" />
-          <div class="form-text">
-            The file where the current logs of Sunshine are stored.
-          </div>
-        </div>
-
-        <!-- Private Key -->
-        <div class="mb-3">
-          <label for="pkey" class="form-label">Private Key</label>
-          <input type="text" class="form-control" id="pkey" placeholder="/dir/pkey.pem" v-model="config.pkey" />
-          <div class="form-text">The private key used for the web UI and Moonlight client pairing. For best
-            compatibility, this should be an RSA-2048 private key.</div>
-        </div>
-
-        <!-- Certificate -->
-        <div class="mb-3">
-          <label for="cert" class="form-label">Certificate</label>
-          <input type="text" class="form-control" id="cert" placeholder="/dir/cert.pem" v-model="config.cert" />
-          <div class="form-text">
-            The certificate used for the web UI and Moonlight client pairing. For best compatibility, this should have
-            an RSA-2048 public key.
-          </div>
-        </div>
-
-        <!-- State File -->
-        <div class="mb-3">
-          <label for="file_state" class="form-label">State File</label>
-          <input type="text" class="form-control" id="file_state" placeholder="sunshine_state.json"
-            v-model="config.file_state" />
-          <div class="form-text">
-            The file where current state of Sunshine is stored
-          </div>
-        </div>
-
-      </div>
-
       <!-- Input Tab -->
       <div id="input" v-if="currentTab === 'input'" class="config-page">
         <!-- Enable Gamepad Input -->
@@ -229,7 +180,7 @@
             </div>
           </div>
         </div>
-        <div class="accordion" v-if="config.controller === 'enabled' && config.gamepad === 'auto'">
+        <div class="accordion" v-if="config.controller === 'enabled' && config.gamepad === 'auto' && platform === 'windows'">
           <div class="accordion-item">
             <h2 class="accordion-header">
               <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -664,6 +615,16 @@
 
       <!-- Network Tab -->
       <div id="network" v-if="currentTab === 'network'" class="config-page">
+        <!-- UPnP -->
+        <div class="mb-3">
+          <label for="upnp" class="form-label">UPnP</label>
+          <select id="upnp" class="form-select" v-model="config.upnp">
+            <option value="disabled">Disabled</option>
+            <option value="enabled">Enabled</option>
+          </select>
+          <div class="form-text">Automatically configure port forwarding for streaming over the Internet</div>
+        </div>
+
         <!-- Address family -->
         <div class="mb-3">
           <label for="address_family" class="form-label">Address Family</label>
@@ -760,16 +721,6 @@
           </div>
         </div>
 
-        <!-- UPnP -->
-        <div class="mb-3">
-          <label for="upnp" class="form-label">UPnP</label>
-          <select id="upnp" class="form-select" v-model="config.upnp">
-            <option value="disabled">Disabled</option>
-            <option value="enabled">Enabled</option>
-          </select>
-          <div class="form-text">Automatically configure port forwarding</div>
-        </div>
-
         <!-- External IP -->
         <div class="mb-3">
           <label for="external_ip" class="form-label">External IP</label>
@@ -830,23 +781,67 @@
 
       </div>
 
-      <!-- Advanced Tab -->
-      <div v-if="currentTab === 'advanced'" class="config-page">
-        <!-- Channels -->
+      <!-- Files Tab -->
+      <div id="files" v-if="currentTab === 'files'" class="config-page">
+        <!-- Apps File -->
         <div class="mb-3">
-          <label for="channels" class="form-label">Channels</label>
-          <input type="text" class="form-control" id="channels" placeholder="1" v-model="config.channels" />
+          <label for="file_apps" class="form-label">Apps File</label>
+          <input type="text" class="form-control" id="file_apps" placeholder="apps.json" v-model="config.file_apps" />
           <div class="form-text">
-            When multicasting, it could be useful to have different configurations for each connected Client. For example:
-            <ul>
-              <li>Clients connected through WAN and LAN have different bitrate constraints.</li>
-              <li>Decoders may require different settings for color</li>
-            </ul>
-            Unlike simply broadcasting to multiple Client, this will generate distinct video streams.<br>
-            Note, CPU usage increases for each distinct video stream generated
+            The file where current apps of Sunshine are stored
           </div>
         </div>
 
+        <!-- Credentials File -->
+        <div class="mb-3">
+          <label for="credentials_file" class="form-label">Credentials File</label>
+          <input type="text" class="form-control" id="credentials_file" placeholder="sunshine_state.json" v-model="config.credentials_file" />
+          <div class="form-text">
+            Store Username/Password separately from Sunshine's state file.
+          </div>
+        </div>
+
+        <!-- Log Path -->
+        <div class="mb-3">
+          <label for="log_path" class="form-label">Logfile Path</label>
+          <input type="text" class="form-control" id="log_path" placeholder="sunshine.log" v-model="config.log_path" />
+          <div class="form-text">
+            The file where the current logs of Sunshine are stored.
+          </div>
+        </div>
+
+        <!-- Private Key -->
+        <div class="mb-3">
+          <label for="pkey" class="form-label">Private Key</label>
+          <input type="text" class="form-control" id="pkey" placeholder="/dir/pkey.pem" v-model="config.pkey" />
+          <div class="form-text">The private key used for the web UI and Moonlight client pairing. For best
+            compatibility, this should be an RSA-2048 private key.</div>
+        </div>
+
+        <!-- Certificate -->
+        <div class="mb-3">
+          <label for="cert" class="form-label">Certificate</label>
+          <input type="text" class="form-control" id="cert" placeholder="/dir/cert.pem" v-model="config.cert" />
+          <div class="form-text">
+            The certificate used for the web UI and Moonlight client pairing. For best compatibility, this should have
+            an RSA-2048 public key.
+          </div>
+        </div>
+
+        <!-- State File -->
+        <div class="mb-3">
+          <label for="file_state" class="form-label">State File</label>
+          <input type="text" class="form-control" id="file_state" placeholder="sunshine_state.json"
+            v-model="config.file_state" />
+          <div class="form-text">
+            The file where current state of Sunshine is stored
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Advanced Tab -->
+      <div v-if="currentTab === 'advanced'" class="config-page">
         <!-- FEC Percentage -->
         <div class="mb-3">
           <label for="fec_percentage" class="form-label">FEC Percentage</label>
@@ -1058,17 +1053,15 @@
                   </div>
                 </div>
 
-                <!-- Prefer lower encoding latency over increased power consumption -->
+                <!-- Prefer lower encoding latency over power savings -->
                 <div class="mb-3" v-if="platform === 'windows'">
-                  <label for="nvenc_latency_over_power" class="form-label">Prefer lower encoding latency over increased power
-                    consumption</label>
+                  <label for="nvenc_latency_over_power" class="form-label">Prefer lower encoding latency over power savings</label>
                   <select id="nvenc_latency_over_power" class="form-select" v-model="config.nvenc_latency_over_power">
                     <option value="disabled">Disabled</option>
                     <option value="enabled">Enabled (default)</option>
                   </select>
                   <div class="form-text">
-                    Adaptive P-State algorithm which NVIDIA drivers employ doesn't work well with low latency streaming, so
-                    sunshine requests high power mode explicitly.<br>
+                    Sunshine requests maximum GPU clock speed while streaming to reduce encoding latency.<br>
                     Disabling it is not recommended since this can lead to
                     <strong>significantly increased encoding latency</strong>.
                   </div>
@@ -1130,6 +1123,18 @@
             <option value="cabac">cabac -- context adaptive binary arithmetic coding - higher quality</option>
             <option value="cavlc">cavlc -- context adaptive variable-length coding - faster decode</option>
           </select>
+        </div>
+
+        <!-- Allow Slow HEVC Encoding -->
+        <div class="mb-3">
+          <label for="qsv_slow_hevc" class="form-label">Allow Slow HEVC Encoding</label>
+          <select id="qsv_slow_hevc" class="form-select" v-model="config.qsv_slow_hevc">
+            <option value="enabled">enabled</option>
+            <option value="disabled">disabled (default)</option>
+          </select>
+          <div class="form-text">
+            This can enable HEVC encoding on older Intel GPUs, at the cost of higher GPU usage and worse performance.
+          </div>
         </div>
 
       </div>
@@ -1311,18 +1316,6 @@
             },
           },
           {
-            id: "files",
-            name: "Files",
-            options: {
-              "file_apps": "",
-              "credentials_file": "",
-              "log_path": "",
-              "pkey": "",
-              "cert": "",
-              "file_state": "",
-            },
-          },
-          {
             id: "input",
             name: "Input",
             options: {
@@ -1366,14 +1359,26 @@
             id: "network",
             name: "Network",
             options: {
+              "upnp": "disabled",
               "address_family": "ipv4",
               "port": 47989,
               "origin_web_ui_allowed": "lan",
-              "upnp": "disabled",
               "external_ip": "",
               "lan_encryption_mode": 0,
               "wan_encryption_mode": 1,
               "ping_timeout": 10000,
+            },
+          },
+          {
+            id: "files",
+            name: "Config Files",
+            options: {
+              "file_apps": "",
+              "credentials_file": "",
+              "log_path": "",
+              "pkey": "",
+              "cert": "",
+              "file_state": "",
             },
           },
           {
@@ -1410,6 +1415,7 @@
             options: {
               "qsv_preset": "medium",
               "qsv_coder": "auto",
+              "qsv_slow_hevc": "disabled",
             },
           },
           {
@@ -1525,12 +1531,20 @@
         this.tabs.forEach(tab => {
           Object.keys(tab.options).forEach(optionKey => {
             let delete_value = false
-            if (optionKey === "global_prep_cmd" || optionKey === "resolutions" || optionKey === "fps") {
-              let regex = /([\d]+x[\d]+)/g  // this regex is only needed for resolutions
-              // Use a regular expression to find each value and replace it with a quoted version
 
-              let config_value = JSON.parse(config[optionKey].replace(regex, '"$1"')).toString()
-              let default_value = JSON.parse(tab.options[optionKey].replace(regex, '"$1"')).toString()
+            if (["resolutions", "fps", "global_prep_cmd"].includes(optionKey)) {
+              let config_value, default_value
+
+              if (optionKey === "resolutions") {
+                let regex = /([\d]+x[\d]+)/g
+
+                // Use a regular expression to find each value and replace it with a quoted version
+                config_value = JSON.parse(config[optionKey].replace(regex, '"$1"')).toString()
+                default_value = JSON.parse(tab.options[optionKey].replace(regex, '"$1"')).toString()
+              } else {
+                config_value = JSON.parse(config[optionKey])
+                default_value = JSON.parse(tab.options[optionKey])
+              }
 
               if (config_value === default_value) {
                 delete_value = true
