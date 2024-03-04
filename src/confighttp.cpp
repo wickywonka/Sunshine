@@ -779,6 +779,42 @@ namespace confighttp {
   }
 
   void
+  updateClients(resp_https_t response, req_https_t request) {
+    if (!authenticate(response, request)) return;
+
+    print_req(request);
+
+    std::stringstream ss;
+    std::stringstream clientsStream;
+    ss << request->content.rdbuf();
+    pt::ptree outputTree;
+    auto g = util::fail_guard([&]() {
+      std::ostringstream data;
+
+      pt::write_json(data, outputTree);
+      response->write(data.str());
+    });
+    pt::ptree inputTree;
+    try {
+      // TODO: Input Validation
+      pt::read_json(ss, inputTree);
+      for (const auto &kv : inputTree) {
+        std::string value = inputTree.get<std::string>(kv.first);
+        if (value.length() == 0 || value.compare("null") == 0) continue;
+
+        clientsStream << kv.first << " = " << value << std::endl;
+      }
+      file_handler::write_file(config::sunshine.config_file.c_str(), clientsStream.str());
+    }
+    catch (std::exception &e) {
+      BOOST_LOG(warning) << "updateClients: "sv << e.what();
+      outputTree.put("status", "false");
+      outputTree.put("error", e.what());
+      return;
+    }
+  }
+
+  void
   closeApp(resp_https_t response, req_https_t request) {
     if (!authenticate(response, request)) return;
 
@@ -825,6 +861,7 @@ namespace confighttp {
     server.resource["^/api/apps/([0-9]+)$"]["DELETE"] = deleteApp;
     server.resource["^/api/clients/unpair-all$"]["POST"] = unpairAll;
     server.resource["^/api/clients/list$"]["GET"] = listClients;
+    server.resource["^/api/clients/list$"]["POST"] = updateClients;
     server.resource["^/api/clients/unpair$"]["POST"] = unpair;
     server.resource["^/api/apps/close$"]["POST"] = closeApp;
     server.resource["^/api/covers/upload$"]["POST"] = uploadCover;

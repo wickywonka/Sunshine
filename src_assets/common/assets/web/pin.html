@@ -11,7 +11,7 @@
     <h1 class="my-4 text-center">PIN Pairing</h1>
     <form action="" class="form d-flex flex-column align-items-center" id="form">
       <div class="card flex-column d-flex p-4 mb-4">
-        <input type="number" pattern="\d*"  placeholder="PIN" id="pin-input" class="form-control mt-2" required />
+        <input type="number" pattern="\d*" placeholder="PIN" id="pin-input" class="form-control mt-2" required />
         <input type="text" placeholder="Device Name" id="name-input" class="form-control my-4" required />
         <button class="btn btn-primary">Send</button>
       </div>
@@ -22,26 +22,172 @@
       </div>
       <div id="status"></div>
     </form>
+
+    <!-- Unpair all Clients -->
+    <div class="card my-4">
+      <div class="card-body">
+        <div class="p-2">
+          <div class="d-flex justify-content-end align-items-center">
+            <h2 id="unpair" class="text-center me-auto">Unpair Clients</h2>
+            <button class="btn btn-danger" :disabled="unpairAllPressed" @click="unpairAll">
+              Unpair All
+            </button>
+          </div>
+          <div id="apply-alert" class="alert alert-success d-flex align-items-center mt-3"
+            :style="{ 'display': (showApplyMessage ? 'flex !important': 'none !important') }">
+            <div class="me-2"><b>Success!</b> Click 'Apply' to restart Sunshine and apply changes. This will terminate
+              any running sessions.</div>
+            <button class="btn btn-success ms-auto apply" @click="clickedApplyBanner">Apply</button>
+          </div>
+          <div class="alert alert-success" v-if="unpairAllStatus === true">
+            Unpair Successful!
+          </div>
+          <div class="alert alert-danger" v-if="unpairAllStatus === false">
+            Error while unpairing
+          </div>
+          <br />
+          <p class="mb-0">Remove your paired devices.</p>
+        </div>
+      </div>
+
+      <div id="client-list" class="list-group list-group-flush list-group-item-light"
+        v-if="clients && clients.length > 0">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col" width="25%">Name</th>
+              <th scope="col">Resolution</th>
+              <th scope="col">Refresh rate</th>
+              <th scope="col">HDR</th>
+              <th scope="col" width="25%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(client, i) in clients" :key="client.uuid">
+              <td>{{ client.name || "Unknown Client"}}</td>
+              <td>
+                <input type="text" class="form-control monospace" v-model="client.resolution" :disabled="saved" />
+              </td>
+              <td>
+                <input type="text" class="form-control monospace" v-model="client.refreshRate" :disabled="saved" />
+              </td>
+              <td>
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" :id="'client-hdrReq' + i" v-model="client.hdrReq"
+                    true-value="true" false-value="false" :disabled="saved" />
+                  <label :for="'client-hdrReq' + i" class="form-check-label">Session</label>
+                </div>
+              </td>
+              <td>
+                <button class="btn btn-primary mx-1" :disabled="!saved" @click="saved = !saved">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-danger mx-1" @click="unpairSingle(client.uuid)">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-else class="list-group list-group-flush list-group-item-light">
+        <div class="list-group-item p-3 text-center"><em>There are no paired clients.</em></div>
+      </div>
+
+    </div>
+
+    <!-- Save and Apply buttons -->
+    <div class="mb-3 buttons">
+      <button class="btn btn-primary" @click="save">Save</button>
+    </div>
+
   </div>
 </body>
 
 <script type="module">
   import Navbar from './Navbar.vue'
-  import {createApp} from 'vue'
-  let app = createApp({
+  import {createApp, ref} from 'vue'
+  const app = createApp({
     components: {
       Navbar
-    }
+    },
+    data() {
+      return {
+        unpairAllPressed: false,
+        unpairAllStatus: null,
+        showApplyMessage: false,
+        clients: [],
+        saved: true,
+      };
+    },
+    computed: {},
+    created() {
+      this.refreshClients();
+    },
+    beforeDestroy() { },
+    methods: {
+      unpairAll() {
+        this.unpairAllPressed = true;
+        fetch("/api/clients/unpair-all", {method: "POST"})
+          .then((r) => r.json())
+          .then((r) => {
+            this.showApplyMessage = true;
+            this.unpairAllPressed = false;
+            this.unpairAllStatus = r.status.toString() === "true";
+            setTimeout(() => {
+              this.unpairAllStatus = null;
+            }, 5000);
+          });
+      },
+      unpairSingle(uuid) {
+        fetch("/api/clients/unpair", {method: "POST", body: JSON.stringify({uuid})}).then(() => {
+          this.showApplyMessage = true;
+          this.refreshClients();
+        });
+      },
+      refreshClients() {
+        fetch("/api/clients/list")
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.status === 'true' && response.named_certs && response.named_certs.length) {
+              this.clients = response.named_certs;
+            } else {
+              this.clients = [];
+            }
+          });
+      },
+      clickedApplyBanner() {
+        this.showApplyMessage = false;
+        fetch("/api/restart", {
+          method: "POST",
+        });
+      },
+      save() {
+        return fetch("/api/clients/list", {
+          method: "POST",
+          body: JSON.stringify(this.clients),
+        }).then((r) => {
+          if (r.status === 200) {
+            this.saved = true
+            return this.saved
+          }
+          else {
+            return false
+          }
+        });
+      },
+    },
   });
+
   app.mount("#app");
-  
+
   document.querySelector("#form").addEventListener("submit", (e) => {
     e.preventDefault();
     let pin = document.querySelector("#pin-input").value;
     let name = document.querySelector("#name-input").value;
     document.querySelector("#status").innerHTML = "";
-    let b = JSON.stringify({ pin: pin, name: name });
-    fetch("/api/pin", { method: "POST", body: b })
+    let b = JSON.stringify({pin: pin, name: name});
+    fetch("/api/pin", {method: "POST", body: b})
       .then((response) => response.json())
       .then((response) => {
         if (response.status.toString().toLowerCase() === "true") {
