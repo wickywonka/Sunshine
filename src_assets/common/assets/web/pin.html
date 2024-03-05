@@ -127,6 +127,8 @@
           this.config = r
         })
       this.refreshClients();
+    },
+    mounted() {
       this.initPinForm();
     },
     beforeDestroy() { },
@@ -172,11 +174,11 @@
         });
       },
       serialize(listArray = []) {
-        let nl = this.config.platform === "windows" ? "\r\n" : "\n";
+        let nl = "\n";
         return "[" +
           nl +
           "    " +
-          listArray.join("," + nl + "    ") +
+          listArray.map(item => JSON.stringify(item)).join("," + nl + "    ") +
           nl +
           "]";
       },
