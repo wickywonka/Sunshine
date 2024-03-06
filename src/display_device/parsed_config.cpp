@@ -31,6 +31,7 @@ namespace display_device {
     bool
     parse_resolution_option(const config::video_t &config, const rtsp_stream::launch_session_t &session, parsed_config_t &parsed_config) {
       const auto resolution_option { static_cast<parsed_config_t::resolution_change_e>(config.resolution_change) };
+      BOOST_LOG(info) << "devices session unique_id: " << session.unique_id;
       switch (resolution_option) {
         case parsed_config_t::resolution_change_e::automatic: {
           if (!session.enable_sops) {

@@ -161,9 +161,16 @@
             } else {
               this.clients = [];
             }
+
+            let tmpClients = [];
+            try {
+              tmpClients = JSON.parse(this.config.clients)
+            } catch (error) {
+            }
+
             this.clients = this.clients.map(client => ({
               ...client,
-              ...(this.config.clients?.find(({uuid}) => uuid = client.uuid))
+              ...(tmpClients.find(({uuid}) => uuid === client.uuid))
             }))
           });
       },
