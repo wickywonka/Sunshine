@@ -378,6 +378,15 @@ namespace display_device {
      */
     bool
     try_revert_settings(settings_t::persistent_data_t &data, bool &data_modified) {
+      try {
+        nlohmann::json json_data = data;
+        BOOST_LOG(debug) << "current persistent display settings:\n"
+                         << json_data.dump(4);
+      }
+      catch (const std::exception &err) {
+        BOOST_LOG(error) << "failed to dump persistent display settings: " << err.what();
+      }
+
       if (!data.contains_modifications()) {
         return true;
       }
@@ -484,7 +493,7 @@ namespace display_device {
         return true;
       }
       catch (const std::exception &err) {
-        BOOST_LOG(info) << "Failed to save display settings: " << err.what();
+        BOOST_LOG(error) << "Failed to save display settings: " << err.what();
       }
 
       return false;
@@ -509,7 +518,7 @@ namespace display_device {
         }
       }
       catch (const std::exception &err) {
-        BOOST_LOG(info) << "Failed to load saved display settings: " << err.what();
+        BOOST_LOG(error) << "Failed to load saved display settings: " << err.what();
       }
 
       return nullptr;
