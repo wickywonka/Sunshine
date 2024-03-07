@@ -147,6 +147,10 @@ namespace display_device {
     std::lock_guard lock { mutex };
 
     const auto result { settings.apply_config(config, session) };
+    if (!result) {
+      BOOST_LOG(error) << "failed to configure display: " << result.get_error_message();
+    }
+
     timer->setup_timer(!result);
     return result;
   }
