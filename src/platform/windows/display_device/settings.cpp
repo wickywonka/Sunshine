@@ -431,6 +431,7 @@ namespace display_device {
         }
       }
 
+      BOOST_LOG(debug) << "changing display topology to: " << to_string(data.topology.initial);
       if (set_topology(data.topology.initial)) {
         newly_enabled_devices.merge(get_newly_enabled_devices_from_topology(current_topology, data.topology.initial));
         current_topology = data.topology.initial;
