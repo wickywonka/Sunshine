@@ -380,7 +380,7 @@ namespace display_device {
     try_revert_settings(settings_t::persistent_data_t &data, bool &data_modified) {
       try {
         nlohmann::json json_data = data;
-        BOOST_LOG(debug) << "current persistent display settings:\n"
+        BOOST_LOG(debug) << "reverting persistent display settings from:\n"
                          << json_data.dump(4);
       }
       catch (const std::exception &err) {
@@ -490,6 +490,8 @@ namespace display_device {
 
         // Write json with indentation
         file << std::setw(4) << json_data << std::endl;
+        BOOST_LOG(debug) << "saved persistent display settings:\n"
+                         << json_data.dump(4);
         return true;
       }
       catch (const std::exception &err) {
