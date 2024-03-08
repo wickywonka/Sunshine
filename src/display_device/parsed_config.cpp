@@ -8,6 +8,7 @@
 #include "src/config.h"
 #include "src/logging.h"
 #include "src/rtsp.h"
+#include "to_string.h"
 
 namespace display_device {
 
@@ -371,6 +372,13 @@ namespace display_device {
       // Error already logged
       return boost::none;
     }
+
+    BOOST_LOG(debug) << "Parsed display device config:\n"
+                     << "device_id: " << parsed_config.device_id << "\n"
+                     << "device_prep: " << static_cast<int>(parsed_config.device_prep) << "\n"
+                     << "change_hdr_state: " << (parsed_config.change_hdr_state ? *parsed_config.change_hdr_state ? "true" : "false" : "none") << "\n"
+                     << "resolution: " << (parsed_config.resolution ? to_string(*parsed_config.resolution) : "none") << "\n"
+                     << "refresh_rate: " << (parsed_config.refresh_rate ? to_string(*parsed_config.refresh_rate) : "none") << "\n";
 
     return parsed_config;
   }
