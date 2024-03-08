@@ -428,20 +428,13 @@
 
         <!-- Output Name -->
         <div class="mb-3" v-if="platform === 'windows'">
-          <label for="output_name" class="form-label">Display Device Id</label>
-          <input type="text" class="form-control" id="output_name"
-            placeholder="{de9bb7e2-186e-505b-9e93-f48793333810}"
-            v-model="config.output_name" />
+          <label for="output_name" class="form-label">Display Device Specify</label>
+          <select id="output_name" class="form-select" v-model="config.output_name">
+            <option v-for="device in displayDevices" :value="device.id" :key="device.id">{{ device.name }}</option>
+          </select>
           <div class="form-text">
             Manually specify a display device id to use for capture. If unset, the primary display is captured.<br>
             Note: If you specified a GPU above, this display must be connected to that GPU.<br>
-            <br>
-            During Sunshine startup, you should see the list of detected display devices and their ids, e.g.:<br>
-            <b>&nbsp;&nbsp;&nbsp;&nbsp;DEVICE ID: {de9bb7e2-186e-505b-9e93-f48793333810}</b><br>
-            <b>&nbsp;&nbsp;&nbsp;&nbsp;DISPLAY NAME: \\.\DISPLAY1</b><br>
-            <b>&nbsp;&nbsp;&nbsp;&nbsp;FRIENDLY NAME: ROG PG279Q</b><br>
-            <b>&nbsp;&nbsp;&nbsp;&nbsp;DEVICE STATE: PRIMARY</b><br>
-            <b>&nbsp;&nbsp;&nbsp;&nbsp;HDR STATE: UNKNOWN</b>
           </div>
         </div>
         <div class="mb-3" v-if="platform === 'linux'">
@@ -1611,6 +1604,13 @@
         // Check if port is NaN or a falsy value (like 0, empty string, etc.).
         // If so, default to config port. Otherwise, use the value of port.
         return port ? port : 47989
+      },
+      displayDevices() {
+        // "DISPLAY NAME: \\\\.\\DISPLAY1\nFRIENDLY NAME: F32D80U\nDEVICE STATE: PRIMARY\nHDR STATE: ENABLED"
+        return this.config.display_devices.map(({device_id, data = ''}) => ({
+          id: device_id,
+          name: data.replace(/.*\nFRIENDLY NAME: (.*[^\n])*?\n.*\n.*/g, '$1'),
+        }))
       },
     },
     mounted() {

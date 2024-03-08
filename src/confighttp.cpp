@@ -29,6 +29,8 @@
 #include "config.h"
 #include "confighttp.h"
 #include "crypto.h"
+#include "src/display_device/display_device.h"
+#include "src/display_device/to_string.h"
 #include "display_device/session.h"
 #include "file_handler.h"
 #include "globals.h"
@@ -544,6 +546,17 @@ namespace confighttp {
       response->write(data.str());
     });
 
+    auto devices { display_device::enum_available_devices() };
+
+    pt::ptree devices_nodes;
+    for (const auto &[device_id, data] : devices) {
+      pt::ptree devices_node;
+      devices_node.put("device_id"s, device_id);
+      devices_node.put("data"s, to_string(data));
+      devices_nodes.push_back(std::make_pair(""s, devices_node));
+    }
+
+    outputTree.add_child("display_devices", devices_nodes);
     outputTree.put("status", "true");
     outputTree.put("platform", SUNSHINE_PLATFORM);
     outputTree.put("version", PROJECT_VER);
