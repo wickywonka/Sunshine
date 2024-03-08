@@ -378,6 +378,15 @@ namespace display_device {
      */
     bool
     try_revert_settings(settings_t::persistent_data_t &data, bool &data_modified) {
+      try {
+        nlohmann::json json_data = data;
+        BOOST_LOG(debug) << "reverting persistent display settings from:\n"
+                         << json_data.dump(4);
+      }
+      catch (const std::exception &err) {
+        BOOST_LOG(error) << "failed to dump persistent display settings: " << err.what();
+      }
+
       if (!data.contains_modifications()) {
         return true;
       }
@@ -431,6 +440,7 @@ namespace display_device {
         }
       }
 
+      BOOST_LOG(debug) << "changing display topology to: " << to_string(data.topology.initial);
       if (set_topology(data.topology.initial)) {
         newly_enabled_devices.merge(get_newly_enabled_devices_from_topology(current_topology, data.topology.initial));
         current_topology = data.topology.initial;
@@ -480,10 +490,12 @@ namespace display_device {
 
         // Write json with indentation
         file << std::setw(4) << json_data << std::endl;
+        BOOST_LOG(debug) << "saved persistent display settings:\n"
+                         << json_data.dump(4);
         return true;
       }
       catch (const std::exception &err) {
-        BOOST_LOG(info) << "Failed to save display settings: " << err.what();
+        BOOST_LOG(error) << "Failed to save display settings: " << err.what();
       }
 
       return false;
@@ -508,7 +520,7 @@ namespace display_device {
         }
       }
       catch (const std::exception &err) {
-        BOOST_LOG(info) << "Failed to load saved display settings: " << err.what();
+        BOOST_LOG(error) << "Failed to load saved display settings: " << err.what();
       }
 
       return nullptr;

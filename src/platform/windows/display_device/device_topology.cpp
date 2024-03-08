@@ -276,7 +276,7 @@ namespace display_device {
         }
       }
       else if (result != ERROR_SUCCESS) {
-        BOOST_LOG(error) << w_utils::get_error_string(result) << " failed to create change topology configuration!";
+        BOOST_LOG(error) << w_utils::get_error_string(result) << " failed to change topology configuration!";
         return false;
       }
 

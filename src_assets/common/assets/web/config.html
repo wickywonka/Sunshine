@@ -515,6 +515,41 @@
                     </div>
                     <input type="text" class="form-control" id="manual_resolution" placeholder="2560x1440" v-model="config.manual_resolution" />
                   </div>
+
+                  <!-- Automatic resolution remapping -->
+                  <div id="auto_resolution_remapping" class="mt-2 ps-4 d-flex flex-column" v-if="config.resolution_change === 'automatic'">
+                    <div class="form-text">
+                      Specify how a specific resolution should be changed to another when it is received from the client.
+                      You can stream at lower resolution, while rendering at higher resolution on host for a supersampling effect.
+                    </div>
+                    <table class="table" v-if="auto_resolution_remapping.length > 0">
+                      <thead>
+                        <tr>
+                          <th scope="col">Received resolution</th>
+                          <th scope="col">Final resolution</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(c, i) in auto_resolution_remapping">
+                          <td>
+                            <input type="text" class="form-control monospace" v-model="c.received" placeholder="1920x1080" />
+                          </td>
+                          <td>
+                            <input type="text" class="form-control monospace" v-model="c.final" placeholder="2560x1440" />
+                          </td>
+                          <td>
+                            <button class="btn btn-danger" @click="auto_resolution_remapping.splice(i,1)">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button class="ms-0 mt-2 btn btn-success" style="margin: 0 auto" @click="add_auto_resolution_remapping">
+                      &plus; Add
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Refresh rate change -->
@@ -1298,6 +1333,7 @@
         resIn: "",
         fpsIn: "",
         global_prep_cmd: [],
+        auto_resolution_remapping: [],
         tabs: [
           {
             id: "general",
@@ -1341,6 +1377,7 @@
               "display_device_prep": "no_operation",
               "resolution_change": "automatic",
               "manual_resolution": "",
+              "auto_resolution_remapping": "[]",
               "refresh_rate_change": "automatic",
               "manual_refresh_rate": "",
               "hdr_prep": "automatic",
@@ -1493,6 +1530,9 @@
 
           this.config.global_prep_cmd = this.config.global_prep_cmd || [];
           this.global_prep_cmd = JSON.parse(this.config.global_prep_cmd);
+
+          this.config.auto_resolution_remapping = this.config.auto_resolution_remapping || [];
+          this.auto_resolution_remapping = JSON.parse(this.config.auto_resolution_remapping);
         });
     },
     methods: {
@@ -1511,6 +1551,7 @@
         // remove quotes from values in fps
         this.config.fps = JSON.stringify(this.fps).replace(/"/g, "");
         this.config.global_prep_cmd = JSON.stringify(this.global_prep_cmd);
+        this.config.auto_resolution_remapping = JSON.stringify(this.auto_resolution_remapping);
       },
       save() {
         this.saved = false;
@@ -1525,7 +1566,7 @@
           Object.keys(tab.options).forEach(optionKey => {
             let delete_value = false
 
-            if (["resolutions", "fps", "global_prep_cmd"].includes(optionKey)) {
+            if (["resolutions", "fps", "global_prep_cmd", "auto_resolution_remapping"].includes(optionKey)) {
               let config_value, default_value
 
               if (optionKey === "resolutions") {
@@ -1595,6 +1636,14 @@
         }
         this.global_prep_cmd.push(template);
       },
+      add_auto_resolution_remapping() {
+        let template = {
+          received: "",
+          final: "",
+        };
+
+        this.auto_resolution_remapping.push(template);
+      }
     },
     computed: {
       effectivePort() {

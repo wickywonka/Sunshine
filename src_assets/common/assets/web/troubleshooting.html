@@ -136,13 +136,9 @@
           platform: "",
           closeAppPressed: false,
           closeAppStatus: null,
-          unpairAllPressed: false,
-          unpairAllStatus: null,
           restartPressed: false,
           resetDisplayDevicePressed: false,
           resetDisplayDeviceStatus: null,
-          showApplyMessage: false,
-          clients: [],
           logs: 'Loading...',
           logFilter: null,
           logInterval: null,
@@ -188,6 +184,18 @@
               this.closeAppStatus = r.status.toString() === "true";
               setTimeout(() => {
                 this.closeAppStatus = null;
+              }, 5000);
+            });
+        },
+        resetDisplayDevicePersistence() {
+          this.resetDisplayDevicePressed = true;
+          fetch("/api/reset-display-device-persistence", { method: "POST" })
+            .then((r) => r.json())
+            .then((r) => {
+              this.resetDisplayDevicePressed = false;
+              this.resetDisplayDeviceStatus = r.status.toString() === "true";
+              setTimeout(() => {
+                this.resetDisplayDeviceStatus = null;
               }, 5000);
             });
         },

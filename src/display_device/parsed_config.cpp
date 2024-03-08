@@ -8,10 +8,151 @@
 #include "src/config.h"
 #include "src/logging.h"
 #include "src/rtsp.h"
+#include "to_string.h"
 
 namespace display_device {
 
   namespace {
+    /**
+     * @brief Parse resolution value from the string.
+     * @param input String to be parsed.
+     * @param output Reference to output variable.
+     * @returns True on successful parsing (empty string allowed), false otherwise.
+     *
+     * EXAMPLES:
+     * ```cpp
+     * boost::optional<resolution_t> resolution;
+     * if (parse_resolution_string("1920x1080", resolution)) {
+     *   if (resolution) {
+     *     // Value was specified
+     *   }
+     *   else {
+     *     // Value was empty
+     *   }
+     * }
+     * ```
+     */
+    bool
+    parse_resolution_string(const std::string &input, boost::optional<resolution_t> &output) {
+      const std::string trimmed_input { boost::algorithm::trim_copy(input) };
+      const boost::regex resolution_regex { R"(^(\d+)x(\d+)$)" };  // std::regex hangs in CTOR for some reason when called in a thread. Problem with MSYS2 packages (UCRT64), maybe?
+
+      boost::smatch match;
+      if (boost::regex_match(trimmed_input, match, resolution_regex)) {
+        try {
+          output = resolution_t {
+            static_cast<unsigned int>(std::stol(match[1])),
+            static_cast<unsigned int>(std::stol(match[2]))
+          };
+        }
+        catch (const std::invalid_argument &err) {
+          BOOST_LOG(error) << "failed to parse manual resolution string " << trimmed_input << " (invalid argument):\n"
+                           << err.what();
+          return false;
+        }
+        catch (const std::out_of_range &err) {
+          BOOST_LOG(error) << "failed to parse manual resolution string " << trimmed_input << " (number out of range):\n"
+                           << err.what();
+          return false;
+        }
+        catch (const std::exception &err) {
+          BOOST_LOG(error) << "failed to parse manual resolution string " << trimmed_input << ":\n"
+                           << err.what();
+          return false;
+        }
+      }
+      else {
+        output = boost::none;
+
+        if (!trimmed_input.empty()) {
+          BOOST_LOG(error) << "failed to parse manual resolution string " << trimmed_input << ". It must match a \"1920x1080\" pattern!";
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    /**
+     * @brief Parse refresh rate value from the string.
+     * @param input String to be parsed.
+     * @param output Reference to output variable.
+     * @returns True on successful parsing (empty string allowed), false otherwise.
+     *
+     * EXAMPLES:
+     * ```cpp
+     * boost::optional<refresh_rate_t> refresh_rate;
+     * if (parse_refresh_rate_string("59.95", refresh_rate)) {
+     *   if (refresh_rate) {
+     *     // Value was specified
+     *   }
+     *   else {
+     *     // Value was empty
+     *   }
+     * }
+     * ```
+     */
+    bool
+    parse_refresh_rate_string(const std::string &input, boost::optional<refresh_rate_t> &output) {
+      const std::string trimmed_input { boost::algorithm::trim_copy(input) };
+      const boost::regex refresh_rate_regex { R"(^(\d+)(?:\.(\d+))?$)" };  // std::regex hangs in CTOR for some reason when called in a thread. Problem with MSYS2 packages (UCRT64), maybe?
+
+      boost::smatch match;
+      if (boost::regex_match(trimmed_input, match, refresh_rate_regex)) {
+        try {
+          if (match[2].matched) {
+            // We have a decimal point and will have to split it into numerator and denominator.
+            // For example:
+            //   59.995:
+            //     numerator = 59995
+            //     denominator = 1000
+
+            // We are essentially removing the decimal point here: 59.995 -> 59995
+            const std::string numerator_str { match[1].str() + match[2].str() };
+            const auto numerator { static_cast<unsigned int>(std::stol(numerator_str)) };
+
+            // Here we are counting decimal places and calculating denominator: 10^decimal_places
+            const auto denominator { static_cast<unsigned int>(std::pow(10, std::distance(match[2].first, match[2].second))) };
+
+            output = refresh_rate_t { numerator, denominator };
+          }
+          else {
+            // We do not have a decimal point, just a valid number.
+            // For example:
+            //   60:
+            //     numerator = 60
+            //     denominator = 1
+            output = refresh_rate_t { static_cast<unsigned int>(std::stol(match[1])), 1 };
+          }
+        }
+        catch (const std::invalid_argument &err) {
+          BOOST_LOG(error) << "Failed to parse manual refresh rate string " << trimmed_input << " (invalid argument):\n"
+                           << err.what();
+          return false;
+        }
+        catch (const std::out_of_range &err) {
+          BOOST_LOG(error) << "Failed to parse manual refresh rate string " << trimmed_input << " (number out of range):\n"
+                           << err.what();
+          return false;
+        }
+        catch (const std::exception &err) {
+          BOOST_LOG(error) << "Failed to parse manual refresh rate string " << trimmed_input << ":\n"
+                           << err.what();
+          return false;
+        }
+      }
+      else {
+        output = boost::none;
+
+        if (!trimmed_input.empty()) {
+          BOOST_LOG(error) << "Failed to parse manual refresh rate string " << trimmed_input << ". Must have a pattern of \"123\" or \"123.456\"!";
+          return false;
+        }
+      }
+
+      return true;
+    }
+
     /**
      * @brief Parse resolution option from the user configuration and the session information.
      * @param config User's video related configuration.
@@ -31,7 +172,6 @@ namespace display_device {
     bool
     parse_resolution_option(const config::video_t &config, const rtsp_stream::launch_session_t &session, parsed_config_t &parsed_config) {
       const auto resolution_option { static_cast<parsed_config_t::resolution_change_e>(config.resolution_change) };
-      BOOST_LOG(info) << "devices session unique_id: " << session.unique_id;
       switch (resolution_option) {
         case parsed_config_t::resolution_change_e::automatic: {
           if (!session.enable_sops) {
@@ -43,43 +183,42 @@ namespace display_device {
               static_cast<unsigned int>(session.width),
               static_cast<unsigned int>(session.height)
             };
+
+            for (const auto &entry : config.auto_resolution_remapping) {
+              boost::optional<resolution_t> received;
+              boost::optional<resolution_t> final;
+
+              if (!parse_resolution_string(entry.received, received) || !parse_resolution_string(entry.final, final)) {
+                // Error already logged
+                return false;
+              }
+
+              if (!received || !final) {
+                BOOST_LOG(error) << "Both values must be set for remapping client resolution! Current entry value: " << entry.received << " -> " << entry.final;
+                return false;
+              }
+
+              if (parsed_config.resolution->width == received->width && parsed_config.resolution->height == received->height) {
+                BOOST_LOG(debug) << "Using remapped resolution entry: " << entry.received << " -> " << entry.final;
+                parsed_config.resolution = final;
+                break;
+              }
+            }
           }
           else {
-            BOOST_LOG(error) << "resolution provided by client session config is invalid: " << session.width << "x" << session.height;
+            BOOST_LOG(error) << "Resolution provided by client session config is invalid: " << session.width << "x" << session.height;
             return false;
           }
           break;
         }
         case parsed_config_t::resolution_change_e::manual: {
-          const std::string trimmed_string { boost::algorithm::trim_copy(config.manual_resolution) };
-          const boost::regex resolution_regex { R"(^(\d+)x(\d+)$)" };  // std::regex hangs in CTOR for some reason when called in a thread. Problem with MSYS2 packages (UCRT64), maybe?
-
-          boost::smatch match;
-          if (boost::regex_match(trimmed_string, match, resolution_regex)) {
-            try {
-              parsed_config.resolution = resolution_t {
-                static_cast<unsigned int>(std::stol(match[1])),
-                static_cast<unsigned int>(std::stol(match[2]))
-              };
-            }
-            catch (const std::invalid_argument &err) {
-              BOOST_LOG(error) << "failed to parse manual resolution string (invalid argument):\n"
-                               << err.what();
-              return false;
-            }
-            catch (const std::out_of_range &err) {
-              BOOST_LOG(error) << "failed to parse manual resolution string (number out of range):\n"
-                               << err.what();
-              return false;
-            }
-            catch (const std::exception &err) {
-              BOOST_LOG(error) << "failed to parse manual resolution string:\n"
-                               << err.what();
-              return false;
-            }
+          if (!parse_resolution_string(config.manual_resolution, parsed_config.resolution)) {
+            // Error already logged
+            return false;
           }
-          else {
-            BOOST_LOG(error) << "failed to parse manual resolution string. It must match a \"WIDTHxHEIGHT\" pattern!";
+
+          if (!parsed_config.resolution) {
+            BOOST_LOG(error) << "Manual resolution must be specified!";
             return false;
           }
           break;
@@ -123,55 +262,13 @@ namespace display_device {
           break;
         }
         case parsed_config_t::refresh_rate_change_e::manual: {
-          const std::string trimmed_string { boost::algorithm::trim_copy(config.manual_refresh_rate) };
-          const boost::regex refresh_rate_regex { R"(^(\d+)(?:\.(\d+))?$)" };  // std::regex hangs in CTOR for some reason when called in a thread. Problem with MSYS2 packages (UCRT64), maybe?
-
-          boost::smatch match;
-          if (boost::regex_match(trimmed_string, match, refresh_rate_regex)) {
-            try {
-              if (match[2].matched) {
-                // We have a decimal point and will have to split it into numerator and denominator.
-                // For example:
-                //   59.995:
-                //     numerator = 59995
-                //     denominator = 1000
-
-                // We have essentially removing the decimal point here: 59.995 -> 59995
-                const std::string numerator_str { match[1].str() + match[2].str() };
-                const auto numerator { static_cast<unsigned int>(std::stol(numerator_str)) };
-
-                // Here we are counting decimal places and calculating denominator: 10^decimal_places
-                const auto denominator { static_cast<unsigned int>(std::pow(10, std::distance(match[2].first, match[2].second))) };
-
-                parsed_config.refresh_rate = refresh_rate_t { numerator, denominator };
-              }
-              else {
-                // We do not have a decimal point, just a valid number.
-                // For example:
-                //   60:
-                //     numerator = 60
-                //     denominator = 1
-                parsed_config.refresh_rate = refresh_rate_t { static_cast<unsigned int>(std::stol(match[1])), 1 };
-              }
-            }
-            catch (const std::invalid_argument &err) {
-              BOOST_LOG(error) << "failed to parse manual refresh rate string (invalid argument):\n"
-                               << err.what();
-              return false;
-            }
-            catch (const std::out_of_range &err) {
-              BOOST_LOG(error) << "failed to parse manual refresh rate string (number out of range):\n"
-                               << err.what();
-              return false;
-            }
-            catch (const std::exception &err) {
-              BOOST_LOG(error) << "failed to parse manual refresh rate string:\n"
-                               << err.what();
-              return false;
-            }
+          if (!parse_refresh_rate_string(config.manual_refresh_rate, parsed_config.refresh_rate)) {
+            // Error already logged
+            return false;
           }
-          else {
-            BOOST_LOG(error) << "failed to parse manual refresh rate string! Must have a pattern of \"123\" or \"123.456\"!";
+
+          if (!parsed_config.refresh_rate) {
+            BOOST_LOG(error) << "Manual refresh rate must be specified!";
             return false;
           }
           break;
@@ -275,6 +372,13 @@ namespace display_device {
       // Error already logged
       return boost::none;
     }
+
+    BOOST_LOG(debug) << "Parsed display device config:\n"
+                     << "device_id: " << parsed_config.device_id << "\n"
+                     << "device_prep: " << static_cast<int>(parsed_config.device_prep) << "\n"
+                     << "change_hdr_state: " << (parsed_config.change_hdr_state ? *parsed_config.change_hdr_state ? "true" : "false" : "none") << "\n"
+                     << "resolution: " << (parsed_config.resolution ? to_string(*parsed_config.resolution) : "none") << "\n"
+                     << "refresh_rate: " << (parsed_config.refresh_rate ? to_string(*parsed_config.refresh_rate) : "none") << "\n";
 
     return parsed_config;
   }

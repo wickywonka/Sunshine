@@ -236,7 +236,6 @@ namespace display_device {
       BOOST_LOG(error) << "display topology is invalid!";
       return boost::none;
     }
-    BOOST_LOG(debug) << "current display topology: " << to_string(current_topology);
 
     // When dealing with the "requested device" here and in other functions we need to keep
     // in mind that it could belong to a duplicated display and thus all of them
@@ -244,6 +243,7 @@ namespace display_device {
     auto duplicated_devices { get_duplicate_devices(requested_device_id, current_topology) };
     const auto final_topology { determine_final_topology(config.device_prep, primary_device_requested, duplicated_devices, current_topology) };
 
+    BOOST_LOG(debug) << "current display topology: " << to_string(current_topology);
     if (!is_topology_the_same(current_topology, final_topology)) {
       BOOST_LOG(debug) << "changing display topology to: " << to_string(final_topology);
       if (!set_topology(final_topology)) {
