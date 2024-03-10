@@ -45,3 +45,6 @@
 [submodule "src_assets/common/sunshine-control-panel"]
 	path = src_assets/common/sunshine-control-panel
 	url = https://github.com/qiin2333/sunshine-control-panel.git
+[submodule "third-party/Virtual-Display-Driver"]
+	path = third-party/Virtual-Display-Driver
+	url = https://github.com/itsmikethetech/Virtual-Display-Driver.git

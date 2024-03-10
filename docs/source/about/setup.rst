@@ -38,7 +38,6 @@ Install
       ===========================================  ==============   ==============    ================================
       Package                                      CUDA Version     Min Driver        CUDA Compute Capabilities
       ===========================================  ==============   ==============    ================================
-      PKGBUILD                                     User dependent   User dependent    User dependent
       sunshine.AppImage                            11.8.0           450.80.02         35;50;52;60;61;62;70;75;80;86;90
       sunshine.pkg.tar.zst                         11.8.0           450.80.02         35;50;52;60;61;62;70;75;80;86;90
       sunshine_{arch}.flatpak                      12.0.0           525.60.13         50;52;60;61;62;70;75;80;86;90
@@ -90,21 +89,7 @@ Install
 
             ./sunshine.AppImage --remove
 
-   .. tab:: Archlinux PKGBUILD
-
-      #. Open terminal and run the following code.
-
-         .. code-block:: bash
-
-            wget https://github.com/LizardByte/Sunshine/releases/latest/download/PKGBUILD
-            makepkg -fi
-
-      Uninstall:
-         .. code-block:: bash
-
-            pacman -R sunshine
-
-   .. tab:: Archlinux pkg
+   .. tab:: Arch Linux Package
 
       #. Open terminal and run the following code.
 
@@ -205,7 +190,7 @@ Install
 
             sudo dnf remove sunshine
 
-   The `deb`, `rpm`, `Flatpak` and `AppImage` packages should handle these steps automatically.
+   The `deb`, `rpm`, `zst`, `Flatpak` and `AppImage` packages should handle these steps automatically.
    Third party packages may not.
 
    Sunshine needs access to `uinput` to create mouse and gamepad events.
@@ -283,18 +268,15 @@ Install
 
    .. important:: Sunshine on macOS is experimental. Gamepads do not work.
 
-   .. tab:: dmg
+   .. tab:: Homebrew
 
-      .. warning:: The `dmg` does not include runtime dependencies. This package is not recommended for most users.
-         No support will be provided!
+      #. Install `Homebrew <https://docs.brew.sh/Installation>`__
+      #. Update the Homebrew sources and install Sunshine.
 
-      #. Download the ``sunshine-<macos_version>-<cpu_architecture>.dmg`` file and install it.
-
-      Uninstall:
          .. code-block:: bash
 
-            cd /etc/sunshine/assets
-            uninstall_pkg.sh
+            brew tap LizardByte/homebrew
+            brew install sunshine
 
    .. tab:: Portfile
 
