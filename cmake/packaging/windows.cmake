@@ -34,6 +34,9 @@ install(DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/misc/firewall/"
 install(DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/misc/gamepad/"
         DESTINATION "scripts"
         COMPONENT gamepad)
+install(DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/misc/vdd/"
+        DESTINATION "scripts"
+        COMPONENT vdd)
 
 # Sunshine assets
 install(DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/assets/"
@@ -57,6 +60,7 @@ SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS
         nsExec::ExecToLog 'icacls \\\"$INSTDIR\\\" /reset'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\migrate-config.bat\\\"'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\add-firewall-rule.bat\\\"'
+        nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\install-vdd.bat\\\"'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\install-gamepad.bat\\\"'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\install-service.bat\\\"'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\autostart-service.bat\\\"'
@@ -125,12 +129,6 @@ set(CPACK_COMPONENT_AUTOSTART_DISPLAY_NAME "Launch on Startup")
 set(CPACK_COMPONENT_AUTOSTART_DESCRIPTION "If enabled, launches Sunshine automatically on system startup.")
 set(CPACK_COMPONENT_AUTOSTART_GROUP "Core")
 
-# control panel
-set(CPACK_COMPONENT_GUI_DISPLAY_NAME "21面板")
-set(CPACK_COMPONENT_GUI_DESCRIPTION "Control panel for config")
-set(CPACK_COMPONENT_GUI_GROUP "Core")
-set(CPACK_COMPONENT_GUI_REQUIRED true)
-
 # assets
 set(CPACK_COMPONENT_ASSETS_DISPLAY_NAME "Required Assets")
 set(CPACK_COMPONENT_ASSETS_DESCRIPTION "Shaders, default box art, and web UI.")
@@ -156,3 +154,8 @@ set(CPACK_COMPONENT_FIREWALL_GROUP "Scripts")
 set(CPACK_COMPONENT_GAMEPAD_DISPLAY_NAME "Virtual Gamepad")
 set(CPACK_COMPONENT_GAMEPAD_DESCRIPTION "Scripts to install and uninstall Virtual Gamepad.")
 set(CPACK_COMPONENT_GAMEPAD_GROUP "Scripts")
+
+# Virtual Display Driver
+set(CPACK_COMPONENT_VDD_DISPLAY_NAME "IddSampleDriver")
+set(CPACK_COMPONENT_VDD_DESCRIPTION "支持HDR的虚拟显示器驱动安装")
+set(CPACK_COMPONENT_VDD_GROUP "Scripts")
