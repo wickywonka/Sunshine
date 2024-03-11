@@ -1,44 +1,32 @@
 @echo off
 setlocal enabledelayedexpansion
 
-rem Get sunshine root directory
-for %%I in ("%~dp0\..") do set "OLD_DIR=%%~fI"
+rem Get temp directory
+set temp_dir=%temp%/Sunshine
 
-rem Create the config directory if it didn't already exist
-set "NEW_DIR=%OLD_DIR%\vdd"
-if not exist "%NEW_DIR%\" mkdir "%NEW_DIR%"
-icacls "%NEW_DIR%" /reset
+rem Create temp directory if it doesn't exist
+if not exist "%temp_dir%" mkdir "%temp_dir%"
 
 rem Get system proxy setting
 set proxy= 
-for /f "tokens=3" %%a in ('reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" ^| find /i "ProxyEnable"') do (
-  set ProxyEnable=%%a
-    
-  if !ProxyEnable! equ 0x1 (
-  for /f "tokens=3" %%a in ('reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" ^| find /i "ProxyServer"') do (
-      set proxy=%%a
-      echo Using system proxy !proxy! to download Virtual Gamepad
-      set proxy=-x !proxy!
-    )
-  ) else (
-    rem Proxy is not enabled.
-  )
-)
-
-rem Strip quotes
-set browser_download_url="https://github.com/itsmikethetech/Virtual-Display-Driver/releases/download/23.12.2HDR/VDD.HDR.23.12.zip"
-
+	@@ -31,14 +29,20 @@ set browser_download_url="https://github.com/itsmikethetech/Virtual-Display-Driv
 echo %browser_download_url%
 
 rem Download the zip
-curl -s -L !proxy! -o "%NEW_DIR%\vdd.zip" %browser_download_url%
+curl -s -L !proxy! -o "%temp_dir%\vdd.zip" %browser_download_url%
 
 rem unzip
-powershell -c "Expand-Archive '%NEW_DIR%\vdd.zip' '%NEW_DIR%'"
-
-pause
+powershell -c "Expand-Archive '%temp_dir%\vdd.zip' '%temp_dir%'"
 
 rem Delete temp file
-del "%NEW_DIR%\vdd.zip"
+del "%temp_dir%\vdd.zip"
 
-pause
+rem install
+set "DRIVER_DIR=%temp_dir%\VDD HDR 23.12.2\IddSampleDriver"
+echo %DRIVER_DIR%
+
+rem install inf
+set CERTIFICATE="%DRIVER_DIR%\Virtual_Display_Driver.cer"
+certutil -addstore -f root %CERTIFICATE%
+certutil -addstore -f TrustedPublisher %CERTIFICATE%
+PNPUTIL /add-driver "%DRIVER_DIR%\IddSampleDriver.inf" /install /subdirs

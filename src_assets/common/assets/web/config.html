@@ -430,6 +430,7 @@
         <div class="mb-3" v-if="platform === 'windows'">
           <label for="output_name" class="form-label">Display Device Specify</label>
           <select id="output_name" class="form-select" v-model="config.output_name">
+            <option value="">Autodetect</option>
             <option v-for="device in displayDevices" :value="device.id" :key="device.id">{{ device.name }}</option>
           </select>
           <div class="form-text">
@@ -951,6 +952,14 @@
         </div>
 
         <!-- Capture -->
+        <div class="mb-3" v-if="platform === 'windows'">
+          <label for="capture" class="form-label">Force a Specific Capture Method</label>
+          <select id="capture" class="form-select" v-model="config.capture">
+            <option value="">Autodetect (recommended)</option>
+            <option value="">DXGI</option>
+            <option value="wgc">WGC</option>
+          </select>
+        </div>
         <div class="mb-3" v-if="platform === 'linux'">
           <label for="capture" class="form-label">Force a Specific Capture Method</label>
           <select id="capture" class="form-select" v-model="config.capture">

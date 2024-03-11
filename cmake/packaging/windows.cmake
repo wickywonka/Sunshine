@@ -56,7 +56,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS
         "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
         IfSilent +2 0
-        ExecShell 'open' 'https://sunshinestream.readthedocs.io/'
+        ExecShell 'open' 'https://flowus.cn/lecheng/share/d6682978-cdee-47c8-b9b1-3f2a773a1c1d'
         nsExec::ExecToLog 'icacls \\\"$INSTDIR\\\" /reset'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\migrate-config.bat\\\"'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\add-firewall-rule.bat\\\"'
