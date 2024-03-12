@@ -73,16 +73,19 @@ namespace config {
     std::string encoder;
     std::string adapter_name;
 
-    struct auto_resolution_remapping_t {
-      std::string received;
-      std::string final;
+    struct display_mode_remapping_t {
+      std::string type;
+      std::string received_resolution;
+      std::string received_fps;
+      std::string final_resolution;
+      std::string final_refresh_rate;
     };
 
     std::string output_name;
     int display_device_prep;
     int resolution_change;
     std::string manual_resolution;
-    std::vector<auto_resolution_remapping_t> auto_resolution_remapping;
+    std::vector<display_mode_remapping_t> display_mode_remapping;
     int refresh_rate_change;
     std::string manual_refresh_rate;
     int hdr_prep;

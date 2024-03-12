@@ -483,4 +483,28 @@ namespace display_device::w_utils {
   DISPLAYCONFIG_PATH_INFO *
   get_active_path(const std::string &device_id, std::vector<DISPLAYCONFIG_PATH_INFO> &paths);
 
+  /**
+   * @brief Check whether the user session is locked.
+   * @returns True if it's definitely known that the session is locked, false otherwise.
+   *
+   * EXAMPLES:
+   * ```cpp
+   * const bool is_locked { is_user_session_locked() };
+   * ```
+   */
+  bool
+  is_user_session_locked();
+
+  /**
+   * @brief Check whether it is already known that the CCD API will fail to set settings.
+   * @returns True if we already known we don't have access (for now), false otherwise.
+   *
+   * EXAMPLES:
+   * ```cpp
+   * const bool no_access { test_no_access_to_ccd_api() };
+   * ```
+   */
+  bool
+  test_no_access_to_ccd_api();
+
 }  // namespace display_device::w_utils

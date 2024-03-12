@@ -8,18 +8,11 @@ namespace display_device {
     return result == result_e::success;
   }
 
-  int
-  settings_t::apply_result_t::get_error_code() const {
-    return static_cast<int>(result);
-  }
-
   std::string
   settings_t::apply_result_t::get_error_message() const {
     switch (result) {
       case result_e::success:
         return "Success";
-      case result_e::config_parse_fail:
-        return "Failed to parse configuration";
       case result_e::topology_fail:
         return "Failed to change or validate the display topology";
       case result_e::primary_display_fail:

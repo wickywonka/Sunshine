@@ -7,7 +7,7 @@ namespace display_device {
   namespace {
 
     /**
-     * @bried Check if the refresh rates are almost equal.
+     * @brief Check if the refresh rates are almost equal.
      * @param r1 First refresh rate.
      * @param r2 Second refresh rate.
      * @return True if refresh rates are almost equal, false otherwise.
@@ -30,7 +30,7 @@ namespace display_device {
     }
 
     /**
-     * @bried Check if the display modes are almost equal.
+     * @brief Check if the display modes are almost equal.
      * @param mode_a First mode.
      * @param mode_b Second mode.
      * @return True if display modes are almost equal, false otherwise.
@@ -72,19 +72,19 @@ namespace display_device {
       std::unordered_set<std::string> all_device_ids;
       for (const auto &device_id : device_ids) {
         if (device_id.empty()) {
-          BOOST_LOG(error) << "device it is empty!";
+          BOOST_LOG(error) << "Device it is empty!";
           return {};
         }
 
         const auto provided_path { w_utils::get_active_path(device_id, display_data->paths) };
         if (!provided_path) {
-          BOOST_LOG(warning) << "failed to find device for " << device_id << "!";
+          BOOST_LOG(warning) << "Failed to find device for " << device_id << "!";
           return {};
         }
 
         const auto provided_path_source_mode { w_utils::get_source_mode(w_utils::get_source_index(*provided_path, display_data->modes), display_data->modes) };
         if (!provided_path_source_mode) {
-          BOOST_LOG(error) << "active device does not have a source mode: " << device_id << "!";
+          BOOST_LOG(error) << "Active device does not have a source mode: " << device_id << "!";
           return {};
         }
 
@@ -103,7 +103,7 @@ namespace display_device {
 
           const auto source_mode { w_utils::get_source_mode(w_utils::get_source_index(path, display_data->modes), display_data->modes) };
           if (!source_mode) {
-            BOOST_LOG(error) << "active device does not have a source mode: " << device_info->device_id << "!";
+            BOOST_LOG(error) << "Active device does not have a source mode: " << device_info->device_id << "!";
             return {};
           }
 
@@ -133,20 +133,28 @@ namespace display_device {
       for (const auto &[device_id, mode] : modes) {
         const auto path { w_utils::get_active_path(device_id, display_data->paths) };
         if (!path) {
-          BOOST_LOG(error) << "failed to find device for " << device_id << "!";
+          BOOST_LOG(error) << "Failed to find device for " << device_id << "!";
           return false;
         }
 
         const auto source_mode { w_utils::get_source_mode(w_utils::get_source_index(*path, display_data->modes), display_data->modes) };
         if (!source_mode) {
-          BOOST_LOG(error) << "active device does not have a source mode: " << device_id << "!";
+          BOOST_LOG(error) << "Active device does not have a source mode: " << device_id << "!";
           return false;
         }
 
         bool new_changes { false };
         const bool resolution_changed { source_mode->width != mode.resolution.width || source_mode->height != mode.resolution.height };
-        const bool refresh_rate_changed { path->targetInfo.refreshRate.Numerator != mode.refresh_rate.numerator ||
-                                          path->targetInfo.refreshRate.Denominator != mode.refresh_rate.denominator };
+
+        bool refresh_rate_changed { false };
+        if (allow_changes) {
+          refresh_rate_changed = !fuzzy_compare_refresh_rates(refresh_rate_t { path->targetInfo.refreshRate.Numerator, path->targetInfo.refreshRate.Denominator }, mode.refresh_rate);
+        }
+        else {
+          // Since we are in strict mode, do not fuzzy compare it
+          refresh_rate_changed = path->targetInfo.refreshRate.Numerator != mode.refresh_rate.numerator ||
+                                 path->targetInfo.refreshRate.Denominator != mode.refresh_rate.denominator;
+        }
 
         if (resolution_changed) {
           source_mode->width = mode.resolution.width;
@@ -169,7 +177,7 @@ namespace display_device {
       }
 
       if (!changes_applied) {
-        BOOST_LOG(debug) << "no changes were made to display modes.";
+        BOOST_LOG(debug) << "No changes were made to display modes as they are equal.";
         return true;
       }
 
@@ -195,7 +203,7 @@ namespace display_device {
   device_display_mode_map_t
   get_current_display_modes(const std::unordered_set<std::string> &device_ids) {
     if (device_ids.empty()) {
-      BOOST_LOG(error) << "device id set is empty!";
+      BOOST_LOG(error) << "Device id set is empty!";
       return {};
     }
 
@@ -208,19 +216,19 @@ namespace display_device {
     device_display_mode_map_t current_modes;
     for (const auto &device_id : device_ids) {
       if (device_id.empty()) {
-        BOOST_LOG(error) << "device id is empty!";
+        BOOST_LOG(error) << "Device id is empty!";
         return {};
       }
 
       const auto path { w_utils::get_active_path(device_id, display_data->paths) };
       if (!path) {
-        BOOST_LOG(error) << "failed to find device for " << device_id << "!";
+        BOOST_LOG(error) << "Failed to find device for " << device_id << "!";
         return {};
       }
 
       const auto source_mode { w_utils::get_source_mode(w_utils::get_source_index(*path, display_data->modes), display_data->modes) };
       if (!source_mode) {
-        BOOST_LOG(error) << "active device does not have a source mode: " << device_id << "!";
+        BOOST_LOG(error) << "Active device does not have a source mode: " << device_id << "!";
         return {};
       }
 
@@ -238,7 +246,7 @@ namespace display_device {
   bool
   set_display_modes(const device_display_mode_map_t &modes) {
     if (modes.empty()) {
-      BOOST_LOG(error) << "modes map is empty!";
+      BOOST_LOG(error) << "Modes map is empty!";
       return false;
     }
 
@@ -246,7 +254,7 @@ namespace display_device {
     for (const auto &[device_id, _] : modes) {
       if (!device_ids.insert(device_id).second) {
         // Sanity check since, it's technically not possible with unordered map to have duplicate keys
-        BOOST_LOG(error) << "duplicate device id provided: " << device_id << "!";
+        BOOST_LOG(error) << "Duplicate device id provided: " << device_id << "!";
         return false;
       }
     }
@@ -266,12 +274,12 @@ namespace display_device {
     // having to choose refresh rate for duplicate display - leave it to the end-user of this function...
     const auto all_device_ids { get_all_duplicated_devices(device_ids) };
     if (all_device_ids.empty()) {
-      BOOST_LOG(error) << "failed to get all duplicated devices!";
+      BOOST_LOG(error) << "Failed to get all duplicated devices!";
       return false;
     }
 
     if (all_device_ids.size() != device_ids.size()) {
-      BOOST_LOG(error) << "not all modes for duplicate displays were provided!";
+      BOOST_LOG(error) << "Not all modes for duplicate displays were provided!";
       return false;
     }
 
@@ -319,7 +327,7 @@ namespace display_device {
       // which is not exposed to the via Windows settings app. To allow this
       // resolution to be selected, we actually need to omit SDC_ALLOW_CHANGES
       // flag.
-      BOOST_LOG(info) << "failed to change display modes using Windows recommended modes, trying to set modes more strictly!";
+      BOOST_LOG(info) << "Failed to change display modes using Windows recommended modes, trying to set modes more strictly!";
       if (do_set_modes(modes, !allow_changes)) {
         current_modes = get_current_display_modes(device_ids);
         if (!current_modes.empty() && all_modes_match(current_modes)) {
@@ -329,7 +337,7 @@ namespace display_device {
     }
 
     do_set_modes(original_modes, allow_changes);  // Return value does not matter as we are trying out best to undo
-    BOOST_LOG(error) << "failed to set display mode(-s) completely!";
+    BOOST_LOG(error) << "Failed to set display mode(-s) completely!";
     return false;
   }
 

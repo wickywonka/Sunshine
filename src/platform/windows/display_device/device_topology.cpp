@@ -89,12 +89,12 @@ namespace display_device {
         const auto prev_device_id_for_path_it { paths_to_ids.find(device_info->device_path) };
         if (prev_device_id_for_path_it != std::end(paths_to_ids)) {
           if (prev_device_id_for_path_it->second != device_info->device_id) {
-            BOOST_LOG(error) << "duplicate display device id found: " << device_info->device_id << " (device path: " << device_info->device_path << ")";
+            BOOST_LOG(error) << "Duplicate display device id found: " << device_info->device_id << " (device path: " << device_info->device_path << ")";
             return {};
           }
         }
         else {
-          BOOST_LOG(verbose) << "new valid device id entry for device " << device_info->device_id << " (device path: " << device_info->device_path << ")";
+          BOOST_LOG(verbose) << "New valid device id entry for device " << device_info->device_id << " (device path: " << device_info->device_path << ")";
           paths_to_ids[device_info->device_path] = device_info->device_id;
         }
 
@@ -102,7 +102,7 @@ namespace display_device {
         if (path_data_it != std::end(path_data)) {
           if (!compareAdapterIds(path_data_it->second.source_adapter_id, path.sourceInfo.adapterId)) {
             // Sanity check, should not be possible since adapter in embedded in the device path
-            BOOST_LOG(error) << "device path " << device_info->device_path << " has different adapters!";
+            BOOST_LOG(error) << "Device path " << device_info->device_path << " has different adapters!";
             return {};
           }
 
@@ -169,7 +169,7 @@ namespace display_device {
         for (const std::string &device_id : group) {
           auto path_data_it { path_data.find(device_id) };
           if (path_data_it == std::end(path_data)) {
-            BOOST_LOG(error) << "device " << device_id << " does not exist in the available topology data!";
+            BOOST_LOG(error) << "Device " << device_id << " does not exist in the available topology data!";
             return {};
           }
 
@@ -182,7 +182,7 @@ namespace display_device {
             // This means we must also use the path with matching source id.
             auto path_source_it { device_data.source_id_to_path_index.find(*already_used_source_id) };
             if (path_source_it == std::end(device_data.source_id_to_path_index)) {
-              BOOST_LOG(error) << "device " << device_id << " does not have a path with a source id " << *already_used_source_id << "!";
+              BOOST_LOG(error) << "Device " << device_id << " does not have a path with a source id " << *already_used_source_id << "!";
               return {};
             }
 
@@ -213,7 +213,7 @@ namespace display_device {
               // has to render them, so I don't know how this 4 source limitation makes sense then?
               //
               // In short, this arbitrary limitation should not affect virtual displays when the GPU is at its limit.
-              BOOST_LOG(error) << "device " << device_id << " cannot be enabled as the adapter has no more free source id (GPU limitation)!";
+              BOOST_LOG(error) << "Device " << device_id << " cannot be enabled as the adapter has no more free source id (GPU limitation)!";
               return {};
             }
 
@@ -347,7 +347,7 @@ namespace display_device {
 
       const auto source_mode { w_utils::get_source_mode(w_utils::get_source_index(path, display_data->modes), display_data->modes) };
       if (!source_mode) {
-        BOOST_LOG(error) << "active device does not have a source mode: " << device_info->device_id << "!";
+        BOOST_LOG(error) << "Active device does not have a source mode: " << device_info->device_id << "!";
         return {};
       }
 
@@ -369,7 +369,7 @@ namespace display_device {
   bool
   is_topology_valid(const active_topology_t &topology) {
     if (topology.empty()) {
-      BOOST_LOG(warning) << "topology input is empty!";
+      BOOST_LOG(warning) << "Topology input is empty!";
       return false;
     }
 
@@ -379,13 +379,13 @@ namespace display_device {
       // You CAN set the group to be more than 2, but then
       // Windows' settings app breaks since it was not designed for this :/
       if (group.empty() || group.size() > 2) {
-        BOOST_LOG(warning) << "topology group is invalid!";
+        BOOST_LOG(warning) << "Topology group is invalid!";
         return false;
       }
 
       for (const auto &device_id : group) {
         if (device_ids.count(device_id) > 0) {
-          BOOST_LOG(warning) << "duplicate device ids found!";
+          BOOST_LOG(warning) << "Duplicate device ids found!";
           return false;
         }
 
@@ -419,18 +419,18 @@ namespace display_device {
   bool
   set_topology(const active_topology_t &new_topology) {
     if (!is_topology_valid(new_topology)) {
-      BOOST_LOG(error) << "topology input is invalid!";
+      BOOST_LOG(error) << "Topology input is invalid!";
       return false;
     }
 
     const auto current_topology { get_current_topology() };
     if (current_topology.empty()) {
-      BOOST_LOG(error) << "failed to get current topology!";
+      BOOST_LOG(error) << "Failed to get current topology!";
       return false;
     }
 
     if (is_topology_the_same(current_topology, new_topology)) {
-      BOOST_LOG(debug) << "same topology provided.";
+      BOOST_LOG(debug) << "Same topology provided.";
       return true;
     }
 
@@ -465,11 +465,11 @@ namespace display_device {
           //
           // However, since we have this bug an additional sanity check is needed
           // regardless of what Windows report back to us.
-          BOOST_LOG(error) << "failed to change topology due to Windows bug!";
+          BOOST_LOG(error) << "Failed to change topology due to Windows bug or because the display is in deep sleep!";
         }
       }
       else {
-        BOOST_LOG(error) << "failed to get updated topology!";
+        BOOST_LOG(error) << "Failed to get updated topology!";
       }
 
       // Revert back to the original topology

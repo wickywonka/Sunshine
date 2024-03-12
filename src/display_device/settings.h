@@ -44,8 +44,7 @@ namespace display_device {
        * @see apply_config
        */
       enum class result_e : int {
-        success = 0,
-        config_parse_fail = 700,
+        success,
         topology_fail,
         primary_display_fail,
         modes_fail,
@@ -71,21 +70,6 @@ namespace display_device {
        */
       explicit
       operator bool() const;
-
-      /**
-       * @brief Convert the result to the underlying integer value.
-       * @returns Integer value of the result.
-       *
-       * EXAMPLES:
-       * ```cpp
-       * const apply_result_t result { result_e::topology_fail };
-       * if (!result) {
-       *   const int error_code = result.get_error_code();
-       * }
-       * ```
-       */
-      [[nodiscard]] int
-      get_error_code() const;
 
       /**
        * @brief Get a string message with better explanation for the result.
@@ -118,6 +102,19 @@ namespace display_device {
     virtual ~settings_t();
 
     /**
+     * @brief Check whether it is already known that changing settings will fail due to various reasons.
+     * @returns True if it's definitely known that changing settings will fail, false otherwise.
+     *
+     * EXAMPLES:
+     * ```cpp
+     * settings_t settings;
+     * const bool will_fail { settings.is_changing_settings_going_to_fail() };
+     * ```
+     */
+    bool
+    is_changing_settings_going_to_fail() const;
+
+    /**
      * @brief Set the file path for persistent data.
      *
      * EXAMPLES:
@@ -130,23 +127,22 @@ namespace display_device {
     set_filepath(std::filesystem::path filepath);
 
     /**
-     * @brief Apply configuration based on the user configuration and the session information.
-     * @param config User's video related configuration.
-     * @param session Session information.
+     * @brief Apply the parsed configuration.
+     * @param config A parsed and validated configuration.
      * @returns The apply result value.
      * @see apply_result_t
+     * @see parsed_config_t
      *
      * EXAMPLES:
      * ```cpp
-     * const std::shared_ptr<rtsp_stream::launch_session_t> launch_session; // Assuming ptr is properly initialized
-     * const config::video_t &video_config { config::video };
+     * const parsed_config_t config;
      *
      * settings_t settings;
-     * const auto result = settings.apply_config(video_config, *launch_session);
+     * const auto result = settings.apply_config(config);
      * ```
      */
     apply_result_t
-    apply_config(const config::video_t &config, const rtsp_stream::launch_session_t &session);
+    apply_config(const parsed_config_t &config);
 
     /**
      * @brief Revert the applied configuration and restore the previous settings.
@@ -196,24 +192,6 @@ namespace display_device {
     reset_persistence();
 
   private:
-    /**
-     * @brief Apply the parsed configuration.
-     * @param config A parsed and validated configuration.
-     * @returns The apply result value.
-     * @see apply_result_t
-     * @see parsed_config_t
-     *
-     * EXAMPLES:
-     * ```cpp
-     * const parsed_config_t config;
-     *
-     * settings_t settings;
-     * const auto result = settings.apply_config(config);
-     * ```
-     */
-    apply_result_t
-    apply_config(const parsed_config_t &config);
-
     std::unique_ptr<persistent_data_t> persistent_data; /**< Platform specific persistent data. */
     std::unique_ptr<audio_data_t> audio_data; /**< Platform specific temporary audio data. */
     std::filesystem::path filepath; /**< Filepath for persistent file. */

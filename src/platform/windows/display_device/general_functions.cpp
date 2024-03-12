@@ -23,13 +23,13 @@ namespace display_device {
     const auto path { w_utils::get_active_path(device_id, display_data->paths) };
     if (!path) {
       // Debug level, because inactive device is valid case for this function
-      BOOST_LOG(debug) << "failed to find device for " << device_id << "!";
+      BOOST_LOG(debug) << "Failed to find device for " << device_id << "!";
       return {};
     }
 
     const auto display_name { w_utils::get_display_name(*path) };
     if (display_name.empty()) {
-      BOOST_LOG(error) << "device " << device_id << " has no display name assigned.";
+      BOOST_LOG(error) << "Device " << device_id << " has no display name assigned.";
     }
 
     return display_name;
@@ -38,7 +38,7 @@ namespace display_device {
   bool
   is_primary_device(const std::string &device_id) {
     if (device_id.empty()) {
-      BOOST_LOG(error) << "device id is empty!";
+      BOOST_LOG(error) << "Device id is empty!";
       return false;
     }
 
@@ -50,13 +50,13 @@ namespace display_device {
 
     const auto path { w_utils::get_active_path(device_id, display_data->paths) };
     if (!path) {
-      BOOST_LOG(error) << "failed to find device for " << device_id << "!";
+      BOOST_LOG(error) << "Failed to find device for " << device_id << "!";
       return false;
     }
 
     const auto source_mode { w_utils::get_source_mode(w_utils::get_source_index(*path, display_data->modes), display_data->modes) };
     if (!source_mode) {
-      BOOST_LOG(error) << "active device does not have a source mode: " << device_id << "!";
+      BOOST_LOG(error) << "Active device does not have a source mode: " << device_id << "!";
       return false;
     }
 
@@ -66,7 +66,7 @@ namespace display_device {
   bool
   set_as_primary_device(const std::string &device_id) {
     if (device_id.empty()) {
-      BOOST_LOG(error) << "device id is empty!";
+      BOOST_LOG(error) << "Device id is empty!";
       return false;
     }
 
@@ -81,18 +81,18 @@ namespace display_device {
     {
       const auto path { w_utils::get_active_path(device_id, display_data->paths) };
       if (!path) {
-        BOOST_LOG(error) << "failed to find device for " << device_id << "!";
+        BOOST_LOG(error) << "Failed to find device for " << device_id << "!";
         return false;
       }
 
       const auto source_mode { w_utils::get_source_mode(w_utils::get_source_index(*path, display_data->modes), display_data->modes) };
       if (!source_mode) {
-        BOOST_LOG(error) << "active device does not have a source mode: " << device_id << "!";
+        BOOST_LOG(error) << "Active device does not have a source mode: " << device_id << "!";
         return false;
       }
 
       if (w_utils::is_primary(*source_mode)) {
-        BOOST_LOG(debug) << "device " << device_id << " is already a primary device.";
+        BOOST_LOG(debug) << "Device " << device_id << " is already a primary device.";
         return true;
       }
 
@@ -109,13 +109,13 @@ namespace display_device {
       auto source_mode { w_utils::get_source_mode(source_index, display_data->modes) };
 
       if (!source_index || !source_mode) {
-        BOOST_LOG(error) << "active device does not have a source mode: " << current_id << "!";
+        BOOST_LOG(error) << "Active device does not have a source mode: " << current_id << "!";
         return false;
       }
 
       if (modified_modes.find(*source_index) != std::end(modified_modes)) {
         // Happens when VIRTUAL_MODE_AWARE is not specified when querying paths, probably will never happen in our case, but just to be safe...
-        BOOST_LOG(debug) << "device " << current_id << " shares the same mode index as a previous device. Device is duplicated. Skipping.";
+        BOOST_LOG(debug) << "Device " << current_id << " shares the same mode index as a previous device. Device is duplicated. Skipping.";
         continue;
       }
 

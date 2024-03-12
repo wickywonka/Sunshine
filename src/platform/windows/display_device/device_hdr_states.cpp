@@ -21,7 +21,7 @@ namespace display_device {
       for (const auto &[device_id, state] : states) {
         const auto path { w_utils::get_active_path(device_id, display_data->paths) };
         if (!path) {
-          BOOST_LOG(error) << "failed to find device for " << device_id << "!";
+          BOOST_LOG(error) << "Failed to find device for " << device_id << "!";
           return false;
         }
 
@@ -51,7 +51,7 @@ namespace display_device {
   hdr_state_map_t
   get_current_hdr_states(const std::unordered_set<std::string> &device_ids) {
     if (device_ids.empty()) {
-      BOOST_LOG(error) << "device id set is empty!";
+      BOOST_LOG(error) << "Device id set is empty!";
       return {};
     }
 
@@ -65,7 +65,7 @@ namespace display_device {
     for (const auto &device_id : device_ids) {
       const auto path { w_utils::get_active_path(device_id, display_data->paths) };
       if (!path) {
-        BOOST_LOG(error) << "failed to find device for " << device_id << "!";
+        BOOST_LOG(error) << "Failed to find device for " << device_id << "!";
         return {};
       }
 
@@ -78,7 +78,7 @@ namespace display_device {
   bool
   set_hdr_states(const hdr_state_map_t &states) {
     if (states.empty()) {
-      BOOST_LOG(error) << "states map is empty!";
+      BOOST_LOG(error) << "States map is empty!";
       return false;
     }
 
@@ -86,7 +86,7 @@ namespace display_device {
     for (const auto &[device_id, _] : states) {
       if (!device_ids.insert(device_id).second) {
         // Sanity check since, it's technically not possible with unordered map to have duplicate keys
-        BOOST_LOG(error) << "duplicate device id provided: " << device_id << "!";
+        BOOST_LOG(error) << "Duplicate device id provided: " << device_id << "!";
         return false;
       }
     }

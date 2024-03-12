@@ -49,7 +49,7 @@ namespace display_device {
     enum class resolution_change_e : int {
       no_operation, /**< Keep the current resolution. */
       automatic, /**< Set the resolution to the one received from the client if the "Optimize game settings" option is also enabled in the client. */
-      manual /**< User has to specify the resolution. */
+      manual /**< User has to specify the resolution ("Optimize game settings" option must be enabled in the client). */
     };
 
     /**

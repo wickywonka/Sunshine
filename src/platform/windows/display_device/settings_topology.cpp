@@ -23,16 +23,16 @@ namespace display_device {
     find_one_of_the_available_devices(const std::string &device_id) {
       const auto devices { enum_available_devices() };
       if (devices.empty()) {
-        BOOST_LOG(error) << "display device list is empty!";
+        BOOST_LOG(error) << "Display device list is empty!";
         return {};
       }
-      BOOST_LOG(info) << "available display devices: " << to_string(devices);
+      BOOST_LOG(info) << "Available display devices: " << to_string(devices);
 
       const auto device_it { std::find_if(std::begin(devices), std::end(devices), [&device_id](const auto &entry) {
         return device_id.empty() ? entry.second.device_state == device_state_e::primary : entry.first == device_id;
       }) };
       if (device_it == std::end(devices)) {
-        BOOST_LOG(error) << "device " << (device_id.empty() ? "PRIMARY" : device_id) << " not found in the list of available devices!";
+        BOOST_LOG(error) << "Device " << (device_id.empty() ? "PRIMARY" : device_id) << " not found in the list of available devices!";
         return {};
       }
 
@@ -220,7 +220,7 @@ namespace display_device {
       // user did not change anything, and we don't need to revert changes.
       if (!is_topology_the_same(previously_configured_topology->modified, prev_final_topology) ||
           !is_topology_the_same(previously_configured_topology->modified, final_topology)) {
-        BOOST_LOG(warning) << "previous topology does not match the new one. Reverting previous changes!";
+        BOOST_LOG(warning) << "Previous topology does not match the new one. Reverting previous changes!";
         if (!revert_settings()) {
           return boost::none;
         }
@@ -233,7 +233,7 @@ namespace display_device {
 
     const auto current_topology { get_current_topology() };
     if (!is_topology_valid(current_topology)) {
-      BOOST_LOG(error) << "display topology is invalid!";
+      BOOST_LOG(error) << "Display topology is invalid!";
       return boost::none;
     }
 
@@ -243,9 +243,9 @@ namespace display_device {
     auto duplicated_devices { get_duplicate_devices(requested_device_id, current_topology) };
     const auto final_topology { determine_final_topology(config.device_prep, primary_device_requested, duplicated_devices, current_topology) };
 
-    BOOST_LOG(debug) << "current display topology: " << to_string(current_topology);
+    BOOST_LOG(debug) << "Current display topology: " << to_string(current_topology);
     if (!is_topology_the_same(current_topology, final_topology)) {
-      BOOST_LOG(debug) << "changing display topology to: " << to_string(final_topology);
+      BOOST_LOG(info) << "Changing display topology to: " << to_string(final_topology);
       if (!set_topology(final_topology)) {
         // Error already logged.
         return boost::none;
@@ -258,7 +258,7 @@ namespace display_device {
     // This check is mainly to cover the case for "config.device_prep == no_operation" as we at least
     // have to validate that the device exists, but it doesn't hurt to double-check it in all cases.
     if (!is_device_found_in_active_topology(requested_device_id, final_topology)) {
-      BOOST_LOG(error) << "device " << requested_device_id << " is not active!";
+      BOOST_LOG(error) << "Device " << requested_device_id << " is not active!";
       return boost::none;
     }
 

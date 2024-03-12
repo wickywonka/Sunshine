@@ -63,29 +63,32 @@ namespace display_device {
 
     /**
      * @brief Configure the display device based on the user configuration and the session information.
+     * 
+     * Upon failing to completely apply configuration, the applied settings will be reverted.
+     * Or, in some cases, we will keep retrying even when the stream has already started as there
+     * is no possibility to apply settings before the stream start.
+     * 
      * @param config User's video related configuration.
      * @param session Session information.
-     * @returns The apply result value.
-     * @note Upon failing to completely apply configuration, the applied settings will be reverted.
-     *       In case the settings cannot be reverted immediately, it will be retried again in 30 seconds
-     *       (repeating indefinitely until success or until persistence is reset).
-     * @see settings_t::apply_result_t
+     * @note There is no return value as we still want to continue with the stream, so that
+     *       users can do something about it once they are connected. Otherwise, we might
+     *       prevent users from logging in at all...
      *
      * EXAMPLES:
      * ```cpp
      * const std::shared_ptr<rtsp_stream::launch_session_t> launch_session; // Assuming ptr is properly initialized
      * const config::video_t &video_config { config::video };
      *
-     * const auto result = session_t::get().configure_display(video_config, *launch_session);
+     * session_t::get().configure_display(video_config, *launch_session);
      * ```
      */
-    settings_t::apply_result_t
+    void
     configure_display(const config::video_t &config, const rtsp_stream::launch_session_t &session);
 
     /**
      * @brief Revert the display configuration and restore the previous state.
      * @note This method automatically loads the persistence (if any) from the previous Sunshine session.
-     * @note In case the state could not be restored, it will be retried again in 30 seconds
+     * @note In case the state could not be restored, it will be retried again in X seconds
      *       (repeating indefinitely until success or until persistence is reset).
      *
      * EXAMPLES:
@@ -115,7 +118,7 @@ namespace display_device {
      * The user then accepts that Sunshine is not able to restore the state and "agrees" to
      * do it manually.
      *
-     * @note This also stops the 30 seconds retry timer.
+     * @note This also stops the retry timer.
      *
      * EXAMPLES:
      * ```cpp
@@ -150,31 +153,38 @@ namespace display_device {
 
   private:
     /**
-     * @brief A class for retrying to restore the original state.
+     * @brief A class for retrying to set/reset state.
      *
      * This timer class spins a thread which is mostly sleeping all the time, but can be
-     * configured to wake up every 30 seconds to try and restore the previous state.
+     * configured to wake up every X seconds.
      *
      * It is tightly synchronized with the session_t class via a shared mutex to ensure
      * that stupid race conditions do not happen where we successfully apply settings
      * for them to be reset by the timer thread immediately.
      */
-    class StateRestoreRetryTimer;
+    class StateRetryTimer;
 
     /**
      * @brief A private constructor to ensure the singleton pattern.
-     * @note Cannot be defaulted in declaration because of forward declared StateRestoreRetryTimer.
+     * @note Cannot be defaulted in declaration because of forward declared StateRetryTimer.
      */
     explicit session_t();
+
+    /**
+     * @brief An implementation of `restore_state` without a mutex lock.
+     * @see restore_state for the description.
+     */
+    void
+    restore_state_impl();
 
     settings_t settings; /**< A class for managing display device settings. */
     std::mutex mutex; /**< A mutex for ensuring thread-safety. */
 
     /**
-     * @brief An instance of StateRestoreRetryTimer.
+     * @brief An instance of StateRetryTimer.
      * @warning MUST BE declared after the settings and mutex members to ensure proper destruction order!.
      */
-    std::unique_ptr<StateRestoreRetryTimer> timer;
+    std::unique_ptr<StateRetryTimer> timer;
   };
 
 }  // namespace display_device

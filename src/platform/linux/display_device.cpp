@@ -91,10 +91,10 @@ namespace display_device {
     // Not implemented
   }
 
-  settings_t::apply_result_t
-  settings_t::apply_config(const config::video_t &, const rtsp_stream::launch_session_t &) {
+  bool
+  settings_t::is_changing_settings_going_to_fail() const {
     // Not implemented
-    return { apply_result_t::result_e::success };
+    return false;
   }
 
   settings_t::apply_result_t

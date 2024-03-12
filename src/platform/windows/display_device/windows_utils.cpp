@@ -16,6 +16,7 @@
 
 // Windows includes after "windows.h"
 #include <SetupApi.h>
+#include <wtsapi32.h>
 
 namespace display_device::w_utils {
 
@@ -279,17 +280,17 @@ namespace display_device::w_utils {
         }
 
         if (unstable_part_index == std::wstring::npos) {
-          BOOST_LOG(error) << "failed to split off the stable part from instance id string " << platf::to_utf8(instance_id);
+          BOOST_LOG(error) << "Failed to split off the stable part from instance id string " << platf::to_utf8(instance_id);
           break;
         }
 
         auto semi_stable_part_index = instance_id.find_first_of(L'&', unstable_part_index + 1);
         if (semi_stable_part_index == std::wstring::npos) {
-          BOOST_LOG(error) << "failed to split off the semi-stable part from instance id string " << platf::to_utf8(instance_id);
+          BOOST_LOG(error) << "Failed to split off the semi-stable part from instance id string " << platf::to_utf8(instance_id);
           break;
         }
 
-        BOOST_LOG(verbose) << "creating device id for path " << platf::to_utf8(device_path) << " from EDID and instance ID: " << platf::to_utf8({ std::begin(instance_id), std::begin(instance_id) + unstable_part_index }) << platf::to_utf8({ std::begin(instance_id) + semi_stable_part_index, std::end(instance_id) });
+        BOOST_LOG(verbose) << "Creating device id for path " << platf::to_utf8(device_path) << " from EDID and instance ID: " << platf::to_utf8({ std::begin(instance_id), std::begin(instance_id) + unstable_part_index }) << platf::to_utf8({ std::begin(instance_id) + semi_stable_part_index, std::end(instance_id) });
         device_id_data.insert(std::end(device_id_data),
           reinterpret_cast<const BYTE *>(instance_id.data()),
           reinterpret_cast<const BYTE *>(instance_id.data() + unstable_part_index));
@@ -302,7 +303,7 @@ namespace display_device::w_utils {
 
     if (device_id_data.empty()) {
       // Using the device path as a fallback, which is always unique, but not as stable as the preferred one
-      BOOST_LOG(verbose) << "creating device id from path " << platf::to_utf8(device_path);
+      BOOST_LOG(verbose) << "Creating device id from path " << platf::to_utf8(device_path);
       device_id_data.insert(std::end(device_id_data),
         reinterpret_cast<const BYTE *>(device_path.data()),
         reinterpret_cast<const BYTE *>(device_path.data() + device_path.size()));
@@ -410,7 +411,7 @@ namespace display_device::w_utils {
     }
 
     if (index >= modes.size()) {
-      BOOST_LOG(error) << "source index " << index << " is out of range " << modes.size();
+      BOOST_LOG(error) << "Source index " << index << " is out of range " << modes.size();
       return boost::none;
     }
 
@@ -488,13 +489,13 @@ namespace display_device::w_utils {
     }
 
     if (*index >= modes.size()) {
-      BOOST_LOG(error) << "source index " << *index << " is out of range " << modes.size();
+      BOOST_LOG(error) << "Source index " << *index << " is out of range " << modes.size();
       return nullptr;
     }
 
     const auto &mode { modes[*index] };
     if (mode.infoType != DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE) {
-      BOOST_LOG(error) << "mode at index " << *index << " is not source mode!";
+      BOOST_LOG(error) << "Mode at index " << *index << " is not source mode!";
       return nullptr;
     }
 
@@ -597,6 +598,55 @@ namespace display_device::w_utils {
   DISPLAYCONFIG_PATH_INFO *
   get_active_path(const std::string &device_id, std::vector<DISPLAYCONFIG_PATH_INFO> &paths) {
     return const_cast<DISPLAYCONFIG_PATH_INFO *>(get_active_path(device_id, const_cast<const std::vector<DISPLAYCONFIG_PATH_INFO> &>(paths)));
+  }
+
+  bool
+  is_user_session_locked() {
+    LPWSTR buffer { nullptr };
+    const auto cleanup_guard {
+      util::fail_guard([&buffer]() {
+        if (buffer) {
+          WTSFreeMemory(buffer);
+        }
+      })
+    };
+
+    DWORD buffer_size_in_bytes { 0 };
+    if (WTSQuerySessionInformationW(WTS_CURRENT_SERVER_HANDLE, WTSGetActiveConsoleSessionId(), WTSSessionInfoEx, &buffer, &buffer_size_in_bytes)) {
+      if (buffer_size_in_bytes > 0) {
+        const auto wts_info { reinterpret_cast<const WTSINFOEXW *>(buffer) };
+        if (wts_info && wts_info->Level == 1) {
+          const bool is_locked { wts_info->Data.WTSInfoExLevel1.SessionFlags == WTS_SESSIONSTATE_LOCK };
+          BOOST_LOG(debug) << "is_user_session_locked: " << is_locked;
+          return is_locked;
+        }
+      }
+
+      BOOST_LOG(warning) << "Failed to get session info in is_user_session_locked.";
+    }
+    else {
+      BOOST_LOG(error) << get_error_string(GetLastError()) << " failed while calling WTSQuerySessionInformationW!";
+    }
+
+    return false;
+  }
+
+  bool
+  test_no_access_to_ccd_api() {
+    auto display_data { query_display_config(w_utils::ACTIVE_ONLY_DEVICES) };
+    if (!display_data) {
+      BOOST_LOG(debug) << "test_no_access_to_ccd_api failed in query_display_config.";
+      return true;
+    }
+
+    // Here we are supplying the retrieved display data back to SetDisplayConfig (with VALIDATE flag only, so that we make no actual changes).
+    // Unless something is really broken on Windows, this call should never fail under normal circumstances - the configuration is 100% correct, since it was
+    // provided by Windows.
+    const UINT32 flags { SDC_VALIDATE | SDC_USE_SUPPLIED_DISPLAY_CONFIG | SDC_VIRTUAL_MODE_AWARE };
+    const LONG result { SetDisplayConfig(display_data->paths.size(), display_data->paths.data(), display_data->modes.size(), display_data->modes.data(), flags) };
+
+    BOOST_LOG(debug) << "test_no_access_to_ccd_api result: " << get_error_string(result);
+    return result == ERROR_ACCESS_DENIED;
   }
 
 }  // namespace display_device::w_utils

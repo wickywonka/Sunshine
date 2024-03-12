@@ -7,6 +7,7 @@
 #include "src/audio.h"
 #include "src/display_device/to_string.h"
 #include "src/logging.h"
+#include "windows_utils.h"
 
 namespace display_device {
 
@@ -118,7 +119,7 @@ namespace display_device {
         const auto original_primary_display { previous_primary_display.empty() ? get_current_primary_display(metadata) : previous_primary_display };
         const auto new_primary_display { determine_new_primary_display(original_primary_display, metadata) };
 
-        BOOST_LOG(debug) << "changing primary display to: " << new_primary_display;
+        BOOST_LOG(info) << "Changing primary display to: " << new_primary_display;
         if (!set_as_primary_device(new_primary_display)) {
           // Error already logged
           return boost::none;
@@ -129,7 +130,7 @@ namespace display_device {
       }
 
       if (!previous_primary_display.empty()) {
-        BOOST_LOG(debug) << "changing primary display back to: " << previous_primary_display;
+        BOOST_LOG(info) << "Changing primary display back to: " << previous_primary_display;
         if (!set_as_primary_device(previous_primary_display)) {
           // Error already logged
           return boost::none;
@@ -198,7 +199,7 @@ namespace display_device {
         const auto original_display_modes { previous_display_modes.empty() ? get_current_display_modes(get_device_ids_from_topology(metadata.current_topology)) : previous_display_modes };
         const auto new_display_modes { determine_new_display_modes(resolution, refresh_rate, original_display_modes, metadata) };
 
-        BOOST_LOG(debug) << "changing display modes to: " << to_string(new_display_modes);
+        BOOST_LOG(info) << "Changing display modes to: " << to_string(new_display_modes);
         if (!set_display_modes(new_display_modes)) {
           // Error already logged
           return boost::none;
@@ -209,7 +210,7 @@ namespace display_device {
       }
 
       if (!previous_display_modes.empty()) {
-        BOOST_LOG(debug) << "changing display modes back to: " << to_string(previous_display_modes);
+        BOOST_LOG(info) << "Changing display modes back to: " << to_string(previous_display_modes);
         if (!set_display_modes(previous_display_modes)) {
           // Error already logged
           return boost::none;
@@ -265,7 +266,7 @@ namespace display_device {
         }
 
         if (state_changed) {
-          BOOST_LOG(debug) << "toggling HDR states for newly enabled devices and waiting for " << delay.count() << "ms before actually applying the correct states.";
+          BOOST_LOG(debug) << "Toggling HDR states for newly enabled devices and waiting for " << delay.count() << "ms before actually applying the correct states.";
           if (!set_hdr_states(toggled_states)) {
             // Error already logged
             return false;
@@ -337,7 +338,7 @@ namespace display_device {
         const auto original_hdr_states { previous_hdr_states.empty() ? get_current_hdr_states(get_device_ids_from_topology(metadata.current_topology)) : previous_hdr_states };
         const auto new_hdr_states { determine_new_hdr_states(change_hdr_state, original_hdr_states, metadata) };
 
-        BOOST_LOG(debug) << "changing hdr states to: " << to_string(new_hdr_states);
+        BOOST_LOG(info) << "Changing hdr states to: " << to_string(new_hdr_states);
         if (!blank_hdr_states(new_hdr_states, metadata.newly_enabled_devices) || !set_hdr_states(new_hdr_states)) {
           // Error already logged
           return boost::none;
@@ -348,7 +349,7 @@ namespace display_device {
       }
 
       if (!previous_hdr_states.empty()) {
-        BOOST_LOG(debug) << "changing hdr states back to: " << to_string(previous_hdr_states);
+        BOOST_LOG(info) << "Changing hdr states back to: " << to_string(previous_hdr_states);
         if (!blank_hdr_states(previous_hdr_states, metadata.newly_enabled_devices) || !set_hdr_states(previous_hdr_states)) {
           // Error already logged
           return boost::none;
@@ -380,11 +381,11 @@ namespace display_device {
     try_revert_settings(settings_t::persistent_data_t &data, bool &data_modified) {
       try {
         nlohmann::json json_data = data;
-        BOOST_LOG(debug) << "reverting persistent display settings from:\n"
+        BOOST_LOG(debug) << "Reverting persistent display settings from:\n"
                          << json_data.dump(4);
       }
       catch (const std::exception &err) {
-        BOOST_LOG(error) << "failed to dump persistent display settings: " << err.what();
+        BOOST_LOG(error) << "Failed to dump persistent display settings: " << err.what();
       }
 
       if (!data.contains_modifications()) {
@@ -402,7 +403,7 @@ namespace display_device {
           current_topology = data.topology.modified;
 
           if (!data.original_hdr_states.empty()) {
-            BOOST_LOG(debug) << "changing back the HDR states to: " << to_string(data.original_hdr_states);
+            BOOST_LOG(info) << "Changing back the HDR states to: " << to_string(data.original_hdr_states);
             if (set_hdr_states(data.original_hdr_states)) {
               data.original_hdr_states.clear();
               data_modified = true;
@@ -413,7 +414,7 @@ namespace display_device {
           }
 
           if (!data.original_modes.empty()) {
-            BOOST_LOG(debug) << "changing back the display modes to: " << to_string(data.original_modes);
+            BOOST_LOG(info) << "Changing back the display modes to: " << to_string(data.original_modes);
             if (set_display_modes(data.original_modes)) {
               data.original_modes.clear();
               data_modified = true;
@@ -424,7 +425,7 @@ namespace display_device {
           }
 
           if (!data.original_primary_display.empty()) {
-            BOOST_LOG(debug) << "changing back the primary device to: " << data.original_primary_display;
+            BOOST_LOG(info) << "Changing back the primary device to: " << data.original_primary_display;
             if (set_as_primary_device(data.original_primary_display)) {
               data.original_primary_display.clear();
               data_modified = true;
@@ -435,26 +436,26 @@ namespace display_device {
           }
         }
         else {
-          BOOST_LOG(error) << "cannot switch to the topology to undo changes!";
+          BOOST_LOG(error) << "Cannot switch to the topology to undo changes!";
           partially_failed = true;
         }
       }
 
-      BOOST_LOG(debug) << "changing display topology to: " << to_string(data.topology.initial);
+      BOOST_LOG(info) << "Changing display topology back to: " << to_string(data.topology.initial);
       if (set_topology(data.topology.initial)) {
         newly_enabled_devices.merge(get_newly_enabled_devices_from_topology(current_topology, data.topology.initial));
         current_topology = data.topology.initial;
         data_modified = true;
       }
       else {
-        BOOST_LOG(error) << "failed to switch back to the initial topology!";
+        BOOST_LOG(error) << "Failed to switch back to the initial topology!";
         partially_failed = true;
       }
 
       if (!newly_enabled_devices.empty()) {
         const auto current_hdr_states { get_current_hdr_states(get_device_ids_from_topology(current_topology)) };
 
-        BOOST_LOG(debug) << "trying to fix HDR states (if needed).";
+        BOOST_LOG(debug) << "Trying to fix HDR states (if needed).";
         blank_hdr_states(current_hdr_states, newly_enabled_devices);  // Return value ignored
         set_hdr_states(current_hdr_states);  // Return value ignored
       }
@@ -490,7 +491,7 @@ namespace display_device {
 
         // Write json with indentation
         file << std::setw(4) << json_data << std::endl;
-        BOOST_LOG(debug) << "saved persistent display settings:\n"
+        BOOST_LOG(debug) << "Saved persistent display settings:\n"
                          << json_data.dump(4);
         return true;
       }
@@ -543,7 +544,7 @@ namespace display_device {
         }
       }
       catch (const std::exception &err) {
-        BOOST_LOG(error) << "failed to remove " << filepath << ". Error: " << err.what();
+        BOOST_LOG(error) << "Failed to remove " << filepath << ". Error: " << err.what();
       }
     }
 
@@ -553,16 +554,126 @@ namespace display_device {
 
   settings_t::~settings_t() = default;
 
-  settings_t::apply_result_t
-  settings_t::apply_config(const config::video_t &config, const rtsp_stream::launch_session_t &session) {
-    BOOST_LOG(info) << "Applying configuration to the display device.";
-    const auto parsed_config { make_parsed_config(config, session) };
-    if (!parsed_config) {
-      BOOST_LOG(error) << "Failed to apply configuration to the display device.";
-      return { apply_result_t::result_e::config_parse_fail };
-    }
+  bool
+  settings_t::is_changing_settings_going_to_fail() const {
+    return w_utils::is_user_session_locked() || w_utils::test_no_access_to_ccd_api();
+  }
 
-    const bool display_may_change { parsed_config->device_prep == parsed_config_t::device_prep_e::ensure_only_display };
+  settings_t::apply_result_t
+  settings_t::apply_config(const parsed_config_t &config) {
+    const auto do_apply_config { [this](const parsed_config_t &config) -> settings_t::apply_result_t {
+      bool failed_while_reverting_settings { false };
+      const boost::optional<topology_pair_t> previously_configured_topology { persistent_data ? boost::make_optional(persistent_data->topology) : boost::none };
+
+      // On Windows the display settings are kept per an active topology list - each topology
+      // has separate configuration saved in the database. Therefore, we must always switch
+      // to the topology we want to modify before we actually start applying settings.
+      const auto topology_result { handle_device_topology_configuration(config, previously_configured_topology, [&]() {
+        const bool audio_sink_was_captured { audio_data != nullptr };
+        if (!revert_settings()) {
+          failed_while_reverting_settings = true;
+          return false;
+        }
+
+        if (audio_sink_was_captured && !audio_data) {
+          audio_data = std::make_unique<audio_data_t>();
+        }
+        return true;
+      }) };
+      if (!topology_result) {
+        // Error already logged
+        return { failed_while_reverting_settings ? apply_result_t::result_e::revert_fail : apply_result_t::result_e::topology_fail };
+      }
+
+      // Once we have switched to the correct topology, we need to select where we want to
+      // save persistent data.
+      //
+      // If we already have cached persistent data, we want to use that, however we must NOT
+      // take over the topology "pair" from the result as the initial topology doest not
+      // reflect the actual initial topology before we made our first changes.
+      //
+      // There is no better way to somehow always guess the initial topology we want to revert to.
+      // The user could have switched topology when the stream was paused, then technically we could
+      // try to switch back to that topology. However, the display could have also turned off and the
+      // topology was automatically changed by Windows. In this case we don't want to switch back to
+      // that topology since it was not the user's decision.
+      //
+      // Therefore, we are always sticking with the first initial topology before the first configuration
+      // was applied.
+      persistent_data_t new_settings { topology_result->pair };
+      persistent_data_t &current_settings { persistent_data ? *persistent_data : new_settings };
+
+      const auto persist_settings = [&]() -> apply_result_t {
+        if (current_settings.contains_modifications()) {
+          if (!persistent_data) {
+            persistent_data = std::make_unique<persistent_data_t>(new_settings);
+          }
+
+          if (!save_settings(filepath, *persistent_data)) {
+            return { apply_result_t::result_e::file_save_fail };
+          }
+        }
+        else if (persistent_data) {
+          if (!revert_settings()) {
+            // Sanity check, as the revert_settings should always pass
+            // at this point since our settings contain no modifications.
+            return { apply_result_t::result_e::revert_fail };
+          }
+        }
+
+        return { apply_result_t::result_e::success };
+      };
+
+      // Since we will be modifying system state in multiple steps, we
+      // have no choice, but to save any changes we have made so
+      // that we can undo them if anything fails.
+      auto save_guard = util::fail_guard([&]() {
+        persist_settings();  // Ignoring the return value
+      });
+
+      // Here each of the handler returns full set of their specific settings for
+      // all the displays in the topology.
+      //
+      // We have the same train of though here as with the topology - if we are
+      // controlling some parts of the display settings, we are taking what
+      // we have before any modification by us are sticking with it until we
+      // release the control.
+      //
+      // Also, since we keep settings for all the displays (not only the ones that
+      // we modify), we can use these settings as a base that will revert whatever
+      // we did before if we are re-applying settings with different configuration.
+      //
+      // User modified the resolution manually? Well, he shouldn't have. If we
+      // are responsible for the resolution, then hands off! Initial settings
+      // will be re-applied when the paused session is resumed.
+
+      const auto original_primary_display { handle_primary_display_configuration(config.device_prep, current_settings.original_primary_display, topology_result->metadata) };
+      if (!original_primary_display) {
+        // Error already logged
+        return { apply_result_t::result_e::primary_display_fail };
+      }
+      current_settings.original_primary_display = *original_primary_display;
+
+      const auto original_modes { handle_display_mode_configuration(config.resolution, config.refresh_rate, current_settings.original_modes, topology_result->metadata) };
+      if (!original_modes) {
+        // Error already logged
+        return { apply_result_t::result_e::modes_fail };
+      }
+      current_settings.original_modes = *original_modes;
+
+      const auto original_hdr_states { handle_hdr_state_configuration(config.change_hdr_state, current_settings.original_hdr_states, topology_result->metadata) };
+      if (!original_hdr_states) {
+        // Error already logged
+        return { apply_result_t::result_e::hdr_states_fail };
+      }
+      current_settings.original_hdr_states = *original_hdr_states;
+
+      save_guard.disable();
+      return persist_settings();
+    } };
+
+    BOOST_LOG(info) << "Applying configuration to the display device.";
+    const bool display_may_change { config.device_prep == parsed_config_t::device_prep_e::ensure_only_display };
     if (display_may_change && !audio_data) {
       // It is very likely that in this situation our "current" audio device will be gone, so we
       // want to capture the audio sink immediately and extend the audio session until we revert our changes.
@@ -570,7 +681,7 @@ namespace display_device {
       audio_data = std::make_unique<audio_data_t>();
     }
 
-    const auto result { apply_config(*parsed_config) };
+    const auto result { do_apply_config(config) };
     if (result) {
       if (!display_may_change && audio_data) {
         // Just to be safe in the future when the video config can be reloaded
@@ -582,7 +693,12 @@ namespace display_device {
       }
     }
 
-    BOOST_LOG(info) << "Display device configuration applied.";
+    if (!result) {
+      BOOST_LOG(error) << "Failed to configure display:\n" << result.get_error_message();
+    }
+    else {
+      BOOST_LOG(info) << "Display device configuration applied.";
+    }
     return result;
   }
 
@@ -634,118 +750,6 @@ namespace display_device {
       BOOST_LOG(debug) << "Releasing captured audio sink";
       audio_data = nullptr;
     }
-  }
-
-  settings_t::apply_result_t
-  settings_t::apply_config(const parsed_config_t &config) {
-    bool failed_while_reverting_settings { false };
-    const boost::optional<topology_pair_t> previously_configured_topology { persistent_data ? boost::make_optional(persistent_data->topology) : boost::none };
-
-    // On Windows the display settings are kept per an active topology list - each topology
-    // has separate configuration saved in the database. Therefore, we must always switch
-    // to the topology we want to modify before we actually start applying settings.
-    const auto topology_result { handle_device_topology_configuration(config, previously_configured_topology, [&]() {
-      const bool audio_sink_was_captured { audio_data != nullptr };
-      if (!revert_settings()) {
-        failed_while_reverting_settings = true;
-        return false;
-      }
-
-      if (audio_sink_was_captured && !audio_data) {
-        audio_data = std::make_unique<audio_data_t>();
-      }
-      return true;
-    }) };
-    if (!topology_result) {
-      // Error already logged
-      return { failed_while_reverting_settings ? apply_result_t::result_e::revert_fail : apply_result_t::result_e::topology_fail };
-    }
-
-    // Once we have switched to the correct topology, we need to select where we want to
-    // save persistent data.
-    //
-    // If we already have cached persistent data, we want to use that, however we must NOT
-    // take over the topology "pair" from the result as the initial topology doest not
-    // reflect the actual initial topology before we made our first changes.
-    //
-    // There is no better way to somehow always guess the initial topology we want to revert to.
-    // The user could have switched topology when the stream was paused, then technically we could
-    // try to switch back to that topology. However, the display could have also turned off and the
-    // topology was automatically changed by Windows. In this case we don't want to switch back to
-    // that topology since it was not the user's decision.
-    //
-    // Therefore, we are always sticking with the first initial topology before the first configuration
-    // was applied.
-    persistent_data_t new_settings { topology_result->pair };
-    persistent_data_t &current_settings { persistent_data ? *persistent_data : new_settings };
-
-    const auto persist_settings = [&]() -> apply_result_t {
-      if (current_settings.contains_modifications()) {
-        if (!persistent_data) {
-          persistent_data = std::make_unique<persistent_data_t>(new_settings);
-        }
-
-        if (!save_settings(filepath, *persistent_data)) {
-          return { apply_result_t::result_e::file_save_fail };
-        }
-      }
-      else if (persistent_data) {
-        if (!revert_settings()) {
-          // Sanity check, as the revert_settings should always pass
-          // at this point since our settings contain no modifications.
-          return { apply_result_t::result_e::revert_fail };
-        }
-      }
-
-      return { apply_result_t::result_e::success };
-    };
-
-    // Since we will be modifying system state in multiple steps, we
-    // have no choice, but to save any changes we have made so
-    // that we can undo them if anything fails.
-    auto save_guard = util::fail_guard([&]() {
-      persist_settings();  // Ignoring the return value
-    });
-
-    // Here each of the handler returns full set of their specific settings for
-    // all the displays in the topology.
-    //
-    // We have the same train of though here as with the topology - if we are
-    // controlling some parts of the display settings, we are taking what
-    // we have before any modification by us are sticking with it until we
-    // release the control.
-    //
-    // Also, since we keep settings for all the displays (not only the ones that
-    // we modify), we can use these settings as a base that will revert whatever
-    // we did before if we are re-applying settings with different configuration.
-    //
-    // User modified the resolution manually? Well, he shouldn't have. If we
-    // are responsible for the resolution, then hands off! Initial settings
-    // will be re-applied when the paused session is resumed.
-
-    const auto original_primary_display { handle_primary_display_configuration(config.device_prep, current_settings.original_primary_display, topology_result->metadata) };
-    if (!original_primary_display) {
-      // Error already logged
-      return { apply_result_t::result_e::primary_display_fail };
-    }
-    current_settings.original_primary_display = *original_primary_display;
-
-    const auto original_modes { handle_display_mode_configuration(config.resolution, config.refresh_rate, current_settings.original_modes, topology_result->metadata) };
-    if (!original_modes) {
-      // Error already logged
-      return { apply_result_t::result_e::modes_fail };
-    }
-    current_settings.original_modes = *original_modes;
-
-    const auto original_hdr_states { handle_hdr_state_configuration(config.change_hdr_state, current_settings.original_hdr_states, topology_result->metadata) };
-    if (!original_hdr_states) {
-      // Error already logged
-      return { apply_result_t::result_e::hdr_states_fail };
-    }
-    current_settings.original_hdr_states = *original_hdr_states;
-
-    save_guard.disable();
-    return persist_settings();
   }
 
 }  // namespace display_device

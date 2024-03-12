@@ -891,16 +891,9 @@ namespace nvhttp {
 
     if (rtsp_stream::session_count() == 0) {
       // We want to prepare display only if there are no active sessions at
-      // the moment. This needs to be done before probing encoders as it could
+      // the moment. This should to be done before probing encoders as it could
       // change display device's state.
-      const auto result { display_device::session_t::get().configure_display(config::video, *launch_session) };
-      if (!result) {
-        tree.put("root.<xmlattr>.status_code", result.get_error_code());
-        tree.put("root.<xmlattr>.status_message", result.get_error_message());
-        tree.put("root.gamesession", 0);
-
-        return;
-      }
+      display_device::session_t::get().configure_display(config::video, *launch_session);
 
       // The display should be restored by the fail guard in case something happens.
       need_to_restore_display_state = true;
@@ -1005,17 +998,9 @@ namespace nvhttp {
 
     if (rtsp_stream::session_count() == 0) {
       // We want to prepare display only if there are no active sessions at
-      // the moment. This needs to be done before probing encoders as it could
-      // change display device's state. Since we are resuming the stream,
-      // the display state shall not be restored in case something else fails.
-      const auto result { display_device::session_t::get().configure_display(config::video, *launch_session) };
-      if (!result) {
-        tree.put("root.<xmlattr>.status_code", result.get_error_code());
-        tree.put("root.<xmlattr>.status_message", result.get_error_message());
-        tree.put("root.gamesession", 0);
-
-        return;
-      }
+      // the moment. This should to be done before probing encoders as it could
+      // change display device's state.
+      display_device::session_t::get().configure_display(config::video, *launch_session);
 
       // Probe encoders again before streaming to ensure our chosen
       // encoder matches the active GPU (which could have changed
