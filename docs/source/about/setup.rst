@@ -51,6 +51,8 @@ Install
 
    .. tab:: AppImage
 
+      .. caution:: Use distro-specific packages instead of the AppImage if they are available.
+
       According to AppImageLint the supported distro matrix of the AppImage is below.
 
       - ✔ Debian bullseye
@@ -103,7 +105,7 @@ Install
 
             pacman -R sunshine
 
-   .. tab:: Debian Package
+   .. tab:: Debian/Ubuntu Package
 
       #. Download ``sunshine-{distro}-{distro-version}-{arch}.deb`` and run the following code.
 
@@ -122,6 +124,8 @@ Install
             sudo apt remove sunshine
 
    .. tab:: Flatpak Package
+
+      .. caution:: Use distro-specific packages instead of the Flatpak if they are available.
 
       .. important:: The instructions provided here are for the version supplied in the `latest release`_, which does
          not necessarily match the version in the Flathub repository!
@@ -195,11 +199,30 @@ Install
 
    Sunshine needs access to `uinput` to create mouse and gamepad events.
 
-   #. Create `udev` rules.
+   #. Create and reload `udev` rules for uinput.
          .. code-block:: bash
 
             echo 'KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"' | \
-            sudo tee /etc/udev/rules.d/85-sunshine.rules
+            sudo tee /etc/udev/rules.d/60-sunshine.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger
+            sudo modprobe uinput
+
+   #. Enable permissions for KMS capture.
+         .. warning:: Capture of most Wayland-based desktop environments will fail unless this step is performed.
+
+         .. note:: ``cap_sys_admin`` may as well be root, except you don't need to be root to run it. It is necessary to
+            allow Sunshine to use KMS capture.
+
+         **Enable**
+            .. code-block:: bash
+
+               sudo setcap cap_sys_admin+p $(readlink -f $(which sunshine))
+
+         **Disable (for Xorg/X11 only)**
+            .. code-block:: bash
+
+               sudo setcap -r $(readlink -f $(which sunshine))
 
    #. Optionally, configure autostart service
 
@@ -244,20 +267,6 @@ Install
             .. code-block:: bash
 
                systemctl --user enable sunshine
-
-   #. Additional Setup for KMS
-         .. note:: ``cap_sys_admin`` may as well be root, except you don't need to be root to run it. It is necessary to
-            allow Sunshine to use KMS.
-
-         **Enable**
-            .. code-block:: bash
-
-               sudo setcap cap_sys_admin+p $(readlink -f $(which sunshine))
-
-         **Disable (for Xorg/X11)**
-            .. code-block:: bash
-
-               sudo setcap -r $(readlink -f $(which sunshine))
 
    #. Reboot
          .. code-block:: bash

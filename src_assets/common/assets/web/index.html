@@ -51,7 +51,7 @@
         <div v-if="stableBuildAvailable">
           <div class="alert alert-warning">
             <div class="d-flex justify-content-between">
-              <div class="my-2">A new <b>Stable</b> Version is Available!</div>
+              <div class="my-2">A new <b>Release</b> Version is Available!</div>
               <a class="btn btn-success m-1" :href="githubVersion.html_url" target="_blank">Download</a>
             </div>
             <h3>{{githubVersion.name}}</h3>
@@ -100,6 +100,7 @@
       } catch (e) {
         console.error(e);
       }
+      if (this.version) document.title += `Ver ${this.version}`;
       this.loading = false;
     },
     computed: {
