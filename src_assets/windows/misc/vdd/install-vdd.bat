@@ -40,7 +40,17 @@ set "DRIVER_DIR=%~dp0\driver"
 echo %DRIVER_DIR%
 
 set DIST_DIR="C:/IddSampleDriver"
-if not exist %DIST_DIR% mkdir %DIST_DIR%
+if exist %DIST_DIR% (
+    goto skip
+)
+goto continue
+
+:skip
+echo "no install needed. Exiting."
+exit /b 0
+
+:continue
+mkdir %DIST_DIR%
 move "%DRIVER_DIR%\*.*" %DIST_DIR%
 
 rem install inf

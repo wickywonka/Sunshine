@@ -56,7 +56,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS
         "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
         IfSilent +2 0
-        ExecShell 'open' 'https://flowus.cn/lecheng/share/d6682978-cdee-47c8-b9b1-3f2a773a1c1d'
+        ExecShell 'open' 'https://www.bilibili.com/video/BV1xu4y1M7yq/'
         nsExec::ExecToLog 'icacls \\\"$INSTDIR\\\" /reset'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\migrate-config.bat\\\"'
         nsExec::ExecToLog '\\\"$INSTDIR\\\\scripts\\\\add-firewall-rule.bat\\\"'
@@ -117,6 +117,7 @@ set(CPACK_NSIS_MANIFEST_DPI_AWARE true)
 
 # Setting components groups and dependencies
 set(CPACK_COMPONENT_GROUP_CORE_EXPANDED true)
+set(CPACK_COMPONENT_GROUP_SCRIPTS_EXPANDED true)
 
 # sunshine binary
 set(CPACK_COMPONENT_APPLICATION_DISPLAY_NAME "${CMAKE_PROJECT_NAME}")
