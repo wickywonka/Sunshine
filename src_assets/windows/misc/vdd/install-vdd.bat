@@ -40,7 +40,8 @@ set "DRIVER_DIR=%~dp0\driver"
 echo %DRIVER_DIR%
 
 set DIST_DIR="C:/IddSampleDriver"
-if exist %DIST_DIR% (
+set "NEFCON=%DIST_DIR%\nefconw.exe"
+if exist %NEFCON% (
     goto skip
 )
 goto continue
@@ -58,9 +59,6 @@ set CERTIFICATE="%DIST_DIR%/Virtual_Display_Driver.cer"
 certutil -addstore -f root %CERTIFICATE%
 certutil -addstore -f TrustedPublisher %CERTIFICATE%
 
-pause
 @REM install inf
-set "NEFCON=%DIST_DIR%\nefconw.exe"
 %NEFCON% --create-device-node --hardware-id ROOT\iddsampledriver --service-name IDD_HDR_FOR_SUNSHINE --class-name Display --class-guid 4d36e968-e325-11ce-bfc1-08002be10318
 %NEFCON% --install-driver --inf-path "%DIST_DIR%\IddSampleDriver.inf"
-pause
