@@ -264,9 +264,6 @@ namespace display_device::w_utils {
   /**
    * @brief Get the source mode index from the path.
    *
-   * This function correctly retrieves the index from the path based on
-   * some flags that indicate how to access the union structure containing the index.
-   *
    * It performs sanity checks on the modes list that the index is indeed correct.
    *
    * @param path Path to get the source mode index for.
@@ -287,10 +284,6 @@ namespace display_device::w_utils {
 
   /**
    * @brief Set the source mode index in the path.
-   *
-   * This function correctly sets the index in the path based on
-   * some flags that indicate how to access the union structure containing the index.
-   *
    * @param path Path to modify.
    * @param index Index value to set or empty optional to mark the index as invalid.
    * @see query_display_config on how to get paths and modes from the system.
@@ -307,10 +300,6 @@ namespace display_device::w_utils {
 
   /**
    * @brief Set the target mode index in the path.
-   *
-   * This function correctly sets the index in the path based on
-   * some flags that indicate how to access the union structure containing the index.
-   *
    * @param path Path to modify.
    * @param index Index value to set or empty optional to mark the index as invalid.
    * @see query_display_config on how to get paths and modes from the system.
@@ -327,10 +316,6 @@ namespace display_device::w_utils {
 
   /**
    * @brief Set the desktop mode index in the path.
-   *
-   * This function correctly sets the index in the path based on
-   * some flags that indicate how to access the union structure containing the index.
-   *
    * @param path Path to modify.
    * @param index Index value to set or empty optional to mark the index as invalid.
    * @see query_display_config on how to get paths and modes from the system.
@@ -347,10 +332,6 @@ namespace display_device::w_utils {
 
   /**
    * @brief Set the clone group id in the path.
-   *
-   * This function correctly sets the id in the path based on
-   * some flags that indicate how to access the union structure containing the id.
-   *
    * @param path Path to modify.
    * @param id Id value to set or empty optional to mark the id as invalid.
    * @see query_display_config on how to get paths and modes from the system.

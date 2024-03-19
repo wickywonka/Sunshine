@@ -396,18 +396,16 @@ namespace display_device::w_utils {
 
   boost::optional<UINT32>
   get_source_index(const DISPLAYCONFIG_PATH_INFO &path, const std::vector<DISPLAYCONFIG_MODE_INFO> &modes) {
-    UINT32 index {};
-    if (path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE) {
-      index = path.sourceInfo.sourceModeInfoIdx;
-      if (index == DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID) {
-        return boost::none;
-      }
-    }
-    else {
-      index = path.sourceInfo.modeInfoIdx;
-      if (index == DISPLAYCONFIG_PATH_MODE_IDX_INVALID) {
-        return boost::none;
-      }
+    // The MS docs is not clear when to access union struct or not. It appears that union struct is available,
+    // whenever QDC_VIRTUAL_MODE_AWARE is specified when querying.
+    //
+    // The docs state, however, that it is only available when
+    // DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE flag is set, but that is just BS (maybe copy-pasta mistake), because some cases
+    // were found where the flag is not set and the union is still being used.
+
+    const UINT32 index { path.sourceInfo.sourceModeInfoIdx };
+    if (index == DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID) {
+      return boost::none;
     }
 
     if (index >= modes.size()) {
@@ -420,65 +418,69 @@ namespace display_device::w_utils {
 
   void
   set_source_index(DISPLAYCONFIG_PATH_INFO &path, const boost::optional<UINT32> &index) {
-    if (path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE) {
-      if (index) {
-        path.sourceInfo.sourceModeInfoIdx = *index;
-      }
-      else {
-        path.sourceInfo.sourceModeInfoIdx = DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID;
-      }
+    // The MS docs is not clear when to access union struct or not. It appears that union struct is available,
+    // whenever QDC_VIRTUAL_MODE_AWARE is specified when querying.
+    //
+    // The docs state, however, that it is only available when
+    // DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE flag is set, but that is just BS (maybe copy-pasta mistake), because some cases
+    // were found where the flag is not set and the union is still being used.
+
+    if (index) {
+      path.sourceInfo.sourceModeInfoIdx = *index;
     }
     else {
-      if (index) {
-        path.sourceInfo.modeInfoIdx = *index;
-      }
-      else {
-        path.sourceInfo.modeInfoIdx = DISPLAYCONFIG_PATH_MODE_IDX_INVALID;
-      }
+      path.sourceInfo.sourceModeInfoIdx = DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID;
     }
   }
 
   void
   set_target_index(DISPLAYCONFIG_PATH_INFO &path, const boost::optional<UINT32> &index) {
-    if (path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE) {
-      if (index) {
-        path.targetInfo.targetModeInfoIdx = *index;
-      }
-      else {
-        path.targetInfo.targetModeInfoIdx = DISPLAYCONFIG_PATH_TARGET_MODE_IDX_INVALID;
-      }
+    // The MS docs is not clear when to access union struct or not. It appears that union struct is available,
+    // whenever QDC_VIRTUAL_MODE_AWARE is specified when querying.
+    //
+    // The docs state, however, that it is only available when
+    // DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE flag is set, but that is just BS (maybe copy-pasta mistake), because some cases
+    // were found where the flag is not set and the union is still being used.
+
+    if (index) {
+      path.targetInfo.targetModeInfoIdx = *index;
     }
     else {
-      if (index) {
-        path.targetInfo.modeInfoIdx = *index;
-      }
-      else {
-        path.targetInfo.modeInfoIdx = DISPLAYCONFIG_PATH_MODE_IDX_INVALID;
-      }
+      path.targetInfo.targetModeInfoIdx = DISPLAYCONFIG_PATH_TARGET_MODE_IDX_INVALID;
     }
   }
 
   void
   set_desktop_index(DISPLAYCONFIG_PATH_INFO &path, const boost::optional<UINT32> &index) {
-    if (path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE) {
-      if (index) {
-        path.targetInfo.desktopModeInfoIdx = *index;
-      }
-      else {
-        path.targetInfo.desktopModeInfoIdx = DISPLAYCONFIG_PATH_DESKTOP_IMAGE_IDX_INVALID;
-      }
+    // The MS docs is not clear when to access union struct or not. It appears that union struct is available,
+    // whenever QDC_VIRTUAL_MODE_AWARE is specified when querying.
+    //
+    // The docs state, however, that it is only available when
+    // DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE flag is set, but that is just BS (maybe copy-pasta mistake), because some cases
+    // were found where the flag is not set and the union is still being used.
+
+    if (index) {
+      path.targetInfo.desktopModeInfoIdx = *index;
+    }
+    else {
+      path.targetInfo.desktopModeInfoIdx = DISPLAYCONFIG_PATH_DESKTOP_IMAGE_IDX_INVALID;
     }
   }
 
   void
   set_clone_group_id(DISPLAYCONFIG_PATH_INFO &path, const boost::optional<UINT32> &id) {
-    if (path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE) {
-      if (id) {
-        path.sourceInfo.cloneGroupId = *id;
-      }
-      else {
-        path.sourceInfo.cloneGroupId = DISPLAYCONFIG_PATH_CLONE_GROUP_INVALID;
-      }
+    // The MS docs is not clear when to access union struct or not. It appears that union struct is available,
+    // whenever QDC_VIRTUAL_MODE_AWARE is specified when querying.
+    //
+    // The docs state, however, that it is only available when
+    // DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE flag is set, but that is just BS (maybe copy-pasta mistake), because some cases
+    // were found where the flag is not set and the union is still being used.
+
+    if (id) {
+      path.sourceInfo.cloneGroupId = *id;
+    }
+    else {
+      path.sourceInfo.cloneGroupId = DISPLAYCONFIG_PATH_CLONE_GROUP_INVALID;
     }
   }
 
