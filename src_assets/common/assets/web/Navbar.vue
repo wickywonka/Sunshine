@@ -14,19 +14,19 @@
                         <a class="nav-link" href="/"><i class="fas fa-fw fa-home"></i> Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/pin"><i class="fas fa-fw fa-unlock"></i> PIN</a>
+                        <a class="nav-link" href="/pin"><i class="fas fa-fw fa-unlock"></i> 配对</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/apps"><i class="fas fa-fw fa-stream"></i> Applications</a>
+                        <a class="nav-link" href="/apps"><i class="fas fa-fw fa-stream"></i> Games & Apps</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/config"><i class="fas fa-fw fa-cog"></i> Configuration</a>
+                        <a class="nav-link" href="/config"><i class="fas fa-fw fa-cog"></i> 设置</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/password"><i class="fas fa-fw fa-user-shield"></i> Change Password</a>
+                        <a class="nav-link" href="/password"><i class="fas fa-fw fa-user-shield"></i> 密码</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/troubleshooting"><i class="fas fa-fw fa-info"></i> Troubleshooting</a>
+                        <a class="nav-link" href="/troubleshooting"><i class="fas fa-fw fa-info"></i> 问题排查</a>
                     </li>
                 </ul>
             </div>

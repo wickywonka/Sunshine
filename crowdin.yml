@@ -18,5 +18,9 @@
         "en-US": "en_US"
       }
     }
+  },
+  {
+    "source": "/src_assets/common/assets/web/locale/*.json",
+    "translation": "/src_assets/common/assets/web/locale/%two_letters_code%/%original_file_name%",
   }
 ]

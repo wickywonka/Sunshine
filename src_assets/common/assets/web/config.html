@@ -37,6 +37,26 @@
 
       <!-- General Tab -->
       <div id="general" v-if="currentTab === 'general'" class="config-page">
+        <!-- Locale -->
+        <div class="mb-3">
+          <label for="locale" class="form-label">Locale</label>
+          <select id="locale" class="form-select" v-model="config.locale">
+            <option value="de">German</option>
+            <option value="en">English</option>
+            <option value="en_GB">English (UK)</option>
+            <option value="en_US">English (US)</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="it">Italian</option>
+            <option value="ru">Russian</option>
+            <option value="sv">Swedish</option>
+            <option value="ch">Chinese Simplified</option>
+          </select>
+          <div class="form-text">
+            The locale used for Sunshine's user interface.
+          </div>
+        </div>
+
         <!-- Sunshine Name -->
         <div class="mb-3">
           <label for="sunshine_name" class="form-label">Sunshine Name</label>
@@ -1421,6 +1441,7 @@
             id: "general",
             name: "General",
             options: {
+              "locale": "en",
               "sunshine_name": "",
               "min_log_level": 2,
               "global_prep_cmd": "[]",

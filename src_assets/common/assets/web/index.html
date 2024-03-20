@@ -8,13 +8,13 @@
 <body id="app">
   <Navbar></Navbar>
   <div id="content" class="container">
-    <h1 class="my-4">Hello, Sunshine!</h1>
-    <p>Sunshine is a self-hosted game stream host for Moonlight.</p>
+    <h1 class="my-4">{{ $t('index.welcome') }}</h1>
+    <p>{{ $t('index.description') }}</p>
     <div class="alert alert-danger" v-if="fancyLogs.find(x => x.level === 'Fatal')">
       <div style="line-height: 32px;">
         <i class="fas fa-circle-exclamation" style="font-size: 32px;margin-right: 0.25em;"></i>
-        <b>Attention!</b> Sunshine detected these errors during startup. We <b>STRONGLY RECOMMEND</b> fixing them
-        before streaming.<br>
+        {{ $t('index.startup_errors') }}
+        <br>
       </div>
       <ul>
         <li v-for="v in fancyLogs.filter(x => x.level === 'Fatal')">{{v.value}}</li>
@@ -27,14 +27,14 @@
         <h2>Version {{version}}</h2>
         <br>
         <div v-if="loading">
-          Loading Latest Release...
+          {{ $t('index.loading_latest') }}
         </div>
         <div class="alert alert-success" v-if="buildVersionIsDirty">
-          Thank you for helping to make Sunshine a better software! 🌇
+          {{ $t('index.version_dirty') }} 🌇
         </div>
         <div v-else-if="!nightlyBuildAvailable && !stableBuildAvailable && !buildVersionIsDirty">
           <div class="alert alert-success">
-            You're running the latest version of Sunshine
+            {{ $t('index.version_latest') }}
           </div>
         </div>
         <div v-if="nightlyBuildAvailable">
@@ -69,8 +69,40 @@
 
 <script type="module">
   import { createApp } from 'vue'
+  import { createI18n } from "vue-i18n";
   import Navbar from './Navbar.vue'
   import ResourceCard from './ResourceCard.vue'
+
+  // Import translation files (do not modify these files in git)
+  import de from './locale/de/sunshine.json'
+  import en from './locale/en/sunshine.json'
+  import en_GB from './locale/en-GB/sunshine.json'
+  import en_US from './locale/en-US/sunshine.json'
+  import es from './locale/es/sunshine.json'
+  import fr from './locale/fr/sunshine.json'
+  import it from './locale/it/sunshine.json'
+  import ru from './locale/ru/sunshine.json'
+  import sv from './locale/sv/sunshine.json'
+  import zh from './locale/zh/sunshine.json'
+
+  // Create the i18n instance
+  const i18n = createI18n({
+    locale: "en",  // initial locale
+    fallbackLocale: "en",  // fallback locale
+    messages: {
+      de: de,
+      en: en,
+      "en-GB": en_GB,
+      "en-US": en_US,
+      es: es,
+      fr: fr,
+      it: it,
+      ru: ru,
+      sv: sv,
+      zh: zh
+    },
+  });
+
   console.log("Hello, Sunshine!")
   let app = createApp({
     components: {
@@ -155,5 +187,6 @@
       }
     }
   });
+  app.use(i18n);
   app.mount('#app');
 </script>

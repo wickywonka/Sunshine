@@ -180,6 +180,7 @@ namespace config {
     bool on_session;
   };
   struct sunshine_t {
+    std::string locale;
     int min_log_level;
     std::bitset<flag::FLAG_SIZE> flags;
     std::string credentials_file;
