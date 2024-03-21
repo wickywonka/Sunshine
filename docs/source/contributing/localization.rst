@@ -36,7 +36,7 @@ Extraction
    Sunshine uses `Vue I18n <https://vue-i18n.intlify.dev/>`__ for localizing the UI.
    The following is a simple example of how to use it.
 
-   - Add the string to `src_assets/common/assets/web/locale/sunshine.json` in English.
+   - Add the string to `src_assets/common/assets/web/locale/en.json` in English.
       .. code-block:: json
 
          {
@@ -53,6 +53,9 @@ Extraction
              <p>{{ $t('index.welcome') }}</p>
            </div>
          </template>
+
+   .. tip:: More formatting examples can be found in the
+      `Vue I18n guide <https://kazupon.github.io/vue-i18n/guide/formatting.html>`__.
 
 .. tab:: C++
 

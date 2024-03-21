@@ -1154,6 +1154,19 @@ namespace config {
       config::sunshine.flags[config::flag::UPNP].flip();
     }
 
+    string_restricted_f(vars, "locale", config::sunshine.locale, {
+                                                                   "de"sv,  // German
+                                                                   "en"sv,  // English
+                                                                   "en-GB"sv,  // English (UK)
+                                                                   "en-US"sv,  // English (US)
+                                                                   "es"sv,  // Spanish
+                                                                   "fr"sv,  // French
+                                                                   "it"sv,  // Italian
+                                                                   "ru"sv,  // Russian
+                                                                   "sv"sv,  // Swedish
+                                                                   "zh"sv,  // Chinese
+                                                                 });
+
     std::string log_level_string;
     string_f(vars, "min_log_level", log_level_string);
 

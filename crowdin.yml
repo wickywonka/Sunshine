@@ -20,7 +20,8 @@
     }
   },
   {
-    "source": "/src_assets/common/assets/web/locale/*.json",
-    "translation": "/src_assets/common/assets/web/locale/%two_letters_code%/%original_file_name%",
+    "source": "/src_assets/common/assets/web/locale/en.json",
+    "dest": "/sunshine.json",
+    "translation": "/src_assets/common/assets/web/locale/%two_letters_code%.%file_extension%",
   }
 ]
