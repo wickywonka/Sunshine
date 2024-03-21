@@ -694,7 +694,8 @@ namespace display_device {
     }
 
     if (!result) {
-      BOOST_LOG(error) << "Failed to configure display:\n" << result.get_error_message();
+      BOOST_LOG(error) << "Failed to configure display:\n"
+                       << result.get_error_message();
     }
     else {
       BOOST_LOG(info) << "Display device configuration applied.";

@@ -101,7 +101,7 @@ namespace display_device {
 
   /**
    * @brief A LIST[LIST[DEVICE_ID]] structure which represents an active topology.
-   * 
+   *
    * Single display:
    *     [[DISPLAY_1]]
    * 2 extended displays:
@@ -110,7 +110,7 @@ namespace display_device {
    *     [[DISPLAY_1, DISPLAY_2]]
    * Mixed displays:
    *     [[EXTENDED_DISPLAY_1], [DUPLICATED_DISPLAY_1, DUPLICATED_DISPLAY_2], [EXTENDED_DISPLAY_2]]
-   * 
+   *
    * @note On Windows the order does not matter of both device ids or the inner lists.
    */
   using active_topology_t = std::vector<std::vector<std::string>>;
@@ -119,7 +119,7 @@ namespace display_device {
    * @brief Enumerate the available (active and inactive) devices.
    * @returns A map of available devices.
    *          Empty map can also be returned if an error has occurred.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const auto devices { enum_available_devices() };
@@ -134,7 +134,7 @@ namespace display_device {
    * @returns A display name for the device, or an empty string if the device is inactive or not found.
    *          Empty string can also be returned if an error has occurred.
    * @see device_info_t
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::string device_name { "MY_DEVICE_ID" };
@@ -149,7 +149,7 @@ namespace display_device {
    * @param device_ids A list of devices to get the modes for.
    * @returns A map of device modes per a device or an empty map if a mode could not be found (e.g. device is inactive).
    *          Empty map can also be returned if an error has occurred.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::unordered_set<std::string> device_ids { "DEVICE_ID_1", "DEVICE_ID_2" };
@@ -165,7 +165,7 @@ namespace display_device {
    * @returns True if modes were set, false otherwise.
    * @warning if any of the specified devices are duplicated, modes modes be provided
    *          for duplicates too!
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::string display_a { "MY_ID_1" };
@@ -182,7 +182,7 @@ namespace display_device {
    * @param device_id A device to perform the check for.
    * @returns True if the device is primary, false otherwise.
    * @see device_state_e
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::string device_id { "MY_DEVICE_ID" };
@@ -197,7 +197,7 @@ namespace display_device {
    * @param device_id A device to set as primary.
    * @returns True if the device is or was set as primary, false otherwise.
    * @note On Windows if the device is duplicated, the other duplicated device(-s) will also become a primary device.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::string device_id { "MY_DEVICE_ID" };
@@ -212,7 +212,7 @@ namespace display_device {
    * @param device_ids A list of devices to get the HDR states for.
    * @returns A map of HDR states per a device or an empty map if an error has occurred.
    * @note On Windows the state cannot be retrieved until the device is active even if it supports it.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::unordered_set<std::string> device_ids { "DEVICE_ID_1", "DEVICE_ID_2" };
@@ -228,7 +228,7 @@ namespace display_device {
    * @returns True if HDR states were set, false otherwise.
    * @note If `unknown` states are provided, they will be silently ignored
    *       and current state will not be changed.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const std::string display_a { "MY_ID_1" };
@@ -244,7 +244,7 @@ namespace display_device {
    * @brief Get the active (current) topology.
    * @returns A list representing the current topology.
    *          Empty list can also be returned if an error has occurred.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * const auto current_topology { get_current_topology() };
@@ -261,7 +261,7 @@ namespace display_device {
    *
    * @param topology Topology to validated.
    * @returns True if it is valid, false otherwise.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * auto current_topology { get_current_topology() };
@@ -277,7 +277,7 @@ namespace display_device {
    * @param topology_a First topology to compare.
    * @param topology_b Second topology to compare.
    * @returns True if topologies are close enough, false otherwise.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * auto current_topology { get_current_topology() };
@@ -293,7 +293,7 @@ namespace display_device {
    * @brief Set the a new active topology for the OS.
    * @param new_topology New device topology to set.
    * @returns True if the new topology has been set, false otherwise.
-   * 
+   *
    * EXAMPLES:
    * ```cpp
    * auto current_topology { get_current_topology() };

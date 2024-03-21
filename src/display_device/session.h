@@ -63,11 +63,11 @@ namespace display_device {
 
     /**
      * @brief Configure the display device based on the user configuration and the session information.
-     * 
+     *
      * Upon failing to completely apply configuration, the applied settings will be reverted.
      * Or, in some cases, we will keep retrying even when the stream has already started as there
      * is no possibility to apply settings before the stream start.
-     * 
+     *
      * @param config User's video related configuration.
      * @param session Session information.
      * @note There is no return value as we still want to continue with the stream, so that
