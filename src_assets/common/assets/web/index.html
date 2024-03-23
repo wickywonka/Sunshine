@@ -5,7 +5,7 @@
   <%- header %>
 </head>
 
-<body id="app">
+<body id="app" v-cloak>
   <Navbar></Navbar>
   <div id="content" class="container">
     <h1 class="my-4">{{ $t('index.welcome') }}</h1>
@@ -40,7 +40,9 @@
         <div v-if="nightlyBuildAvailable">
           <div class="alert alert-warning">
             <div class="d-flex justify-content-between">
-              <div class="my-2">有新的 <b>基地版</b> sunshine可以更新!</div>
+              <div class="my-2">
+                <p></b>有新的 <b>基地版</b> sunshine可以更新!</p>
+              </div>
               <a class="btn btn-success m-1" href="https://github.com/qiin2333/Sunshine/releases/alpha"
                 target="_blank">Download</a>
             </div>
@@ -54,7 +56,8 @@
               <div class="my-2">
                 <p v-html="$t('index.new_stable')"></p>
               </div>
-              <a class="btn btn-success m-1" :href="githubVersion.html_url" target="_blank">{{ $t('index.download') }}</a>
+              <a class="btn btn-success m-1" :href="githubVersion.html_url" target="_blank">{{ $t('index.download')
+                }}</a>
             </div>
             <h3>{{githubVersion.name}}</h3>
             <pre>{{githubVersion.body}}</pre>
@@ -70,8 +73,8 @@
 </body>
 
 <script type="module">
-  import { createApp } from 'vue'
-  import { i18n } from './Locale.vue'
+  import {createApp} from 'vue'
+  import i18n from './locale.js'
   import Navbar from './Navbar.vue'
   import ResourceCard from './ResourceCard.vue'
 
@@ -153,12 +156,16 @@
         let rawLogLines = (this.logs.split(regex)).splice(1);
         let logLines = []
         for (let i = 0; i < rawLogLines.length; i += 2) {
-          logLines.push({ timestamp: rawLogLines[i], level: rawLogLines[i + 1].split(":")[0], value: rawLogLines[i + 1] });
+          logLines.push({timestamp: rawLogLines[i], level: rawLogLines[i + 1].split(":")[0], value: rawLogLines[i + 1]});
         }
         return logLines;
       }
     }
   });
-  app.use(i18n);
-  app.mount('#app');
+
+  //Wait for locale initialization, then render
+  i18n().then(i18n => {
+    app.use(i18n);
+    app.mount('#app');
+  });
 </script>

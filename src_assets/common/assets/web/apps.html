@@ -70,7 +70,7 @@
       </style>
 </head>
 
-<body id="app">
+<body id="app" v-cloak>
   <Navbar></Navbar>
   <div class="container">
     <div class="my-4">
@@ -120,7 +120,7 @@
           <label for="excludeGlobalPrep" class="form-label">{{ $t('apps.global_prep_name') }}</label>
           <select id="excludeGlobalPrep" class="form-select" v-model="editForm['exclude-global-prep-cmd']">
             <option v-for="val in [false, true]" :value="val">
-              {{ !val ? $t('apps.enabled') : $t('apps.disabled') }}
+              {{ !val ? $t('_common.enabled') : $t('_common.disabled') }}
             </option>
           </select>
           <div class="form-text">{{ $t('apps.global_prep_desc') }}</div>
@@ -136,10 +136,10 @@
           <table class="table" v-if="editForm['prep-cmd'].length > 0">
             <thead>
               <tr>
-                <th scope="col"><i class="fas fa-play"></i> {{ $t('apps.do_cmd') }}</th>
-                <th scope="col"><i class="fas fa-undo"></i> {{ $t('apps.undo_cmd') }}</th>
+                <th scope="col"><i class="fas fa-play"></i> {{ $t('_common.do_cmd') }}</th>
+                <th scope="col"><i class="fas fa-undo"></i> {{ $t('_common.undo_cmd') }}</th>
                 <th scope="col" v-if="platform === 'windows'">
-                  <i class="fas fa-shield-alt"></i> {{ $t('apps.run_as') }}
+                  <i class="fas fa-shield-alt"></i> {{ $t('_common.run_as') }}
                 </th>
                 <th scope="col"></th>
               </tr>
@@ -156,7 +156,7 @@
                   <div class="form-check">
                     <input type="checkbox" class="form-check-input" :id="'prep-cmd-admin-' + i" v-model="c.elevated"
                       true-value="true" false-value="false" />
-                    <label :for="'prep-cmd-admin-' + i" class="form-check-label">{{ $t('apps.elevated') }}</label>
+                    <label :for="'prep-cmd-admin-' + i" class="form-check-label">{{ $t('_common.elevated') }}</label>
                   </div>
                 </td>
                 <td>
@@ -187,7 +187,7 @@
           </div>
           <div class="form-text">
             {{ $t('apps.detached_cmds_desc') }}<br>
-            <b>{{ $t('common.note') }}</b> {{ $t('apps.detached_cmds_note') }}
+            <b>{{ $t('_common.note') }}</b> {{ $t('apps.detached_cmds_note') }}
           </div>
         </div>
         <!-- command -->
@@ -197,7 +197,7 @@
             v-model="editForm.cmd" />
           <div id="appCmdHelp" class="form-text">
             {{ $t('apps.cmd_desc') }}<br>
-            <b>{{ $t('common.note') }}</b> {{ $t('apps.cmd_note') }}
+            <b>{{ $t('_common.note') }}</b> {{ $t('apps.cmd_note') }}
           </div>
         </div>
         <!-- working dir -->
@@ -209,7 +209,7 @@
         </div>
         <!-- elevation -->
         <div class="mb-3 form-check" v-if="platform === 'windows'">
-          <label for="appElevation" class="form-check-label">{{ $t('apps.run_as') }}</label>
+          <label for="appElevation" class="form-check-label">{{ $t('_common.run_as') }}</label>
           <input type="checkbox" class="form-check-input" id="appElevation" v-model="editForm.elevated"
             true-value="true" false-value="false" />
           <div class="form-text">{{ $t('apps.run_as_desc') }}</div>
@@ -236,7 +236,7 @@
           <div id="exitTimeoutHelp" class="form-text">{{ $t('apps.exit_timeout_desc') }}</div>
         </div>
         <div class="mb-3">
-          <label for="appImagePath" class="form-label">{{ $t('apps.iamge') }}</label>
+          <label for="appImagePath" class="form-label">{{ $t('apps.image') }}</label>
           <div class="input-group dropup">
             <input type="text" class="form-control monospace" id="appImagePath" aria-describedby="appImagePathHelp"
               v-model="editForm['image-path']" />
@@ -336,14 +336,14 @@
           </div>
           <div class="form-text"><a
               href="https://docs.lizardbyte.dev/projects/sunshine/en/latest/about/guides/app_examples.html"
-              target="_blank">{{ $t('common.see_more') }}</a></div>
+              target="_blank">{{ $t('_common.see_more') }}</a></div>
         </div>
         <!-- Save buttons -->
         <div class="d-flex">
           <button @click="showEditForm = false" class="btn btn-secondary m-2">
-            Cancel
+            {{ $t('_common.cancel') }}
           </button>
-          <button class="btn btn-primary m-2" @click="save">{{ $t('common.save') }}</button>
+          <button class="btn btn-primary m-2" @click="save">{{ $t('_common.save') }}</button>
         </div>
       </div>
     </div>
@@ -356,7 +356,7 @@
 </body>
 <script type="module">
   import { createApp } from 'vue';
-  import { i18n } from './Locale.vue'
+  import i18n from './locale.js'
   import Navbar from './Navbar.vue'
   import {Dropdown} from 'bootstrap'
 
@@ -561,6 +561,9 @@
     }
   });
 
-  app.use(i18n)
-  app.mount("#app")
+  //Wait for locale initialization, then render
+  i18n().then(i18n => {
+    app.use(i18n);
+    app.mount('#app');
+  });
 </script>

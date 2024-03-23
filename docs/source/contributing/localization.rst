@@ -36,7 +36,7 @@ Extraction
    Sunshine uses `Vue I18n <https://vue-i18n.intlify.dev/>`__ for localizing the UI.
    The following is a simple example of how to use it.
 
-   - Add the string to `src_assets/common/assets/web/locale/en.json` in English.
+   - Add the string to `src_assets/common/assets/web/public/assets/locale/en.json`, in English.
       .. code-block:: json
 
          {
@@ -44,6 +44,9 @@ Extraction
              "welcome": "Hello, Sunshine!"
            }
          }
+
+      .. note:: The json keys should be sorted alphabetically. You can use `jsonabc <https://novicelab.org/jsonabc/>`__
+         to sort the keys.
 
    - Use the string in a Vue component.
       .. code-block:: html
