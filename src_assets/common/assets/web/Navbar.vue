@@ -57,4 +57,14 @@ export default {
 .form-control::placeholder {
     opacity: 0.5;
 }
+
+body {
+    background: url(http://tva1.sinaimg.cn/large/008cEDDEgy1ho2jclvm0rj30u016eaj3.jpg) no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+:root {
+    --bs-body-bg: rgba(255, 255, 255, .3);
+}
 </style>
