@@ -422,7 +422,7 @@
             <h2 class="accordion-header">
               <button class="accordion-button" type="button" data-bs-toggle="collapse"
                 data-bs-target="#panelsStayOpen-collapseOne">
-                Display device options
+                {{ $t('config.display_device_options_win') }}
               </button>
             </h2>
             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
@@ -430,49 +430,44 @@
               <div class="accordion-body">
                 <div class="mb-3">
                   <label class="form-label">
-                    Note about how settings are applied
+                    {{ $t('config.display_device_options_note_win') }}
                   </label>
                   <div class="form-text">
-                    Windows saves various display settings for each combination of currently active displays.<br>
-                    Sunshine applies changes to a display(-s) belonging to such a display combination.<br>
-                    If you disconnect a device which was active when Sunshine applied the settings, the changes will not be<br>
-                    reverted back unless the combination is active again by the time Sunshine tries to revert changes!<br>
-                    The same is true if you connect a new device and Windows decides to activate it, which will change<br>
-                    the active display combination.
+                    <p style="white-space: pre-line">{{ $t('config.display_device_options_note_desc_win') }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Device display preparation -->
                 <div class="mb-3">
                   <label for="display_device_prep" class="form-label">
-                    Display preparation
+                    {{ $t('config.display_device_prep_win') }}
                   </label>
                   <select id="display_device_prep" class="form-select" v-model="config.display_device_prep">
-                    <option value="no_operation">Disabled</option>
-                    <option value="ensure_active">Activate the display automatically</option>
-                    <option value="ensure_primary">Activate the display automatically and make it a primary display</option>
-                    <option value="ensure_only_display">Deactivate other displays and activate only the specified display</option>
+                    <option value="no_operation">{{ $t('config.display_device_prep_no_operation_win') }}</option>
+                    <option value="ensure_active">{{ $t('config.display_device_prep_ensure_active_win') }}</option>
+                    <option value="ensure_primary">{{ $t('config.display_device_prep_ensure_primary_win') }}</option>
+                    <option value="ensure_only_display">{{ $t('config.display_device_prep_ensure_only_display_win') }}</option>
                   </select>
                 </div>
 
                 <!-- Resolution change -->
                 <div class="mb-3">
                   <label for="resolution_change" class="form-label">
-                    Resolution change
+                    {{ $t('config.resolution_change_win') }}
                   </label>
                   <select id="resolution_change" class="form-select" v-model="config.resolution_change">
-                    <option value="no_operation">Disabled</option>
-                    <option value="automatic">Use resolution provided by the client</option>
-                    <option value="manual">Use manually entered resolution</option>
+                    <option value="no_operation">{{ $t('config.resolution_change_no_operation_win') }}</option>
+                    <option value="automatic">{{ $t('config.resolution_change_automatic_win') }}</option>
+                    <option value="manual">{{ $t('config.resolution_change_manual_win') }}</option>
                   </select>
                   <div class="form-text" v-if="config.resolution_change === 'automatic' || config.resolution_change === 'manual'">
-                    "Optimize game settings" option must be enabled on the Moonlight client for this to work.
+                    {{ $t('config.resolution_change_ogs_desc_win') }}
                   </div>
 
                   <!-- Manual resolution -->
                   <div class="mt-2 ps-4" v-if="config.resolution_change === 'manual'">
                     <div class="form-text">
-                      Enter the resolution to be used
+                      {{ $t('config.resolution_change_manual_desc_win') }}
                     </div>
                     <input type="text" class="form-control" id="manual_resolution" placeholder="2560x1440" v-model="config.manual_resolution" />
                   </div>
@@ -481,59 +476,44 @@
                 <!-- Refresh rate change -->
                 <div class="mb-3">
                   <label for="refresh_rate_change" class="form-label">
-                    Refresh rate change
+                    {{ $t('config.refresh_rate_change_win') }}
                   </label>
                   <select id="refresh_rate_change" class="form-select" v-model="config.refresh_rate_change">
-                    <option value="no_operation">Disabled</option>
-                    <option value="automatic">Use FPS value provided by the client</option>
-                    <option value="manual">Use manually entered refresh rate</option>
+                    <option value="no_operation">{{ $t('config.refresh_rate_change_no_operation_win') }}</option>
+                    <option value="automatic">{{ $t('config.refresh_rate_change_automatic_win') }}</option>
+                    <option value="manual">{{ $t('config.refresh_rate_change_manual_desc_win') }}</option>
                   </select>
 
                   <!-- Manual refresh rate -->
                   <div class="mt-2 ps-4" v-if="config.refresh_rate_change === 'manual'">
                     <div class="form-text">
-                      Enter the refresh rate to be used
+                      {{ $t('config.refresh_rate_change_manual_desc_win') }}
                     </div>
-                    <input type="text" class="form-control" id="manual_refresh_rate" placeholder="59.95 or 60" v-model="config.manual_refresh_rate" />
+                    <input type="text" class="form-control" id="manual_refresh_rate" placeholder="59.95" v-model="config.manual_refresh_rate" />
                   </div>
                 </div>
 
                 <!-- HDR preparation -->
                 <div class="mb-3">
                   <label for="hdr_prep" class="form-label">
-                    HDR state change
+                    {{ $t('config.hdr_prep_win') }}
                   </label>
                   <select id="hdr_prep" class="form-select" v-model="config.hdr_prep">
-                    <option value="no_operation">Disabled</option>
-                    <option value="automatic">Switch on/off the HDR mode as requested by the client</option>
+                    <option value="no_operation">{{ $t('config.hdr_prep_no_operation_win') }}</option>
+                    <option value="automatic">{{ $t('config.hdr_prep_automatic_win') }}</option>
                   </select>
                 </div>
 
                 <!-- Display mode remapping -->
                 <div class="mb-3" v-if="config.resolution_change === 'automatic' || config.refresh_rate_change === 'automatic'">
                   <label for="display_mode_remapping" class="form-label">
-                    Remap display modes
+                    {{ $t('config.display_mode_remapping_win') }}
                   </label>
                   <div id="display_mode_remapping" class="d-flex flex-column">
                     <div class="form-text">
-                      Specify how a specific resolution and/or refresh rate should be remapped to other values.<br>
-                      You can stream at lower resolution, while rendering at higher resolution on host for a supersampling effect.<br>
-                      Or you can stream at higher FPS while limiting the host to the lower refresh rate.<br>
-                      Matching is performed top to bottom. Once the entry is matched, others are no longer checked, but still validated.
-                      <template v-if="get_display_mode_remapping_type() === ''">
-                        <br>
-                        <br>
-                        At least one "received" and one "final" value must be specified.<br>
-                        Empty field in "received" section means "match any". Empty field in "final" section means "keep received value".<br>
-                        You can match specific FPS value to specific resolution if you wish so...<br>
-                        <br>
-                        Note: if "Optimize game settings" option is not enabled on the Moonlight client, the rows containing resolution value(-s) are ignored.
-                      </template>
-                      <template v-if="get_display_mode_remapping_type() === 'resolution_only'">
-                        <br>
-                        <br>
-                        Note: if "Optimize game settings" option is not enabled on the Moonlight client, the remapping is disabled.
-                      </template>
+                      <p style="white-space: pre-line">{{ $t('config.display_mode_remapping_desc_win') }}</p>
+                      <p v-if="get_display_mode_remapping_type() === ''" style="white-space: pre-line">{{ $t('config.display_mode_remapping_default_mode_desc_win') }}</p>
+                      <p v-if="get_display_mode_remapping_type() === 'resolution_only'" style="white-space: pre-line">{{ $t('config.display_mode_remapping_resolution_only_mode_desc_win') }}</p>
                     </div>
 
                     <!--
@@ -549,15 +529,15 @@
                     60 -> 90
                     30 -> 60
 
-                    and if the user want the second entry, he would have to remove the first one, which would be valid in other config combination.
+                    and if the user wants the second entry, he would have to remove the first one, which would be valid in other config combination.
                     -->
                     <table class="table" v-if="display_mode_remapping.filter((value) => value.type === get_display_mode_remapping_type()).length > 0">
                       <thead>
                         <tr>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">Received resolution</th>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">Received FPS</th>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">Final resolution</th>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">Final refresh rate</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">{{ $t('config.display_mode_remapping_received_resolution_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">{{ $t('config.display_mode_remapping_received_fps_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">{{ $t('config.display_mode_remapping_final_resolution_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">{{ $t('config.display_mode_remapping_final_refresh_rate_win') }}</th>
                           <th scope="col"></th>
                         </tr>
                       </thead>
@@ -565,16 +545,16 @@
                         <tr v-for="(c, i) in display_mode_remapping">
                           <template v-if="c.type === '' && c.type === get_display_mode_remapping_type()">
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.received_resolution" placeholder="1920x1080 (optional)" />
+                              <input type="text" class="form-control monospace" v-model="c.received_resolution" :placeholder="`1920x1080 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.received_fps" placeholder="60 (optional)" />
+                              <input type="text" class="form-control monospace" v-model="c.received_fps" :placeholder="`60 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_resolution" placeholder="2560x1440 (optional)" />
+                              <input type="text" class="form-control monospace" v-model="c.final_resolution" :placeholder="`2560x1440 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" placeholder="119.95 or 120 (optional)" />
+                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" :placeholder="`119.95 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
                               <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
@@ -600,7 +580,7 @@
                               <input type="text" class="form-control monospace" v-model="c.received_fps" placeholder="60" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" placeholder="119.95 or 120" />
+                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" placeholder="119.95" />
                             </td>
                             <td>
                               <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
