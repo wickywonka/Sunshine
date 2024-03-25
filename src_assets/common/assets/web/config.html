@@ -6,7 +6,7 @@
     <style>
       .config-page {
         padding: 1em;
-        border: 1px solid #dee2e6;
+        border: 1px solid transparent;
         border-top: none;
       }
 
@@ -26,7 +26,7 @@
   <Navbar></Navbar>
   <div class="container">
     <h1 class="my-4">{{ $t('config.configuration') }}</h1>
-    <div class="form" v-if="config">
+    <div class="form card" v-if="config">
       <!-- Header -->
       <ul class="nav nav-tabs">
         <li class="nav-item" v-for="tab in tabs" :key="tab.id">

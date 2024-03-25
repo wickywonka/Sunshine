@@ -59,7 +59,7 @@ export default {
 }
 
 body {
-    background: url(https://i0.hdslb.com/bfs/article/bcdb25b7c8eb797360ff14c42181278e503284338.png@1e_1c.webp) no-repeat;
+    background: url(https://raw.gitmirror.com/qiin2333/qiin.github.io/assets/img/sunshine-bg0.webp) no-repeat;
     background-size: cover;
     background-attachment: fixed;
 }
