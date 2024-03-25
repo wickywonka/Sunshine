@@ -64,7 +64,10 @@ body {
     background-attachment: fixed;
 }
 
-:root {
+[data-bs-theme=light] {
     --bs-body-bg: rgba(255, 255, 255, .3);
+}
+[data-bs-theme=dark] {
+    --bs-body-bg: rgba(0, 0, 0, .65);
 }
 </style>
