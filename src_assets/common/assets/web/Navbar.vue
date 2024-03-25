@@ -59,7 +59,7 @@ export default {
 }
 
 body {
-    background: url(http://tva1.sinaimg.cn/large/008cEDDEgy1ho2jclvm0rj30u016eaj3.jpg) no-repeat;
+    background: url(https://i0.hdslb.com/bfs/article/bcdb25b7c8eb797360ff14c42181278e503284338.png@1e_1c.webp) no-repeat;
     background-size: cover;
     background-attachment: fixed;
 }
