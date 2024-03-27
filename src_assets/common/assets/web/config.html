@@ -392,7 +392,7 @@
         <div class="mb-3" v-if="platform === 'windows'">
           <label for="output_name" class="form-label">{{ $t('config.output_name_win') }}</label>
           <select id="output_name" class="form-select" v-model="config.output_name">
-            <option value="">Autodetect</option>
+            <option value="">{{ $t('_common.autodetect') }}</option>
             <option v-for="device in displayDevices" :value="device.id" :key="device.id">{{ device.name }}</option>
           </select>
           <div class="form-text">
