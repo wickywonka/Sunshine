@@ -144,7 +144,7 @@
     "display_device_prep_ensure_active_win": "自动激活指定显示器",
     "display_device_prep_ensure_only_display_win": "禁用其他显示器，只启用指定显示器",
     "display_device_prep_ensure_primary_win": "自动激活指定显示器并设置为主显示器",
-    "display_device_prep_no_operation_win": "Disabled",
+    "display_device_prep_no_operation_win": "无操作",
     "display_device_prep_win": "串流时显示器组合状态设定",
     "display_mode_remapping_default_mode_desc_win": "At least one \"received\" and one \"final\" value must be specified.\nEmpty field in \"received\" section means \"match any\". Empty field in \"final\" section means \"keep received value\".\nYou can match specific FPS value to specific resolution if you wish so...\n\nNote: if \"Optimize game settings\" option is not enabled on the Moonlight client, the rows containing resolution value(-s) are ignored.",
     "display_mode_remapping_desc_win": "Specify how a specific resolution and/or refresh rate should be remapped to other values.\nYou can stream at lower resolution, while rendering at higher resolution on host for a supersampling effect.\nOr you can stream at higher FPS while limiting the host to the lower refresh rate.\nMatching is performed top to bottom. Once the entry is matched, others are no longer checked, but still validated.",
