@@ -40,11 +40,10 @@
         <div v-if="nightlyBuildAvailable">
           <div class="alert alert-warning">
             <div class="d-flex justify-content-between">
-              <div class="my-2">
-                <p></b>有新的 <b>基地版</b> sunshine可以更新!</p>
-              </div>
+              <div class="my-2">有新的 <b>基地版</b> sunshine可以更新!</div>
               <a class="btn btn-success m-1" href="https://github.com/qiin2333/Sunshine/releases/alpha"
-                target="_blank">Download</a>
+                target="_blank">{{ $t('index.download')
+                }}</a>
             </div>
             <pre><b>{{nightlyData.head_sha}}</b></pre>
             <pre>{{nightlyData.display_title}}</pre>
@@ -53,9 +52,7 @@
         <div v-if="stableBuildAvailable">
           <div class="alert alert-warning">
             <div class="d-flex justify-content-between">
-              <div class="my-2">
-                <p v-html="$t('index.new_stable')"></p>
-              </div>
+              <div class="my-2" v-html="$t('index.new_stable')"></div>
               <a class="btn btn-success m-1" :href="githubVersion.html_url" target="_blank">{{ $t('index.download')
                 }}</a>
             </div>
