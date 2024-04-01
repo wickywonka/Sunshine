@@ -6,6 +6,18 @@ set_target_properties(sunshine PROPERTIES CXX_STANDARD 17
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR})
 
+# Homebrew build fails the vite build if we set these environment variables
+# this block must be before the platform specific code
+if(${SUNSHINE_BUILD_HOMEBREW})
+    set(NPM_SOURCE_ASSETS_DIR "")
+    set(NPM_ASSETS_DIR "")
+    set(NPM_BUILD_HOMEBREW "true")
+else()
+    set(NPM_SOURCE_ASSETS_DIR ${SUNSHINE_SOURCE_ASSETS_DIR})
+    set(NPM_ASSETS_DIR ${CMAKE_BINARY_DIR})
+    set(NPM_BUILD_HOMEBREW "")
+endif()
+
 # platform specific target definitions
 if(WIN32)
     include(${CMAKE_MODULE_PATH}/targets/windows.cmake)
@@ -48,16 +60,6 @@ else()
     set(NPM_BUILD_HOMEBREW "")
 endif()
 
-#WebUI build
-add_custom_target(web-ui ALL
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        COMMENT "Installing NPM Dependencies and Building the Web UI"
-        COMMAND bash -c \"npm install && SUNSHINE_BUILD_HOMEBREW=${NPM_BUILD_HOMEBREW} SUNSHINE_SOURCE_ASSETS_DIR=${NPM_SOURCE_ASSETS_DIR} SUNSHINE_ASSETS_DIR=${NPM_ASSETS_DIR} npm run build\") # cmake-lint: disable=C0301
-
-add_custom_target(sunshine-control-panel ALL
-        WORKING_DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/common/sunshine-control-panel"
-        COMMENT "Installing NPM Dependencies and Building the gui"
-        COMMAND bash -c \"npm install && npm run build:win\") # cmake-lint: disable=C0301
 # tests
 if(BUILD_TESTS)
     add_subdirectory(tests)
