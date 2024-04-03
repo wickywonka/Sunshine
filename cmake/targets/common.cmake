@@ -2,9 +2,6 @@
 # this file will also load platform specific macros
 
 add_executable(sunshine ${SUNSHINE_TARGET_FILES})
-set_target_properties(sunshine PROPERTIES CXX_STANDARD 17
-        VERSION ${PROJECT_VERSION}
-        SOVERSION ${PROJECT_VERSION_MAJOR})
 
 # Homebrew build fails the vite build if we set these environment variables
 # this block must be before the platform specific code
@@ -39,6 +36,9 @@ endif()
 
 target_link_libraries(sunshine ${SUNSHINE_EXTERNAL_LIBRARIES} ${EXTRA_LIBS})
 target_compile_definitions(sunshine PUBLIC ${SUNSHINE_DEFINITIONS})
+set_target_properties(sunshine PROPERTIES CXX_STANDARD 17
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR})
 
 # CLion complains about unknown flags after running cmake, and cannot add symbols to the index for cuda files
 if(CUDA_INHERIT_COMPILE_OPTIONS)
