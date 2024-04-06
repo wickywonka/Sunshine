@@ -3,7 +3,6 @@
     "apply": "Anwenden",
     "auto": "Automatisch",
     "autodetect": "AutoDetection (empfohlen)",
-    "beta": "(Beta)",
     "cancel": "Abbrechen",
     "disabled": "Deaktiviert",
     "disabled_def": "Deaktiviert (Standard)",
@@ -93,6 +92,7 @@
     "always_send_scancodes": "Scancodes immer senden",
     "always_send_scancodes_desc": "Das Senden von Scancodes verbessert die Kompatibilität mit Spielen und Apps, kann aber zu falschen Tastatureingaben von bestimmten Clients führen, die kein amerikanisches Tastaturlayout verwenden. Aktivieren, wenn die Eingabe der Tastatur in bestimmten Anwendungen überhaupt nicht funktioniert. Deaktivieren, wenn Schlüssel auf dem Client die falsche Eingabe auf dem Host generieren.",
     "amd_coder": "AMF Coder (H264)",
+    "amd_enforce_hrd": "Hypothetische Referenz-Decodierer (HRD) durchsetzen",
     "amd_preanalysis": "AMF-Voranalyse",
     "amd_quality": "AMF-Qualität",
     "amd_quality_balanced": "ausgewogen -- Ausgewogen (Standard)",
@@ -105,6 +105,7 @@
     "amd_rc_vbr_peak": "vbr_peak – eingeschränkte Variablen-Bitrate spitzen",
     "amd_usage": "AMF-Nutzung",
     "amd_usage_lowlatency": "niedrige Latenz - niedrige Latenz (schnell)",
+    "amd_usage_lowlatency_high_quality": "lowlatency_high_quality - niedrige Latenz, hohe Qualität (schnell)",
     "amd_usage_transcoding": "transcoding -- Umkodierung (langsamste)",
     "amd_usage_ultralowlatency": "ultralowlatenz - extrem niedrige Latenz (schnellste)",
     "amd_usage_webcam": "webcam -- Webcam (langsam)",
@@ -335,6 +336,8 @@
     "success_msg": "Passwort wurde erfolgreich geändert! Diese Seite wird bald neu geladen, Ihr Browser wird Sie nach den neuen Zugangsdaten fragen."
   },
   "pin": {
+    "pair_failure": "Paarung fehlgeschlagen: Prüfen Sie, ob die PIN korrekt eingegeben wurde",
+    "pair_success": "Erfolgreich! Bitte überprüfe Mondlicht um fortzufahren",
     "pin_pairing": "PIN Pairing",
     "send": "Senden",
     "warning_msg": "Stellen Sie sicher, dass Sie Zugriff auf den Client haben, mit dem Sie sich verbinden. Diese Software kann Ihrem Computer die totale Kontrolle geben, also seien Sie vorsichtig!"

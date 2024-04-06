@@ -3,7 +3,6 @@
     "apply": "Applique",
     "auto": "Automatique",
     "autodetect": "Détection automatique (recommandé)",
-    "beta": "(bêta)",
     "cancel": "Annuler",
     "disabled": "Désactivé",
     "disabled_def": "Désactivé (par défaut)",
@@ -93,6 +92,7 @@
     "always_send_scancodes": "Toujours envoyer les codes de balayage",
     "always_send_scancodes_desc": "L'envoi de codes de numérisation améliore la compatibilité avec les jeux et les applications, mais peut entraîner une saisie incorrecte du clavier de certains clients qui n'utilisent pas de disposition de clavier anglais américain. Activer si l'entrée du clavier ne fonctionne pas du tout dans certaines applications. Désactiver si les clés du client génèrent la mauvaise entrée sur l'hôte.",
     "amd_coder": "Codeur AMF (H264)",
+    "amd_enforce_hrd": "Enforcement du Décodeur Hypothetical Reference Decoder (HRD) de l'AMF",
     "amd_preanalysis": "Pré-analyse AMF",
     "amd_quality": "Qualité AMF",
     "amd_quality_balanced": "balanced -- équilibré (par défaut)",
@@ -105,6 +105,7 @@
     "amd_rc_vbr_peak": "vbr_peak -- Débit variable contraint par le pic",
     "amd_usage": "Utilisation de l'AMF",
     "amd_usage_lowlatency": "lowlatency - faible latence (rapide)",
+    "amd_usage_lowlatency_high_quality": "lowlatency_high_quality - faible latence, haute qualité (rapide)",
     "amd_usage_transcoding": "transcoding -- transcodage (plus lent)",
     "amd_usage_ultralowlatency": "ultralowlatency - latence ultra basse (plus rapide)",
     "amd_usage_webcam": "webcam -- webcam (lent)",
@@ -335,6 +336,8 @@
     "success_msg": "Le mot de passe a été modifié avec succès ! Cette page sera bientôt rechargée, votre navigateur vous demandera les nouveaux identifiants."
   },
   "pin": {
+    "pair_failure": "Échec de l'appairage : Vérifiez si le code PIN est correctement saisi",
+    "pair_success": "Succès ! Veuillez vérifier la lumière de lune pour continuer",
     "pin_pairing": "Appairage par code PIN",
     "send": "Envoyer",
     "warning_msg": "Assurez-vous que vous avez accès au client avec lequel vous appariez. Ce logiciel peut donner un contrôle total à votre ordinateur, alors soyez prudent !"

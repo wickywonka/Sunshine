@@ -3,7 +3,6 @@
     "apply": "Tillämpa",
     "auto": "Automatisk",
     "autodetect": "Autodetektera (rekommenderas)",
-    "beta": "(beta)",
     "cancel": "Avbryt",
     "disabled": "Inaktiverad",
     "disabled_def": "Inaktiverad (standard)",
@@ -93,6 +92,7 @@
     "always_send_scancodes": "Skicka alltid sökkoder",
     "always_send_scancodes_desc": "Att skicka skanningskoder förbättrar kompatibiliteten med spel och appar men kan resultera i felaktig tangentbordsinmatning från vissa klienter som inte använder en amerikansk engelsk tangentbordslayout. Aktivera om tangentbordsinmatningen inte fungerar alls i vissa program. Inaktivera om nycklar på klienten genererar fel indata på värden.",
     "amd_coder": "AMF-kod (H264)",
+    "amd_enforce_hrd": "AMF Hypotetisk referensavkodare (HRD) verkställighet",
     "amd_preanalysis": "AMF Föranalys",
     "amd_quality": "AMF Kvalitet",
     "amd_quality_balanced": "balanced -- balanserad (standard)",
@@ -105,6 +105,7 @@
     "amd_rc_vbr_peak": "vbr_peak – peak constrained variabelbithastighet",
     "amd_usage": "AMF användning",
     "amd_usage_lowlatency": "låg latens - låg latens (snabb)",
+    "amd_usage_lowlatency_high_quality": "lowlatency_high_quality - låg latens, hög kvalitet (snabb)",
     "amd_usage_transcoding": "transcoding – Omkodning (långsammare)",
     "amd_usage_ultralowlatency": "ultralowlatens - extremt låg latens (snabbast)",
     "amd_usage_webcam": "webcam – webbkamera (långsam)",
@@ -335,6 +336,8 @@
     "success_msg": "Lösenordet har ändrats! Den här sidan kommer att laddas om snart, din webbläsare kommer att be dig om de nya uppgifterna."
   },
   "pin": {
+    "pair_failure": "Parkoppling misslyckades: Kontrollera om PIN-koden är korrekt skriven",
+    "pair_success": "Klart! Kontrollera Moonlight för att fortsätta",
     "pin_pairing": "PIN Pairing",
     "send": "Skicka",
     "warning_msg": "Se till att du har tillgång till klienten du parar ihop med. Denna programvara kan ge total kontroll till din dator, så var försiktig!"
