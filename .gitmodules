@@ -22,6 +22,10 @@
 	path = third-party/nanors
 	url = https://github.com/sleepybishop/nanors.git
 	branch = master
+[submodule "third-party/nlohmann_json"]
+	path = third-party/nlohmann_json
+	url = https://github.com/nlohmann/json
+	branch = master
 [submodule "third-party/nv-codec-headers"]
 	path = third-party/nv-codec-headers
 	url = https://github.com/FFmpeg/nv-codec-headers
@@ -53,8 +57,4 @@
 [submodule "third-party/wlr-protocols"]
 	path = third-party/wlr-protocols
 	url = https://gitlab.freedesktop.org/wlroots/wlr-protocols
-	branch = master
-[submodule "third-party/nlohmann_json"]
-	path = third-party/nlohmann_json
-	url = https://github.com/nlohmann/json
 	branch = master
