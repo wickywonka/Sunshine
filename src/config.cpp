@@ -381,10 +381,10 @@ namespace config {
     (int) display_device::parsed_config_t::device_prep_e::no_operation,  // display_device_prep
     (int) display_device::parsed_config_t::resolution_change_e::automatic,  // resolution_change
     {},  // manual_resolution
-    {},  // display_mode_remapping
     (int) display_device::parsed_config_t::refresh_rate_change_e::automatic,  // refresh_rate_change
     {},  // manual_refresh_rate
-    (int) display_device::parsed_config_t::hdr_prep_e::automatic  // hdr_prep
+    (int) display_device::parsed_config_t::hdr_prep_e::automatic,  // hdr_prep
+    {}  // display_mode_remapping
   };
 
   audio_t audio {
