@@ -189,54 +189,6 @@
               }, 5000);
             });
         },
-        resetDisplayDevicePersistence() {
-          this.resetDisplayDevicePressed = true;
-          fetch("/api/reset-display-device-persistence", { method: "POST" })
-            .then((r) => r.json())
-            .then((r) => {
-              this.resetDisplayDevicePressed = false;
-              this.resetDisplayDeviceStatus = r.status.toString() === "true";
-              setTimeout(() => {
-                this.resetDisplayDeviceStatus = null;
-              }, 5000);
-            });
-        },
-        resetDisplayDevicePersistence() {
-          this.resetDisplayDevicePressed = true;
-          fetch("/api/reset-display-device-persistence", { method: "POST" })
-            .then((r) => r.json())
-            .then((r) => {
-              this.resetDisplayDevicePressed = false;
-              this.resetDisplayDeviceStatus = r.status.toString() === "true";
-              setTimeout(() => {
-                this.resetDisplayDeviceStatus = null;
-              }, 5000);
-            });
-        },
-        resetDisplayDevicePersistence() {
-          this.resetDisplayDevicePressed = true;
-          fetch("/api/reset-display-device-persistence", { method: "POST" })
-            .then((r) => r.json())
-            .then((r) => {
-              this.resetDisplayDevicePressed = false;
-              this.resetDisplayDeviceStatus = r.status.toString() === "true";
-              setTimeout(() => {
-                this.resetDisplayDeviceStatus = null;
-              }, 5000);
-            });
-        },
-        resetDisplayDevicePersistence() {
-          this.resetDisplayDevicePressed = true;
-          fetch("/api/reset-display-device-persistence", { method: "POST" })
-            .then((r) => r.json())
-            .then((r) => {
-              this.resetDisplayDevicePressed = false;
-              this.resetDisplayDeviceStatus = r.status.toString() === "true";
-              setTimeout(() => {
-                this.resetDisplayDeviceStatus = null;
-              }, 5000);
-            });
-        },
         copyLogs() {
           navigator.clipboard.writeText(this.actualLogs);
         },
