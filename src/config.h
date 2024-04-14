@@ -86,10 +86,10 @@ namespace config {
     int display_device_prep;
     int resolution_change;
     std::string manual_resolution;
-    std::vector<display_mode_remapping_t> display_mode_remapping;
     int refresh_rate_change;
     std::string manual_refresh_rate;
     int hdr_prep;
+    std::vector<display_mode_remapping_t> display_mode_remapping;
   };
 
   struct audio_t {
