@@ -508,10 +508,12 @@ jobs:
       - name: Upload coverage
         # any except canceled or skipped
         if: always() && (steps.test_report.outcome == 'success')
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
+          fail_ci_if_error: true
           files: ./build/coverage.xml
           flags: ${{ runner.os }}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Create/Update GitHub Release
         if: ${{ needs.setup_release.outputs.create_release == 'true' }}
@@ -613,7 +615,7 @@ jobs:
           echo "publish=${PUBLISH}" >> $GITHUB_OUTPUT
 
       - name: Validate and Publish Homebrew Formula
-        uses: LizardByte/homebrew-release-action@v2024.314.134529
+        uses: LizardByte/homebrew-release-action@v2024.409.24405
         with:
           formula_file: ${{ github.workspace }}/homebrew/sunshine.rb
           git_email: ${{ secrets.GH_BOT_EMAIL }}
@@ -831,10 +833,12 @@ jobs:
       - name: Upload coverage
         # any except canceled or skipped
         if: always() && (steps.test_report.outcome == 'success')
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
+          fail_ci_if_error: false  # todo: re-enable this when action is fixed
           files: ./build/coverage.xml
           flags: ${{ runner.os }}-${{ matrix.os_version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Create/Update GitHub Release
         if: ${{ needs.setup_release.outputs.create_release == 'true' && matrix.release }}
@@ -1067,10 +1071,12 @@ jobs:
       - name: Upload coverage
         # any except canceled or skipped
         if: always() && (steps.test_report.outcome == 'success')
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
+          fail_ci_if_error: true
           files: ./build/coverage.xml
           flags: ${{ runner.os }}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Package Windows Debug Info
         working-directory: build
