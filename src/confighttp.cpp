@@ -753,6 +753,7 @@ namespace confighttp {
       response->write(data.str());
     });
     nvhttp::erase_all_clients();
+    proc::proc.terminate();
     outputTree.put("status", true);
   }
 

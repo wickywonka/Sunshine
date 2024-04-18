@@ -8,11 +8,13 @@
 <body id="app" v-cloak>
   <Navbar></Navbar>
   <div id="content" class="container">
-    <h1 class="my-4">{{ $t('pin.pin_pairing') }}</h1>
+    <h1 class="my-4 text-center">{{ $t('pin.pin_pairing') }}</h1>
     <form action="" class="form d-flex flex-column align-items-center" id="form">
       <div class="card flex-column d-flex p-4 mb-4">
-        <input type="number" pattern="\d*" placeholder="PIN" id="pin-input" class="form-control mt-2" required />
-        <input type="text" placeholder="Device Name" id="name-input" class="form-control my-4" required />
+        <input type="text" pattern="\d*" :placeholder="`${$t('pin.pin')}`" id="pin-input" class="form-control mt-2"
+          required />
+        <input type="text" :placeholder="`${$t('pin.device_name')}`" id="name-input" class="form-control my-4"
+          required />
         <button class="btn btn-primary">{{ $t('pin.send') }}</button>
       </div>
       <div class="alert alert-warning">
@@ -26,22 +28,21 @@
       <div class="card-body">
         <div class="p-2">
           <div class="d-flex justify-content-end align-items-center">
-            <h2 id="unpair" class="text-center me-auto">Unpair Clients</h2>
+            <h2 id="unpair" class="text-center me-auto">{{ $t('troubleshooting.unpair_title') }}</h2>
             <button class="btn btn-danger" :disabled="unpairAllPressed" @click="unpairAll">
-              Unpair All
+              {{ $t('troubleshooting.unpair_all') }}
             </button>
           </div>
           <div id="apply-alert" class="alert alert-success d-flex align-items-center mt-3"
             :style="{ 'display': (showApplyMessage ? 'flex !important': 'none !important') }">
-            <div class="me-2"><b>Success!</b> Click 'Apply' to restart Sunshine and apply changes. This will terminate
-              any running sessions.</div>
-            <button class="btn btn-success ms-auto apply" @click="clickedApplyBanner">Apply</button>
+            <div class="me-2"><b>{{ $t('_common.success') }}</b> {{ $t('troubleshooting.unpair_single_success') }}</div>
+            <button class="btn btn-success ms-auto apply" @click="clickedApplyBanner">{{ $t('_common.dismiss') }}</button>
           </div>
           <div class="alert alert-success" v-if="unpairAllStatus === true">
-            Unpair Successful!
+            {{ $t('troubleshooting.unpair_all_success') }}
           </div>
           <div class="alert alert-danger" v-if="unpairAllStatus === false">
-            Error while unpairing
+            {{ $t('troubleshooting.unpair_all_error') }}
           </div>
           <br />
           <p class="mb-0">Remove your paired devices.</p>
@@ -92,7 +93,7 @@
           </table>
         </div>
         <div v-else class="list-group list-group-flush list-group-item-light">
-          <div class="list-group-item p-3 text-center"><em>There are no paired clients.</em></div>
+          <div class="list-group-item p-3 text-center"><em>{{ $t('troubleshooting.unpair_single_no_devices') }}</em></div>
         </div>
 
       </div>
@@ -101,7 +102,7 @@
 </body>
 
 <script type="module">
-  import { createApp, ref } from 'vue'
+  import {createApp, ref} from 'vue'
   import i18n from './locale.js'
   import Navbar from './Navbar.vue'
 

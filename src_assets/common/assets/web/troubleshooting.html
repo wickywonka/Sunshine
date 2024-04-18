@@ -132,6 +132,10 @@
           logs: 'Loading...',
           logFilter: null,
           logInterval: null,
+          restartPressed: false,
+          showApplyMessage: false,
+          unpairAllPressed: false,
+          unpairAllStatus: null,
         };
       },
       computed: {
@@ -187,6 +191,7 @@
               setTimeout(() => {
                 this.resetDisplayDeviceStatus = null;
               }, 5000);
+              this.refreshClients();
             });
         },
         copyLogs() {
