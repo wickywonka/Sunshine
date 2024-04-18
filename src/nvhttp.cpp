@@ -43,6 +43,8 @@ namespace nvhttp {
   namespace fs = std::filesystem;
   namespace pt = boost::property_tree;
 
+  crypto::cert_chain_t cert_chain;
+
   class SunshineHttpsServer: public SimpleWeb::Server<SimpleWeb::HTTPS> {
   public:
     SunshineHttpsServer(const std::string &certification_file, const std::string &private_key_file):
@@ -1149,15 +1151,15 @@ namespace nvhttp {
 
     auto add_cert = std::make_shared<safe::queue_t<crypto::x509_t>>(30);
 
-    // /resume doesn't always get the parameter "localAudioPlayMode"
-    // /launch will store it in host_audio
+    // resume doesn't always get the parameter "localAudioPlayMode"
+    // launch will store it in host_audio
     bool host_audio {};
 
     https_server_t https_server { config::nvhttp.cert, config::nvhttp.pkey };
     http_server_t http_server;
 
     // Verify certificates after establishing connection
-    https_server.verify = [&cert_chain, add_cert](SSL *ssl) {
+    https_server.verify = [add_cert](SSL *ssl) {
       crypto::x509_t x509 { SSL_get_peer_certificate(ssl) };
       if (!x509) {
         BOOST_LOG(info) << "unknown -- denied"sv;
