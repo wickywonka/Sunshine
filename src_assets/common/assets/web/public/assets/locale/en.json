@@ -380,7 +380,6 @@
     "device_name": "Device Name",
     "pair_failure": "Pairing Failed: Check if the PIN is typed correctly",
     "pair_success": "Success! Please check Moonlight to continue",
-    "pin": "PIN",
     "pin_pairing": "PIN Pairing",
     "send": "Send",
     "warning_msg": "Make sure you have access to the client you are pairing with. This software can give total control to your computer, so be careful!"
@@ -412,9 +411,9 @@
     "restart_sunshine_success": "Sunshine is restarting",
     "troubleshooting": "Troubleshooting",
     "unpair_all": "Unpair All",
-    "unpair_all_desc": "Remove your paired devices. Individually unpaired devices with an active session will remain connected, but cannot start or resume a session.",
     "unpair_all_error": "Error while unpairing",
     "unpair_all_success": "All devices unpaired.",
+    "unpair_desc": "Remove your paired devices. Individually unpaired devices with an active session will remain connected, but cannot start or resume a session.",
     "unpair_single_no_devices": "There are no paired devices.",
     "unpair_single_success": "However, the device(s) may still be in an active session. Use the 'Force Close' button above to end any open sessions.",
     "unpair_single_unknown": "Unknown Client",
