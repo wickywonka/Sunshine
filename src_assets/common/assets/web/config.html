@@ -1625,7 +1625,7 @@
         // "DISPLAY NAME: \\\\.\\DISPLAY1\nFRIENDLY NAME: F32D80U\nDEVICE STATE: PRIMARY\nHDR STATE: ENABLED"
         return this.config.display_devices.map(({device_id, data = ''}) => ({
           id: device_id,
-          name: data.replace(/.*\nFRIENDLY NAME: (.*[^\n])*?\n.*\n.*/g, '$1'),
+          name: data.replace(/.*?(DISPLAY\d+)?\nFRIENDLY NAME: (.*[^\n])*?\n.*\n.*/g, '$2($1)'),
         }))
       },
     },
