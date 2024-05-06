@@ -124,8 +124,8 @@
                 </td>
                 <td>
                   <div class="form-check">
-                    <input type="checkbox" class="form-check-input" :id="'prep-cmd-admin-' + i" v-model="c['on-session']"
-                      true-value="true" false-value="false" />
+                    <input type="checkbox" class="form-check-input" :id="'prep-cmd-admin-' + i"
+                      v-model="c['on-session']" true-value="true" false-value="false" />
                     <label :for="'prep-cmd-admin-' + i" class="form-check-label">Session</label>
                   </div>
                 </td>
@@ -172,17 +172,18 @@
           <div class="accordion-item">
             <h2 class="accordion-header">
               <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                      data-bs-target="#panelsStayOpen-collapseOne">
+                data-bs-target="#panelsStayOpen-collapseOne">
                 {{ $t('config.gamepad_ds4_manual') }}
               </button>
             </h2>
             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
-                 aria-labelledby="panelsStayOpen-headingOne">
+              aria-labelledby="panelsStayOpen-headingOne">
               <div class="accordion-body">
                 <div>
-                  <label for="ds4_back_as_touchpad_click" class="form-label">{{ $t('config.ds4_back_as_touchpad_click') }}</label>
+                  <label for="ds4_back_as_touchpad_click" class="form-label">{{ $t('config.ds4_back_as_touchpad_click')
+                    }}</label>
                   <select id="ds4_back_as_touchpad_click" class="form-select"
-                          v-model="config.ds4_back_as_touchpad_click">
+                    v-model="config.ds4_back_as_touchpad_click">
                     <option value="disabled">{{ $t('_common.disabled') }}</option>
                     <option value="enabled">{{ $t('_common.enabled_def') }}</option>
                   </select>
@@ -192,21 +193,21 @@
             </div>
           </div>
         </div>
-        <div class="accordion" v-if="config.controller === 'enabled' && config.gamepad === 'auto' && platform === 'windows'">
+        <div class="accordion"
+          v-if="config.controller === 'enabled' && config.gamepad === 'auto' && platform === 'windows'">
           <div class="accordion-item">
             <h2 class="accordion-header">
               <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                      data-bs-target="#panelsStayOpen-collapseOne">
+                data-bs-target="#panelsStayOpen-collapseOne">
                 {{ $t('config.gamepad_auto') }}
               </button>
             </h2>
             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
-                 aria-labelledby="panelsStayOpen-headingOne">
+              aria-labelledby="panelsStayOpen-headingOne">
               <div class="accordion-body">
                 <div>
                   <label for="motion_as_ds4" class="form-label">{{ $t('config.motion_as_ds4') }}</label>
-                  <select id="motion_as_ds4" class="form-select"
-                          v-model="config.motion_as_ds4">
+                  <select id="motion_as_ds4" class="form-select" v-model="config.motion_as_ds4">
                     <option value="disabled">{{ $t('_common.disabled') }}</option>
                     <option value="enabled">{{ $t('_common.enabled_def') }}</option>
                   </select>
@@ -214,8 +215,7 @@
                 </div>
                 <div>
                   <label for="touchpad_as_ds4" class="form-label">{{ $t('config.touchpad_as_ds4') }}</label>
-                  <select id="touchpad_as_ds4" class="form-select"
-                          v-model="config.touchpad_as_ds4">
+                  <select id="touchpad_as_ds4" class="form-select" v-model="config.touchpad_as_ds4">
                     <option value="disabled">{{ $t('_common.disabled') }}</option>
                     <option value="enabled">{{ $t('_common.enabled_def') }}</option>
                   </select>
@@ -230,7 +230,7 @@
         <div class="mb-3" v-if="config.controller === 'enabled'">
           <label for="back_button_timeout" class="form-label">{{ $t('config.back_button_timeout') }}</label>
           <input type="text" class="form-control" id="back_button_timeout" placeholder="-1"
-                 v-model="config.back_button_timeout" />
+            v-model="config.back_button_timeout" />
           <div class="form-text">{{ $t('config.back_button_timeout_desc') }}</div>
         </div>
 
@@ -249,7 +249,7 @@
         <div class="mb-3" v-if="config.keyboard === 'enabled' && platform === 'windows'">
           <label for="key_repeat_delay" class="form-label">{{ $t('config.key_repeat_delay') }}</label>
           <input type="text" class="form-control" id="key_repeat_delay" placeholder="500"
-                 v-model="config.key_repeat_delay" />
+            v-model="config.key_repeat_delay" />
           <div class="form-text">{{ $t('config.key_repeat_delay_desc') }}</div>
         </div>
 
@@ -257,7 +257,7 @@
         <div class="mb-3" v-if="config.keyboard === 'enabled' && platform === 'windows'">
           <label for="key_repeat_frequency" class="form-label">{{ $t('config.key_repeat_frequency') }}</label>
           <input type="text" class="form-control" id="key_repeat_frequency" placeholder="24.9"
-                 v-model="config.key_repeat_frequency" />
+            v-model="config.key_repeat_frequency" />
           <div class="form-text">{{ $t('config.key_repeat_frequency_desc') }}</div>
         </div>
 
@@ -338,8 +338,8 @@
         </div>
         <div class="mb-3" v-if="platform === 'macos'">
           <label for="audio_sink" class="form-label">{{ $t('config.audio_sink') }}</label>
-          <input type="text" class="form-control" id="audio_sink" :placeholder="$t('config.audio_sink_placeholder_macos')"
-            v-model="config.audio_sink" />
+          <input type="text" class="form-control" id="audio_sink"
+            :placeholder="$t('config.audio_sink_placeholder_macos')" v-model="config.audio_sink" />
           <div class="form-text">
             {{ $t('config.audio_sink_desc_macos') }}<br>
             <br>
@@ -358,7 +358,8 @@
 
         <!-- Install Steam Audio Drivers -->
         <div class="mb-3" v-if="platform === 'windows'">
-          <label for="install_steam_audio_drivers" class="form-label">{{ $t('config.install_steam_audio_drivers') }}</label>
+          <label for="install_steam_audio_drivers" class="form-label">{{ $t('config.install_steam_audio_drivers')
+            }}</label>
           <select id="install_steam_audio_drivers" class="form-select" v-model="config.install_steam_audio_drivers">
             <option value="disabled">{{ $t('_common.disabled') }}</option>
             <option value="enabled">{{ $t('_common.enabled_def') }}</option>
@@ -369,8 +370,8 @@
         <!-- Adapter Name -->
         <div class="mb-3" v-if="platform === 'windows'">
           <label for="adapter_name" class="form-label">{{ $t('config.adapter_name') }}</label>
-          <input type="text" class="form-control" id="adapter_name" :placeholder="$t('config.adapter_name_placeholder_win')"
-            v-model="config.adapter_name" />
+          <input type="text" class="form-control" id="adapter_name"
+            :placeholder="$t('config.adapter_name_placeholder_win')" v-model="config.adapter_name" />
           <div class="form-text">
             {{ $t('config.adapter_name_desc_win') }}<br>
             <pre>tools\dxgi-info.exe</pre>
@@ -378,7 +379,8 @@
         </div>
         <div class="mb-3" v-if="platform === 'linux'">
           <label for="adapter_name" class="form-label">{{ $t('config.adapter_name') }}</label>
-          <input class="form-control" id="adapter_name" placeholder="/dev/dri/renderD128" v-model="config.adapter_name" />
+          <input class="form-control" id="adapter_name" placeholder="/dev/dri/renderD128"
+            v-model="config.adapter_name" />
           <div class="form-text">
             {{ $t('config.adapter_name_desc_linux_1') }}<br>
             <pre>ls /dev/dri/renderD*  # {{ $t('config.adapter_name_desc_linux_2') }}</pre>
@@ -387,7 +389,7 @@
                 grep -E "((VAProfileH264High|VAProfileHEVCMain|VAProfileHEVCMain10).*VAEntrypointEncSlice)|Driver version"
             </pre>
             {{ $t('config.adapter_name_desc_linux_3') }}<br>
-            <i>VAProfileH264High   : VAEntrypointEncSlice</i>
+            <i>VAProfileH264High : VAEntrypointEncSlice</i>
           </div>
         </div>
 
@@ -454,7 +456,8 @@
                     <option value="no_operation">{{ $t('config.display_device_prep_no_operation_win') }}</option>
                     <option value="ensure_active">{{ $t('config.display_device_prep_ensure_active_win') }}</option>
                     <option value="ensure_primary">{{ $t('config.display_device_prep_ensure_primary_win') }}</option>
-                    <option value="ensure_only_display">{{ $t('config.display_device_prep_ensure_only_display_win') }}</option>
+                    <option value="ensure_only_display">{{ $t('config.display_device_prep_ensure_only_display_win') }}
+                    </option>
                   </select>
                 </div>
 
@@ -468,7 +471,8 @@
                     <option value="automatic">{{ $t('config.resolution_change_automatic_win') }}</option>
                     <option value="manual">{{ $t('config.resolution_change_manual_win') }}</option>
                   </select>
-                  <div class="form-text" v-if="config.resolution_change === 'automatic' || config.resolution_change === 'manual'">
+                  <div class="form-text"
+                    v-if="config.resolution_change === 'automatic' || config.resolution_change === 'manual'">
                     {{ $t('config.resolution_change_ogs_desc_win') }}
                   </div>
 
@@ -477,7 +481,8 @@
                     <div class="form-text">
                       {{ $t('config.resolution_change_manual_desc_win') }}
                     </div>
-                    <input type="text" class="form-control" id="manual_resolution" placeholder="2560x1440" v-model="config.manual_resolution" />
+                    <input type="text" class="form-control" id="manual_resolution" placeholder="2560x1440"
+                      v-model="config.manual_resolution" />
                   </div>
                 </div>
 
@@ -497,7 +502,8 @@
                     <div class="form-text">
                       {{ $t('config.refresh_rate_change_manual_desc_win') }}
                     </div>
-                    <input type="text" class="form-control" id="manual_refresh_rate" placeholder="59.95" v-model="config.manual_refresh_rate" />
+                    <input type="text" class="form-control" id="manual_refresh_rate" placeholder="59.95"
+                      v-model="config.manual_refresh_rate" />
                   </div>
                 </div>
 
@@ -513,15 +519,18 @@
                 </div>
 
                 <!-- Display mode remapping -->
-                <div class="mb-3" v-if="config.resolution_change === 'automatic' || config.refresh_rate_change === 'automatic'">
+                <div class="mb-3"
+                  v-if="config.resolution_change === 'automatic' || config.refresh_rate_change === 'automatic'">
                   <label for="display_mode_remapping" class="form-label">
                     {{ $t('config.display_mode_remapping_win') }}
                   </label>
                   <div id="display_mode_remapping" class="d-flex flex-column">
                     <div class="form-text">
                       <p style="white-space: pre-line">{{ $t('config.display_mode_remapping_desc_win') }}</p>
-                      <p v-if="get_display_mode_remapping_type() === ''" style="white-space: pre-line">{{ $t('config.display_mode_remapping_default_mode_desc_win') }}</p>
-                      <p v-if="get_display_mode_remapping_type() === 'resolution_only'" style="white-space: pre-line">{{ $t('config.display_mode_remapping_resolution_only_mode_desc_win') }}</p>
+                      <p v-if="get_display_mode_remapping_type() === ''" style="white-space: pre-line">{{
+                        $t('config.display_mode_remapping_default_mode_desc_win') }}</p>
+                      <p v-if="get_display_mode_remapping_type() === 'resolution_only'" style="white-space: pre-line">{{
+                        $t('config.display_mode_remapping_resolution_only_mode_desc_win') }}</p>
                     </div>
 
                     <!--
@@ -539,13 +548,18 @@
 
                     and if the user wants the second entry, he would have to remove the first one, which would be valid in other config combination.
                     -->
-                    <table class="table" v-if="display_mode_remapping.filter((value) => value.type === get_display_mode_remapping_type()).length > 0">
+                    <table class="table"
+                      v-if="display_mode_remapping.filter((value) => value.type === get_display_mode_remapping_type()).length > 0">
                       <thead>
                         <tr>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">{{ $t('config.display_mode_remapping_received_resolution_win') }}</th>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">{{ $t('config.display_mode_remapping_received_fps_win') }}</th>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">{{ $t('config.display_mode_remapping_final_resolution_win') }}</th>
-                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">{{ $t('config.display_mode_remapping_final_refresh_rate_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">{{
+                            $t('config.display_mode_remapping_received_resolution_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">{{
+                            $t('config.display_mode_remapping_received_fps_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'refresh_rate_only'">{{
+                            $t('config.display_mode_remapping_final_resolution_win') }}</th>
+                          <th scope="col" v-if="get_display_mode_remapping_type() !== 'resolution_only'">{{
+                            $t('config.display_mode_remapping_final_refresh_rate_win') }}</th>
                           <th scope="col"></th>
                         </tr>
                       </thead>
@@ -553,16 +567,20 @@
                         <tr v-for="(c, i) in display_mode_remapping">
                           <template v-if="c.type === '' && c.type === get_display_mode_remapping_type()">
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.received_resolution" :placeholder="`1920x1080 (${$t('config.display_mode_remapping_optional')})`" />
+                              <input type="text" class="form-control monospace" v-model="c.received_resolution"
+                                :placeholder="`1920x1080 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.received_fps" :placeholder="`60 (${$t('config.display_mode_remapping_optional')})`" />
+                              <input type="text" class="form-control monospace" v-model="c.received_fps"
+                                :placeholder="`60 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_resolution" :placeholder="`2560x1440 (${$t('config.display_mode_remapping_optional')})`" />
+                              <input type="text" class="form-control monospace" v-model="c.final_resolution"
+                                :placeholder="`2560x1440 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" :placeholder="`119.95 (${$t('config.display_mode_remapping_optional')})`" />
+                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate"
+                                :placeholder="`119.95 (${$t('config.display_mode_remapping_optional')})`" />
                             </td>
                             <td>
                               <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
@@ -572,10 +590,12 @@
                           </template>
                           <template v-if="c.type === 'resolution_only' && c.type === get_display_mode_remapping_type()">
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.received_resolution" placeholder="1920x1080" />
+                              <input type="text" class="form-control monospace" v-model="c.received_resolution"
+                                placeholder="1920x1080" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_resolution" placeholder="2560x1440" />
+                              <input type="text" class="form-control monospace" v-model="c.final_resolution"
+                                placeholder="2560x1440" />
                             </td>
                             <td>
                               <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
@@ -583,12 +603,15 @@
                               </button>
                             </td>
                           </template>
-                          <template v-if="c.type === 'refresh_rate_only' && c.type === get_display_mode_remapping_type()">
+                          <template
+                            v-if="c.type === 'refresh_rate_only' && c.type === get_display_mode_remapping_type()">
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.received_fps" placeholder="60" />
+                              <input type="text" class="form-control monospace" v-model="c.received_fps"
+                                placeholder="60" />
                             </td>
                             <td>
-                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate" placeholder="119.95" />
+                              <input type="text" class="form-control monospace" v-model="c.final_refresh_rate"
+                                placeholder="119.95" />
                             </td>
                             <td>
                               <button class="btn btn-danger" @click="display_mode_remapping.splice(i,1)">
@@ -599,7 +622,8 @@
                         </tr>
                       </tbody>
                     </table>
-                    <button class="ms-0 mt-2 btn btn-success" style="margin: 0 auto" @click="add_display_mode_remapping(get_display_mode_remapping_type())">
+                    <button class="ms-0 mt-2 btn btn-success" style="margin: 0 auto"
+                      @click="add_display_mode_remapping(get_display_mode_remapping_type())">
                       &plus; Add
                     </button>
                   </div>
@@ -766,7 +790,8 @@
         <!-- External IP -->
         <div class="mb-3">
           <label for="external_ip" class="form-label">{{ $t('config.external_ip') }}</label>
-          <input type="text" class="form-control" id="external_ip" placeholder="123.456.789.12" v-model="config.external_ip" />
+          <input type="text" class="form-control" id="external_ip" placeholder="123.456.789.12"
+            v-model="config.external_ip" />
           <div class="form-text">{{ $t('config.external_ip_desc') }}</div>
         </div>
 
@@ -813,7 +838,8 @@
         <!-- Credentials File -->
         <div class="mb-3">
           <label for="credentials_file" class="form-label">{{ $t('config.credentials_file') }}</label>
-          <input type="text" class="form-control" id="credentials_file" placeholder="sunshine_state.json" v-model="config.credentials_file" />
+          <input type="text" class="form-control" id="credentials_file" placeholder="sunshine_state.json"
+            v-model="config.credentials_file" />
           <div class="form-text">{{ $t('config.credentials_file_desc') }}</div>
         </div>
 
@@ -853,7 +879,8 @@
         <!-- FEC Percentage -->
         <div class="mb-3">
           <label for="fec_percentage" class="form-label">{{ $t('config.fec_percentage') }}</label>
-          <input type="text" class="form-control" id="fec_percentage" placeholder="20" v-model="config.fec_percentage" />
+          <input type="text" class="form-control" id="fec_percentage" placeholder="20"
+            v-model="config.fec_percentage" />
           <div class="form-text">{{ $t('config.fec_percentage_desc') }}</div>
         </div>
 
@@ -867,7 +894,8 @@
         <!-- Min Threads -->
         <div class="mb-3">
           <label for="min_threads" class="form-label">{{ $t('config.min_threads') }}</label>
-          <input type="number" class="form-control" id="min_threads" placeholder="2" min="1" v-model="config.min_threads" />
+          <input type="number" class="form-control" id="min_threads" placeholder="2" min="1"
+            v-model="config.min_threads" />
           <div class="form-text">{{ $t('config.min_threads_desc') }}</div>
         </div>
 
@@ -1003,18 +1031,21 @@
 
                 <!-- Prefer lower encoding latency over power savings -->
                 <div class="mb-3" v-if="platform === 'windows'">
-                  <label for="nvenc_latency_over_power" class="form-label">{{ $t('config.nvenc_latency_over_power') }}</label>
+                  <label for="nvenc_latency_over_power" class="form-label">{{ $t('config.nvenc_latency_over_power')
+                    }}</label>
                   <select id="nvenc_latency_over_power" class="form-select" v-model="config.nvenc_latency_over_power">
                     <option value="disabled">{{ $t('_common.disabled') }}</option>
                     <option value="enabled">{{ $t('_common.enabled_def') }}</option>
                   </select>
                   <div class="form-text">{{ $t('config.nvenc_latency_over_power_desc') }}</div>
                 </div>
-                
+
                 <!-- Present OpenGL/Vulkan on top of DXGI -->
                 <div class="mb-3" v-if="platform === 'windows'">
-                  <label for="nvenc_opengl_vulkan_on_dxgi" class="form-label">{{ $t('config.nvenc_opengl_vulkan_on_dxgi') }}</label>
-                  <select id="nvenc_opengl_vulkan_on_dxgi" class="form-select" v-model="config.nvenc_opengl_vulkan_on_dxgi">
+                  <label for="nvenc_opengl_vulkan_on_dxgi" class="form-label">{{
+                    $t('config.nvenc_opengl_vulkan_on_dxgi') }}</label>
+                  <select id="nvenc_opengl_vulkan_on_dxgi" class="form-select"
+                    v-model="config.nvenc_opengl_vulkan_on_dxgi">
                     <option value="disabled">{{ $t('_common.disabled') }}</option>
                     <option value="enabled">{{ $t('_common.enabled_def') }}</option>
                   </select>
@@ -1264,7 +1295,7 @@
   </div>
 </body>
 <script type="module">
-  import { createApp } from 'vue'
+  import {createApp} from 'vue'
   import i18n from './locale.js'
   import Navbar from './Navbar.vue'
 
@@ -1585,12 +1616,11 @@
         };
 
         if (this.platform === 'windows') {
-          template = { ...template, elevated: false };
+          template = {...template, elevated: false};
         }
         this.global_prep_cmd.push(template);
       },
-      get_display_mode_remapping_type()
-      {
+      get_display_mode_remapping_type() {
         // Assuming here that at least one setting is set to "automatic"
         if (this.config.resolution_change !== 'automatic') {
           return "refresh_rate_only";
@@ -1625,7 +1655,7 @@
         // "DISPLAY NAME: \\\\.\\DISPLAY1\nFRIENDLY NAME: F32D80U\nDEVICE STATE: PRIMARY\nHDR STATE: ENABLED"
         return this.config.display_devices.map(({device_id, data = ''}) => ({
           id: device_id,
-          name: data.replace(/.*?(DISPLAY\d+)?\nFRIENDLY NAME: (.*[^\n])*?\n.*\n.*/g, '$2($1)'),
+          name: data.replace(/.*?(DISPLAY\d+)?\nFRIENDLY NAME: (.*[^\n])*?\n.*\n.*/g, '$2 ($1)').replace('()', ''),
         }))
       },
     },
