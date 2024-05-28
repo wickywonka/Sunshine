@@ -3,10 +3,10 @@ name: CI
 
 on:
   pull_request:
-    branches: [master]
+    branches: [master, nightly]
     types: [opened, synchronize, reopened]
   push:
-    branches: [master]
+    branches: [master, nightly]
   workflow_dispatch:
 
 concurrency:
@@ -24,24 +24,116 @@ jobs:
         shell: bash
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-
-  setup_release:
-    name: Setup Release
-    outputs:
-      publish_release: ${{ steps.setup_release.outputs.publish_release }}
-      release_commit: ${{ steps.setup_release.outputs.release_commit }}
-      release_tag: ${{ steps.setup_release.outputs.release_tag }}
-      release_version: ${{ steps.setup_release.outputs.release_version }}
+  
+  check_dockerfiles:
+    name: Check Dockerfiles
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Find dockerfiles
+        id: find
+        run: |
+          dockerfiles=$(find . -type f -iname "Dockerfile" -o -iname "*.dockerfile")
+          echo "found dockerfiles: ${dockerfiles}"
+          # do not quote to keep this as a single line
+          echo dockerfiles=${dockerfiles} >> $GITHUB_OUTPUT
+          MATRIX_COMBINATIONS=""
+          for FILE in ${dockerfiles}; do
+            # extract tag from file name
+            tag=$(echo $FILE | sed -r -z -e 's/(\.\/)*.*\/(Dockerfile)/None/gm')
+            if [[ $tag == "None" ]]; then
+              MATRIX_COMBINATIONS="$MATRIX_COMBINATIONS {\"dockerfile\": \"$FILE\"},"
+            else
+              tag=$(echo $FILE | sed -r -z -e 's/(\.\/)*.*\/(.+)(\.dockerfile)/-\2/gm')
+              MATRIX_COMBINATIONS="$MATRIX_COMBINATIONS {\"dockerfile\": \"$FILE\", \"tag\": \"$tag\"},"
+            fi
+          done
+          # removes the last character (i.e. comma)
+          MATRIX_COMBINATIONS=${MATRIX_COMBINATIONS::-1}
+          # setup matrix for later jobs
+          matrix=$((
+            echo "{ \"include\": [$MATRIX_COMBINATIONS] }"
+          ) | jq -c .)
+          echo $matrix
+          echo $matrix | jq .
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+    outputs:
+      dockerfiles: ${{ steps.find.outputs.dockerfiles }}
+      matrix: ${{ steps.find.outputs.matrix }}
+  
+  check_changelog:
+    name: Check Changelog
+    needs: [check_dockerfiles]
+    if: ${{ needs.check_dockerfiles.outputs.dockerfiles }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        if: ${{ github.ref == 'refs/heads/master' || github.base_ref == 'master' }}
+        uses: actions/checkout@v4
 
-      - name: Setup Release
-        id: setup_release
-        uses: LizardByte/setup-release-action@v2024.524.1411
+      - name: Verify Changelog
+        id: verify_changelog
+        if: ${{ github.ref == 'refs/heads/master' || github.base_ref == 'master' }}
+        # base_ref for pull request check, ref for push
+        uses: LizardByte/.github/actions/verify_changelog@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      next_version: ${{ steps.verify_changelog.outputs.changelog_parser_version }}
+      next_version_bare: ${{ steps.verify_changelog.outputs.changelog_parser_version_bare }}
+      last_version: ${{ steps.verify_changelog.outputs.latest_release_tag_name }}
+      release_body: ${{ steps.verify_changelog.outputs.changelog_parser_description }}
+
+  setup_release:
+    name: Setup Release
+    needs: check_changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set release details
+        id: release_details
+        env:
+          RELEASE_BODY: ${{ needs.check_changelog.outputs.release_body }}
+        run: |
+          # determine to create a release or not
+          if [[ $GITHUB_EVENT_NAME == "push" ]]; then
+            RELEASE=true
+          else
+            RELEASE=false
+          fi
+
+          # set the release tag
+          COMMIT=${{ github.sha }}
+          if [[ $GITHUB_REF == refs/heads/master ]]; then
+            TAG="${{ needs.check_changelog.outputs.next_version }}"
+            RELEASE_NAME="${{ needs.check_changelog.outputs.next_version }}"
+            RELEASE_BODY="$RELEASE_BODY"
+            PRE_RELEASE="false"
+          elif [[ $GITHUB_REF == refs/heads/nightly ]]; then
+            TAG="nightly-dev"
+            RELEASE_NAME="nightly"
+            RELEASE_BODY="automated nightly release - $(date -u +'%Y-%m-%dT%H:%M:%SZ') - ${COMMIT}"
+            PRE_RELEASE="true"
+          fi
+
+          echo "create_release=${RELEASE}" >> $GITHUB_OUTPUT
+          echo "release_tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "release_commit=${COMMIT}" >> $GITHUB_OUTPUT
+          echo "release_name=${RELEASE_NAME}" >> $GITHUB_OUTPUT
+          echo "pre_release=${PRE_RELEASE}" >> $GITHUB_OUTPUT
+
+          # this is stupid but works for multiline strings
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+    outputs:
+      create_release: ${{ steps.release_details.outputs.create_release }}
+      release_tag: ${{ steps.release_details.outputs.release_tag }}
+      release_commit: ${{ steps.release_details.outputs.release_commit }}
+      release_name: ${{ steps.release_details.outputs.release_name }}
+      release_body: ${{ env.RELEASE_BODY }}
+      pre_release: ${{ steps.release_details.outputs.pre_release }}
 
   setup_flatpak_matrix:
     name: Setup Flatpak Matrix
@@ -74,7 +166,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [setup_release, setup_flatpak_matrix]
     strategy:
-      fail-fast: false  # false to test all, true to fail entire job if any fail
+      fail-fast: false # false to test all, true to fail entire job if any fail
       matrix: ${{fromJson(needs.setup_flatpak_matrix.outputs.matrix)}}
 
     steps:
@@ -82,11 +174,11 @@ jobs:
         uses: easimon/maximize-build-space@v10
         with:
           root-reserve-mb: 10240
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -193,11 +285,11 @@ jobs:
     runs-on: ubuntu-${{ matrix.dist }}
     needs: [setup_release]
     strategy:
-      fail-fast: false  # false to test all, true to fail entire job if any fail
+      fail-fast: false # false to test all, true to fail entire job if any fail
       matrix:
-        include:  # package these differently
+        include: # package these differently
           - type: AppImage
-            EXTRA_ARGS: '-DSUNSHINE_BUILD_APPIMAGE=ON'
+            EXTRA_ARGS: "-DSUNSHINE_BUILD_APPIMAGE=ON"
             dist: 22.04
 
     steps:
@@ -205,11 +297,11 @@ jobs:
         uses: easimon/maximize-build-space@v10
         with:
           root-reserve-mb: 30720
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -298,7 +390,7 @@ jobs:
         id: python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Build latest libva
         env:
@@ -481,7 +573,7 @@ jobs:
   build_mac_brew:
     needs: [setup_release]
     strategy:
-      fail-fast: false  # false to test all, true to fail entire job if any fail
+      fail-fast: false # false to test all, true to fail entire job if any fail
       matrix:
         include:
           # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
@@ -569,7 +661,7 @@ jobs:
         uses: LizardByte/create-release-action@v2024.520.211408
         with:
           allowUpdates: true
-          artifacts: '${{ github.workspace }}/homebrew/*'
+          artifacts: "${{ github.workspace }}/homebrew/*"
           discussionCategory: announcements
           generateReleaseNotes: true
           name: ${{ needs.setup_release.outputs.release_tag }}
@@ -580,7 +672,7 @@ jobs:
   build_mac_port:
     needs: [setup_release]
     strategy:
-      fail-fast: false  # false to test all, true to fail entire job if any fail
+      fail-fast: false # false to test all, true to fail entire job if any fail
       matrix:
         include:
           # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
@@ -618,7 +710,7 @@ jobs:
         id: python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Configure Portfile
         run: |
@@ -717,7 +809,7 @@ jobs:
           path: artifacts/
 
       - name: Fix screen capture permissions
-        if: ${{ matrix.os_version != 12 }}  # macOS-12 is okay
+        if: ${{ matrix.os_version != 12 }} # macOS-12 is okay
         # can be removed if the following is fixed in the runner image
         # https://github.com/actions/runner-images/issues/9529
         # https://github.com/actions/runner-images/pull/9530
@@ -768,8 +860,7 @@ jobs:
         # any except canceled or skipped
         if: always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
         id: test_report
-        working-directory:
-          /opt/local/var/macports/build/_Users_runner_work_Sunshine_Sunshine_ports_multimedia_Sunshine/Sunshine/work
+        working-directory: /opt/local/var/macports/build/_Users_runner_work_Sunshine_Sunshine_ports_multimedia_Sunshine/Sunshine/work
         run: |
           base_dir=$(pwd)
           build_dir=${base_dir}/build
@@ -799,7 +890,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           disable_search: true
-          fail_ci_if_error: false  # todo: re-enable this when action is fixed
+          fail_ci_if_error: false # todo: re-enable this when action is fixed
           files: ./build/coverage.xml
           flags: ${{ runner.os }}-${{ matrix.os_version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -820,7 +911,7 @@ jobs:
   build_win:
     name: Windows
     runs-on: windows-2019
-    needs: [setup_release]
+    needs: [check_changelog, setup_release]
 
     steps:
       - name: Checkout
@@ -942,9 +1033,11 @@ jobs:
             git
             mingw-w64-ucrt-x86_64-boost
             mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-cppwinrt
             mingw-w64-ucrt-x86_64-curl
             mingw-w64-ucrt-x86_64-graphviz
             mingw-w64-ucrt-x86_64-miniupnpc
+            mingw-w64-ucrt-x86_64-nlohmann-json
             mingw-w64-ucrt-x86_64-nodejs
             mingw-w64-ucrt-x86_64-nsis
             mingw-w64-ucrt-x86_64-onevpl
@@ -957,7 +1050,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Python Path
         id: python-path
