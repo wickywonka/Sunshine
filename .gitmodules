@@ -62,7 +62,3 @@
 	path = src_assets/common/sunshine-control-panel
 	url = https://github.com/qiin2333/sunshine-control-panel.git
 	branch = master
-[submodule "third-party/nlohmann_json"]
-	path = third-party/nlohmann_json
-	url = https://github.com/nlohmann/json
-	branch = master

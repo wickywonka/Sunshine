@@ -44,7 +44,7 @@
           <div class="alert alert-warning">
             <div class="d-flex justify-content-between">
               <div class="my-2">有新的 <b>基地版</b> sunshine可以更新!</div>
-              <a class="btn btn-success m-1" href="https://github.com/qiin2333/Sunshine/releases/alpha"
+              <a class="btn btn-success m-1" :href="preReleaseVersion.release.html_url"
                 target="_blank">{{ $t('index.download')
                 }}</a>
             </div>
@@ -114,7 +114,7 @@
       } catch (e) {
         console.error(e);
       }
-      if (this.version) document.title += ` Ver ${this.version}`;
+      if (this.version) document.title += ` Ver ${this.version.version}`;
       this.loading = false;
     },
     computed: {
