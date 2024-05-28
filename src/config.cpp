@@ -471,6 +471,7 @@ namespace config {
     47989,  // Base port number
     "ipv4",  // Address family
     platf::appdata().string() + "/sunshine.log",  // log file
+    false,  // notify_pre_releases
     {},  // prep commands
   };
 
@@ -1151,6 +1152,8 @@ namespace config {
     bool_f(vars, "high_resolution_scrolling", input.high_resolution_scrolling);
     bool_f(vars, "native_pen_touch", input.native_pen_touch);
 
+    bool_f(vars, "notify_pre_releases", sunshine.notify_pre_releases);
+
     int port = sunshine.port;
     int_between_f(vars, "port"s, port, { 1024 + nvhttp::PORT_HTTPS, 65535 - rtsp_stream::RTSP_SETUP_PORT });
     sunshine.port = (std::uint16_t) port;
@@ -1321,10 +1324,16 @@ namespace config {
       BOOST_LOG(fatal) << "Failed to apply config: "sv << err.what();
     }
 
-    if (!config_loaded) {
 #ifdef _WIN32
+    // UCRT64 raises an access denied exception if launching from the shortcut
+    // as non-admin and the config folder is not yet present; we can defer
+    // so that service instance will do the work instead.
+
+    if (!config_loaded && !shortcut_launch) {
       BOOST_LOG(fatal) << "To relaunch Sunshine successfully, use the shortcut in the Start Menu. Do not run Sunshine.exe manually."sv;
       std::this_thread::sleep_for(10s);
+#else
+    if (!config_loaded) {
 #endif
       return -1;
     }
@@ -1332,6 +1341,8 @@ namespace config {
 #ifdef _WIN32
     // We have to wait until the config is loaded to handle these launches,
     // because we need to have the correct base port loaded in our config.
+    // Exception: UCRT64 shortcut_launch instances may have no config loaded due to
+    // insufficient permissions to create folder; port defaults will be acceptable.
     if (service_admin_launch) {
       // This is a relaunch as admin to start the service
       service_ctrl::start_service();

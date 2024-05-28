@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="auto">
 
 <head>
   <%- header %>
@@ -78,18 +78,18 @@
     <!-- Reset persistent display device settings -->
     <div class="card p-2 my-4" v-if="platform === 'windows'">
       <div class="card-body">
-        <h2 id="reset_display_device">{{ $t('troubleshooting.reset_display_device_win') }}</h2>
+        <h2 id="reset_display_device">{{ $t('troubleshooting.reset_display_device_windows') }}</h2>
         <br>
-        <p style="white-space: pre-line">{{ $t('troubleshooting.reset_display_device_desc_win') }}</p>
+        <p style="white-space: pre-line">{{ $t('troubleshooting.reset_display_device_desc_windows') }}</p>
         <div class="alert alert-success" v-if="resetDisplayDeviceStatus === true">
-          {{ $t('troubleshooting.reset_display_device_success_win') }}
+          {{ $t('troubleshooting.reset_display_device_success_windows') }}
         </div>
         <div class="alert alert-danger" v-if="resetDisplayDeviceStatus === false">
-          {{ $t('troubleshooting.reset_display_device_error_win') }}
+          {{ $t('troubleshooting.reset_display_device_error_windows') }}
         </div>
         <div>
           <button class="btn btn-warning" :disabled="resetDisplayDevicePressed" @click="resetDisplayDevicePersistence">
-            {{ $t('troubleshooting.reset_display_device_win') }}
+            {{ $t('troubleshooting.reset_display_device_windows') }}
           </button>
         </div>
       </div>
@@ -113,8 +113,8 @@
   </div>
 
   <script type="module">
-    import { createApp, ref } from 'vue'
-    import i18n from './locale.js'
+    import { createApp } from 'vue'
+    import { initApp } from './init'
     import Navbar from './Navbar.vue'
 
     const app = createApp({
@@ -194,6 +194,18 @@
               this.refreshClients();
             });
         },
+        resetDisplayDevicePersistence() {
+          this.resetDisplayDevicePressed = true;
+          fetch("/api/reset-display-device-persistence", { method: "POST" })
+            .then((r) => r.json())
+            .then((r) => {
+              this.resetDisplayDevicePressed = false;
+              this.resetDisplayDeviceStatus = r.status.toString() === "true";
+              setTimeout(() => {
+                this.resetDisplayDeviceStatus = null;
+              }, 5000);
+            });
+        },
         copyLogs() {
           navigator.clipboard.writeText(this.actualLogs);
         },
@@ -209,11 +221,7 @@
       },
     });
 
-    //Wait for locale initialization, then render
-    i18n().then(i18n => {
-      app.use(i18n);
-      app.mount('#app');
-    });
+    initApp(app);
   </script>
 
 </body>

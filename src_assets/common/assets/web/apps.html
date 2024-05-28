@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="auto">
 
 <head>
       <%- header %>
@@ -355,10 +355,10 @@
   </div>
 </body>
 <script type="module">
-  import { createApp } from 'vue';
-  import i18n from './locale.js'
+  import { createApp } from 'vue'
+  import { initApp } from './init'
   import Navbar from './Navbar.vue'
-  import {Dropdown} from 'bootstrap'
+  import { Dropdown } from 'bootstrap/dist/js/bootstrap'
 
   const app = createApp({
     components: {
@@ -561,9 +561,5 @@
     }
   });
 
-  //Wait for locale initialization, then render
-  i18n().then(i18n => {
-    app.use(i18n);
-    app.mount('#app');
-  });
+  initApp(app);
 </script>

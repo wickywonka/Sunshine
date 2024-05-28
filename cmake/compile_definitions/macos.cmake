@@ -2,9 +2,17 @@
 
 add_compile_definitions(SUNSHINE_PLATFORM="macos")
 
-link_directories(/opt/local/lib)
-link_directories(/usr/local/lib)
-link_directories(/opt/homebrew/lib)
+set(MACOS_LINK_DIRECTORIES
+        /opt/homebrew/lib
+        /opt/local/lib
+        /usr/local/lib)
+
+foreach(dir ${MACOS_LINK_DIRECTORIES})
+    if(EXISTS ${dir})
+        link_directories(${dir})
+    endif()
+endforeach()
+
 ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 
 list(APPEND SUNSHINE_EXTERNAL_LIBRARIES
@@ -47,5 +55,5 @@ if(SUNSHINE_ENABLE_TRAY)
     list(APPEND SUNSHINE_EXTERNAL_LIBRARIES
             ${COCOA})
     list(APPEND PLATFORM_TARGET_FILES
-            "${CMAKE_SOURCE_DIR}/third-party/tray/tray_darwin.m")
+            "${CMAKE_SOURCE_DIR}/third-party/tray/src/tray_darwin.m")
 endif()
