@@ -49,8 +49,6 @@ const displayDevices = computed(() =>
       </PlatformLayout>
     </div>
   </div>
-
-  <!-- org Output Name -->
   <!-- <div class="mb-3" v-if="platform === 'windows'">
     <label for="output_name" class="form-label">{{
       $t("config.output_name_win")
