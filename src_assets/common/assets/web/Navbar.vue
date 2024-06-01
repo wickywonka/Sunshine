@@ -41,13 +41,14 @@
 import ThemeToggle from './ThemeToggle.vue'
 
 export default {
-    created() {
-        console.log("Header mounted!")
-    },
-    mounted() {
-        let el = document.querySelector("a[href='" + document.location.pathname + "']");
-        if (el) el.classList.add("active")
-    }
+  components: { ThemeToggle },
+  created() {
+    console.log("Header mounted!")
+  },
+  mounted() {
+    let el = document.querySelector("a[href='" + document.location.pathname + "']");
+    if (el) el.classList.add("active")
+  }
 }
 </script>
 

@@ -168,6 +168,26 @@ namespace proc {
     _env = launch_session->env;
     _env["SUNSHINE_APP_ID"] = std::to_string(_app_id);
     _env["SUNSHINE_APP_NAME"] = _app.name;
+    _env["SUNSHINE_CLIENT_WIDTH"] = std::to_string(launch_session->width);
+    _env["SUNSHINE_CLIENT_HEIGHT"] = std::to_string(launch_session->height);
+    _env["SUNSHINE_CLIENT_FPS"] = std::to_string(launch_session->fps);
+    _env["SUNSHINE_CLIENT_HDR"] = launch_session->enable_hdr ? "true" : "false";
+    _env["SUNSHINE_CLIENT_GCMAP"] = std::to_string(launch_session->gcmap);
+    _env["SUNSHINE_CLIENT_HOST_AUDIO"] = launch_session->host_audio ? "true" : "false";
+    _env["SUNSHINE_CLIENT_ENABLE_SOPS"] = launch_session->enable_sops ? "true" : "false";
+    int channelCount = launch_session->surround_info & (65535);
+    switch (channelCount) {
+      case 2:
+        _env["SUNSHINE_CLIENT_AUDIO_CONFIGURATION"] = "2.0";
+        break;
+      case 6:
+        _env["SUNSHINE_CLIENT_AUDIO_CONFIGURATION"] = "5.1";
+        break;
+      case 8:
+        _env["SUNSHINE_CLIENT_AUDIO_CONFIGURATION"] = "7.1";
+        break;
+    }
+    _env["SUNSHINE_CLIENT_AUDIO_SURROUND_PARAMS"] = launch_session->surround_params;
 
     if (!_app.output.empty() && _app.output != "null"sv) {
 #ifdef _WIN32
