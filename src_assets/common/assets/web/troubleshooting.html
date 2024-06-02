@@ -93,14 +93,6 @@
           </button>
         </div>
       </div>
-      <ul id="client-list" class="list-group list-group-flush list-group-item-light" v-if="clients && clients.length > 0">
-        <div v-for="client in clients" class="list-group-item d-flex">
-          <div class="p-2 flex-grow-1">{{client.name != "" ? client.name : $t('troubleshooting.unpair_single_unknown')}}</div><div class="me-2 ms-auto btn btn-danger" @click="unpairSingle(client.uuid)"><i class="fas fa-trash"></i></div>
-        </div>
-      </ul>
-      <ul v-else class="list-group list-group-flush list-group-item-light">
-        <div class="list-group-item p-3 text-center"><em>{{ $t('troubleshooting.unpair_single_no_devices') }}</em></div>
-      </ul>
       
     </div>
     <!-- Logs -->
@@ -166,7 +158,6 @@
           this.refreshLogs();
         }, 5000);
         this.refreshLogs();
-        this.refreshClients();
       },
       beforeDestroy() {
         clearInterval(this.logInterval);
@@ -201,31 +192,7 @@
               setTimeout(() => {
                 this.resetDisplayDeviceStatus = null;
               }, 5000);
-              this.refreshClients();
             });
-        },
-        unpairSingle(uuid) {
-          fetch("/api/clients/unpair", { method: "POST", body: JSON.stringify({ uuid }) }).then(() => {
-            this.showApplyMessage = true;
-            this.refreshClients();
-          });
-        },
-        refreshClients() {
-          fetch("/api/clients/list")
-            .then((response) => response.json())
-            .then((response) => {
-              const clientList = document.querySelector("#client-list");
-              if (response.status === 'true' && response.named_certs && response.named_certs.length) {
-                this.clients = response.named_certs.sort((a, b) => {
-                  return (a.name.toLowerCase() > b.name.toLowerCase() || a.name == "" ? 1 : -1)
-                });
-              } else {
-                this.clients = [];
-              }
-            });
-        },
-        clickedApplyBanner() {
-          this.showApplyMessage = false;
         },
         copyLogs() {
           navigator.clipboard.writeText(this.actualLogs);

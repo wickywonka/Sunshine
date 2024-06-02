@@ -134,7 +134,7 @@
         if (!this.preReleaseVersion || !this.githubVersion || !this.version) {
           return false;
         }
-        return this.preReleaseVersion.isGreater(this.version) && this.preReleaseVersion.isGreater(this.githubVersion);
+        return this.preReleaseVersion.isGreater(this.version);
       },
       buildVersionIsDirty() {
         return this.version.version?.split(".").length === 5 &&

@@ -49,21 +49,6 @@ const displayDevices = computed(() =>
       </PlatformLayout>
     </div>
   </div>
-    <label for="output_name" class="form-label">{{
-      $t("config.output_name_win")
-    }}</label>
-    <select id="output_name" class="form-select" v-model="config.output_name">
-      <option value="">{{ $t("_common.autodetect") }}</option>
-      <option
-        v-for="device in displayDevices"
-        :value="device.id"
-        :key="device.id"
-      >
-        {{ device.name }}
-      </option>
-    </select>
-    <div class="form-text">{{ $t("config.output_name_desc_win") }}<br /></div>
-  </div>
   <div class="mb-3" v-if="platform === 'linux' || platform === 'macos'">
     <label for="output_name" class="form-label">{{
       $t("config.output_name_unix")
@@ -94,5 +79,5 @@ const displayDevices = computed(() =>
             </pre
       >
     </div>
-  </div> -->
+  </div>
 </template>
