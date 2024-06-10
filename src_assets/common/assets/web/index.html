@@ -55,9 +55,7 @@
         <div v-if="stableBuildAvailable">
           <div class="alert alert-warning">
             <div class="d-flex justify-content-between">
-              <div class="my-2">
-                <p>{{ $t('index.new_stable') }}</p>
-              </div>
+              <div class="my-2">{{ $t('index.new_stable') }}</div>
               <a class="btn btn-success m-1" :href="githubVersion.release.html_url" target="_blank">{{ $t('index.download') }}</a>
             </div>
             <h3>{{githubVersion.release.name}}</h3>
