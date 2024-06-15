@@ -1,9 +1,12 @@
 # load common dependencies
 # this file will also load platform specific dependencies
 
+# boost, this should be before Simple-Web-Server as it also depends on boost
+include(dependencies/Boost_Sunshine)
+
 # submodules
 # moonlight common library
-set(ENET_NO_INSTALL ON CACHE BOOL "Don't install any libraries build for enet")
+set(ENET_NO_INSTALL ON CACHE BOOL "Don't install any libraries built for enet")
 add_subdirectory("${CMAKE_SOURCE_DIR}/third-party/moonlight-common-c/enet")
 
 # web server
@@ -25,11 +28,6 @@ if(NOT DEFINED FFMPEG_PREPARED_BINARIES)
         set(FFMPEG_PLATFORM_LIBRARIES mfplat ole32 strmiids mfuuid vpl)
     elseif(UNIX AND NOT APPLE)
         set(FFMPEG_PLATFORM_LIBRARIES numa va va-drm va-x11 vdpau X11)
-        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-            list(APPEND FFMPEG_PLATFORM_LIBRARIES mfx)
-            set(CPACK_DEB_PLATFORM_PACKAGE_DEPENDS "libmfx1,")
-            set(CPACK_RPM_PLATFORM_PACKAGE_REQUIRES "intel-mediasdk >= 22.3.0,")
-        endif()
     endif()
     set(FFMPEG_PREPARED_BINARIES
             "${CMAKE_SOURCE_DIR}/third-party/build-deps/ffmpeg/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")

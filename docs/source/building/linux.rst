@@ -16,16 +16,11 @@ Install Requirements
           build-essential \
           cmake \
           libayatana-appindicator3-dev \
-          libboost-filesystem-dev \
-          libboost-locale-dev \
-          libboost-log-dev \
-          libboost-program-options-dev \
           libcap-dev \  # KMS
           libcurl4-openssl-dev \
           libdrm-dev \  # KMS
           libevdev-dev \
           libminiupnpc-dev \
-          libmfx-dev \  # x86_64 only
           libnotify-dev \
           libnuma-dev \
           libopus-dev \
@@ -55,11 +50,9 @@ Install Requirements
       sudo dnf update && \
       sudo dnf group install "Development Tools" && \
       sudo dnf install \
-          boost-devel \
           cmake \
           gcc \
           gcc-c++ \
-          intel-mediasdk-devel \ # x86_64 only
           libappindicator-gtk3-devel \
           libcap-devel \
           libcurl-devel \
@@ -97,16 +90,11 @@ Install Requirements
           build-essential \
           cmake \
           libappindicator3-dev \
-          libboost-filesystem-dev \
-          libboost-locale-dev \
-          libboost-log-dev \
-          libboost-program-options-dev \
           libcap-dev \  # KMS
           libcurl4-openssl-dev \
           libdrm-dev \  # KMS
           libevdev-dev \
           libminiupnpc-dev \
-          libmfx-dev \  # x86_64 only
           libnotify-dev \
           libnuma-dev \
           libopus-dev \
@@ -138,16 +126,11 @@ Install Requirements
           gcc-11 \
           g++-11 \
           libappindicator3-dev \
-          libboost-filesystem-dev \
-          libboost-locale-dev \
-          libboost-log-dev \
-          libboost-program-options-dev \
           libcap-dev \  # KMS
           libcurl4-openssl-dev \
           libdrm-dev \  # KMS
           libevdev-dev \
           libminiupnpc-dev \
-          libmfx-dev \  # x86_64 only
           libnotify-dev \
           libnuma-dev \
           libopus-dev \

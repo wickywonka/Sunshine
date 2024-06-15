@@ -117,15 +117,7 @@ elseif(NOT LIBDRM_FOUND)
 endif()
 
 # evdev
-pkg_check_modules(PC_EVDEV libevdev REQUIRED)
-find_path(EVDEV_INCLUDE_DIR libevdev/libevdev.h
-        HINTS ${PC_EVDEV_INCLUDE_DIRS} ${PC_EVDEV_INCLUDEDIR})
-find_library(EVDEV_LIBRARY
-        NAMES evdev libevdev)
-if(EVDEV_INCLUDE_DIR AND EVDEV_LIBRARY)
-    include_directories(SYSTEM ${EVDEV_INCLUDE_DIR})
-    list(APPEND PLATFORM_LIBRARIES ${EVDEV_LIBRARY})
-endif()
+include(dependencies/libevdev_Sunshine)
 
 # vaapi
 if(${SUNSHINE_ENABLE_VAAPI})
@@ -226,7 +218,7 @@ else()
     message(STATUS "Tray icon disabled")
 endif()
 
-if (${SUNSHINE_TRAY} EQUAL 0 AND SUNSHINE_REQUIRE_TRAY)
+if(${SUNSHINE_ENABLE_TRAY} AND ${SUNSHINE_TRAY} EQUAL 0 AND SUNSHINE_REQUIRE_TRAY)
     message(FATAL_ERROR "Tray icon is required")
 endif()
 
@@ -248,12 +240,10 @@ list(APPEND PLATFORM_TARGET_FILES
         "${CMAKE_SOURCE_DIR}/third-party/glad/include/glad/egl.h")
 
 list(APPEND PLATFORM_LIBRARIES
-        Boost::dynamic_linking
         dl
         pulse
         pulse-simple)
 
 include_directories(
         SYSTEM
-        "${CMAKE_SOURCE_DIR}/third-party/nv-codec-headers/include"
         "${CMAKE_SOURCE_DIR}/third-party/glad/include")

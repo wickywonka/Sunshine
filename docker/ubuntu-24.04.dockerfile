@@ -39,10 +39,6 @@ apt-get install -y --no-install-recommends \
   git \
   graphviz \
   libayatana-appindicator3-dev \
-  libboost-filesystem-dev=1.83.* \
-  libboost-locale-dev=1.83.* \
-  libboost-log-dev=1.83.* \
-  libboost-program-options-dev=1.83.* \
   libcap-dev \
   libcurl4-openssl-dev \
   libdrm-dev \
@@ -69,10 +65,6 @@ apt-get install -y --no-install-recommends \
   wget \
   x11-xserver-utils \
   xvfb
-if [[ "${TARGETPLATFORM}" == 'linux/amd64' ]]; then
-  apt-get install -y --no-install-recommends \
-    libmfx-dev
-fi
 apt-get clean
 rm -rf /var/lib/apt/lists/*
 _DEPS

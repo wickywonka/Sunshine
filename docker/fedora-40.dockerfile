@@ -30,7 +30,6 @@ set -e
 dnf -y update
 dnf -y group install "Development Tools"
 dnf -y install \
-  boost-devel-1.83.0* \
   cmake-3.28.* \
   doxygen \
   gcc-14.1.* \
@@ -65,9 +64,6 @@ dnf -y install \
   wget \
   which \
   xorg-x11-server-Xvfb
-if [[ "${TARGETPLATFORM}" == 'linux/amd64' ]]; then
-  dnf -y install intel-mediasdk-devel
-fi
 dnf clean all
 rm -rf /var/cache/yum
 _DEPS
