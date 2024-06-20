@@ -332,6 +332,7 @@ namespace config {
     0,  // hevc_mode
     0,  // av1_mode
 
+    1,  // min_fps_factor
     2,  // min_threads
     {
       "superfast"s,  // preset
@@ -443,8 +444,8 @@ namespace config {
     std::chrono::duration<double> { 1 / 24.9 },  // key_repeat_period
 
     {
-      platf::supported_gamepads().front().data(),
-      platf::supported_gamepads().front().size(),
+      platf::supported_gamepads(nullptr).front().name.data(),
+      platf::supported_gamepads(nullptr).front().name.size(),
     },  // Default gamepad
     true,  // back as touchpad click enabled (manual DS4 only)
     true,  // client gamepads with motion events are emulated as DS4
@@ -982,6 +983,17 @@ namespace config {
     return ret;
   }
 
+  std::vector<std::string_view> &
+  get_supported_gamepad_options() {
+    const auto options = platf::supported_gamepads(nullptr);
+    static std::vector<std::string_view> opts {};
+    opts.reserve(options.size());
+    for (auto &opt : options) {
+      opts.emplace_back(opt.name);
+    }
+    return opts;
+  }
+
   void
   apply_config(std::unordered_map<std::string, std::string> &&vars) {
     if (!fs::exists(stream.file_apps.c_str())) {
@@ -1071,6 +1083,7 @@ namespace config {
     int_f(vars, "refresh_rate_change", video.refresh_rate_change, display_device::parsed_config_t::refresh_rate_change_from_view);
     string_f(vars, "manual_refresh_rate", video.manual_refresh_rate);
     int_f(vars, "hdr_prep", video.hdr_prep, display_device::parsed_config_t::hdr_prep_from_view);
+    int_between_f(vars, "min_fps_factor", video.min_fps_factor, { 1, 3 });
 
     path_f(vars, "pkey", nvhttp.pkey);
     path_f(vars, "cert", nvhttp.cert);
@@ -1138,7 +1151,7 @@ namespace config {
       input.key_repeat_delay = std::chrono::milliseconds { to };
     }
 
-    string_restricted_f(vars, "gamepad"s, input.gamepad, platf::supported_gamepads());
+    string_restricted_f(vars, "gamepad"s, input.gamepad, get_supported_gamepad_options());
     bool_f(vars, "ds4_back_as_touchpad_click", input.ds4_back_as_touchpad_click);
     bool_f(vars, "motion_as_ds4", input.motion_as_ds4);
     bool_f(vars, "touchpad_as_ds4", input.touchpad_as_ds4);
@@ -1179,6 +1192,7 @@ namespace config {
                                                                    "pt"sv,  // Portuguese
                                                                    "ru"sv,  // Russian
                                                                    "sv"sv,  // Swedish
+                                                                   "tr"sv,  // Turkish
                                                                    "zh"sv,  // Chinese
                                                                  });
 
@@ -1295,9 +1309,7 @@ namespace config {
     bool config_loaded = false;
     try {
       // Create appdata folder if it does not exist
-      if (!boost::filesystem::exists(platf::appdata().string())) {
-        boost::filesystem::create_directories(platf::appdata().string());
-      }
+      file_handler::make_directory(platf::appdata().string());
 
       // Create empty config file if it does not exist
       if (!fs::exists(sunshine.config_file)) {

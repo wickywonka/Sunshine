@@ -80,6 +80,12 @@ namespace platf {
   constexpr std::uint32_t TOUCHPAD_BUTTON = 0x100000;
   constexpr std::uint32_t MISC_BUTTON = 0x200000;
 
+  struct supported_gamepad_t {
+    std::string name;
+    bool is_enabled;
+    std::string reason_disabled;
+  };
+
   enum class gamepad_feedback_e {
     rumble,
     rumble_triggers,
@@ -563,13 +569,12 @@ namespace platf {
   audio_control();
 
   /**
-   * display_name --> The name of the monitor that SHOULD be displayed
-   *    If display_name is empty --> Use the first monitor that's compatible you can find
-   *    If you require to use this parameter in a separate thread --> make a copy of it.
-   *
-   * config --> Stream configuration
-   *
-   * Returns display_t based on hwdevice_type
+   * @brief Get the display_t instance for the given hwdevice_type.
+   * @param display_name The name of the monitor that SHOULD be displayed
+   * If display_name is empty, use the first monitor that's compatible you can find
+   * If you require to use this parameter in a separate thread, make a copy of it.
+   * @param config Stream configuration
+   * @returns display_t based on hwdevice_type
    */
   std::shared_ptr<display_t>
   display(mem_type_e hwdevice_type, const std::string &display_name, const video::config_t &config);
@@ -695,9 +700,9 @@ namespace platf {
   void
   hscroll(input_t &input, int distance);
   void
-  keyboard(input_t &input, uint16_t modcode, bool release, uint8_t flags);
+  keyboard_update(input_t &input, uint16_t modcode, bool release, uint8_t flags);
   void
-  gamepad(input_t &input, int nr, const gamepad_state_t &gamepad_state);
+  gamepad_update(input_t &input, int nr, const gamepad_state_t &gamepad_state);
   void
   unicode(input_t &input, char *utf8, int size);
 
@@ -718,7 +723,7 @@ namespace platf {
    * @param touch The touch event.
    */
   void
-  touch(client_input_t *input, const touch_port_t &touch_port, const touch_input_t &touch);
+  touch_update(client_input_t *input, const touch_port_t &touch_port, const touch_input_t &touch);
 
   /**
    * @brief Sends a pen event to the OS.
@@ -727,7 +732,7 @@ namespace platf {
    * @param pen The pen event.
    */
   void
-  pen(client_input_t *input, const touch_port_t &touch_port, const pen_input_t &pen);
+  pen_update(client_input_t *input, const touch_port_t &touch_port, const pen_input_t &pen);
 
   /**
    * @brief Sends a gamepad touch event to the OS.
@@ -784,6 +789,10 @@ namespace platf {
   [[nodiscard]] std::unique_ptr<deinit_t>
   init();
 
-  std::vector<std::string_view> &
-  supported_gamepads();
+  /**
+   * @brief Gets the supported gamepads for this platform backend.
+   * @return Vector of gamepad options and status.
+   */
+  std::vector<supported_gamepad_t> &
+  supported_gamepads(input_t *input);
 }  // namespace platf

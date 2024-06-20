@@ -243,7 +243,7 @@ const KeyCodeMap kKeyCodesMap[] = {
   }
 
   void
-  keyboard(input_t &input, uint16_t modcode, bool release, uint8_t flags) {
+  keyboard_update(input_t &input, uint16_t modcode, bool release, uint8_t flags) {
     auto key = keysym(modcode);
 
     BOOST_LOG(debug) << "got keycode: 0x"sv << std::hex << modcode << ", translated to: 0x" << std::hex << key << ", release:" << release;
@@ -297,14 +297,6 @@ const KeyCodeMap kKeyCodesMap[] = {
     BOOST_LOG(info) << "unicode: Unicode input not yet implemented for MacOS."sv;
   }
 
-  /**
-   * @brief Creates a new virtual gamepad.
-   * @param input The input context.
-   * @param id The gamepad ID.
-   * @param metadata Controller metadata from client (empty if none provided).
-   * @param feedback_queue The queue for posting messages back to the client.
-   * @return 0 on success.
-   */
   int
   alloc_gamepad(input_t &input, const gamepad_id_t &id, const gamepad_arrival_t &metadata, feedback_queue_t feedback_queue) {
     BOOST_LOG(info) << "alloc_gamepad: Gamepad not yet implemented for MacOS."sv;
@@ -317,7 +309,7 @@ const KeyCodeMap kKeyCodesMap[] = {
   }
 
   void
-  gamepad(input_t &input, int nr, const gamepad_state_t &gamepad_state) {
+  gamepad_update(input_t &input, int nr, const gamepad_state_t &gamepad_state) {
     BOOST_LOG(info) << "gamepad: Gamepad not yet implemented for MacOS."sv;
   }
 
@@ -492,7 +484,7 @@ const KeyCodeMap kKeyCodesMap[] = {
    * @param touch The touch event.
    */
   void
-  touch(client_input_t *input, const touch_port_t &touch_port, const touch_input_t &touch) {
+  touch_update(client_input_t *input, const touch_port_t &touch_port, const touch_input_t &touch) {
     // Unimplemented feature - platform_caps::pen_touch
   }
 
@@ -503,7 +495,7 @@ const KeyCodeMap kKeyCodesMap[] = {
    * @param pen The pen event.
    */
   void
-  pen(client_input_t *input, const touch_port_t &touch_port, const pen_input_t &pen) {
+  pen_update(client_input_t *input, const touch_port_t &touch_port, const pen_input_t &pen) {
     // Unimplemented feature - platform_caps::pen_touch
   }
 
@@ -596,9 +588,11 @@ const KeyCodeMap kKeyCodesMap[] = {
     delete input;
   }
 
-  std::vector<std::string_view> &
-  supported_gamepads() {
-    static std::vector<std::string_view> gamepads { ""sv };
+  std::vector<supported_gamepad_t> &
+  supported_gamepads(input_t *input) {
+    static std::vector gamepads {
+      supported_gamepad_t { "", false, "gamepads.macos_not_implemented" }
+    };
 
     return gamepads;
   }
