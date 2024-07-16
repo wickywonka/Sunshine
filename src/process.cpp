@@ -387,6 +387,30 @@ namespace proc {
     return _app.name;
   }
 
+  void
+  proc_t::run_menu_cmd(std::string cmd_id) {
+    auto iter = std::find_if(_app.menu_cmds.begin(), _app.menu_cmds.end(), [&cmd_id](const auto menu_cmd) {
+      return menu_cmd.id == cmd_id;
+    });
+
+    if (iter != _app.menu_cmds.end()) {
+      auto cmd = iter->do_cmd;
+      std::error_code ec;
+
+      boost::filesystem::path working_dir = _app.working_dir.empty() ?
+                                              find_working_directory(cmd) :
+                                              boost::filesystem::path(_app.working_dir);
+      auto child = platf::run_command(iter->elevated, true, cmd, working_dir, _env, nullptr, ec, nullptr);
+      if (ec) {
+        BOOST_LOG(warning) << "Couldn't run cmd ["sv << cmd << "]: System: "sv << ec.message();
+      }
+      else {
+        BOOST_LOG(info) << "Executing cmd ["sv << cmd << "]"sv;
+        child.detach();
+      }
+    }
+  }
+
   proc_t::~proc_t() {
     // It's not safe to call terminate() here because our proc_t is a static variable
     // that may be destroyed after the Boost loggers have been destroyed. Instead,
@@ -608,6 +632,7 @@ namespace proc {
         proc::ctx_t ctx;
 
         auto prep_nodes_opt = app_node.get_child_optional("prep-cmd"s);
+        auto menu_nodes_opt = app_node.get_child_optional("menu-cmd"s);
         auto detached_nodes_opt = app_node.get_child_optional("detached"s);
         auto exclude_global_prep = app_node.get_optional<bool>("exclude-global-prep-cmd"s);
         auto output = app_node.get_optional<std::string>("output"s);
@@ -651,6 +676,20 @@ namespace proc {
               parse_env_val(this_env, do_cmd.value_or("")),
               parse_env_val(this_env, undo_cmd.value_or("")),
               std::move(elevated.value_or(false)));
+          }
+        }
+
+        std::vector<proc::scmd_t> menu_cmds;
+        if (menu_nodes_opt) {
+          auto &menu_nodes = *menu_nodes_opt;
+
+          menu_cmds.reserve(menu_nodes.size());
+          for (auto &[_, menu_node] : menu_nodes) {
+            auto id = menu_node.get<std::string>("id"s);
+            auto name = menu_node.get<std::string>("name"s);
+            auto do_cmd = parse_env_val(this_env, menu_node.get<std::string>("cmd"s));
+            auto elevated = menu_node.get_optional<bool>("elevated");
+            menu_cmds.emplace_back(std::move(id), std::move(name), std::move(do_cmd), std::move(elevated.value_or(false)));
           }
         }
 
@@ -704,6 +743,7 @@ namespace proc {
 
         ctx.name = std::move(name);
         ctx.prep_cmds = std::move(prep_cmds);
+        ctx.menu_cmds = std::move(menu_cmds);
         ctx.detached = std::move(detached);
 
         apps.emplace_back(std::move(ctx));

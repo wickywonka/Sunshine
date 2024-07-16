@@ -18,6 +18,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 
 // local includes
@@ -37,6 +38,8 @@
 #include "utility.h"
 #include "uuid.h"
 #include "video.h"
+
+using json = nlohmann::json;
 
 using namespace std::literals;
 namespace nvhttp {
@@ -846,6 +849,20 @@ namespace nvhttp {
       app.put("AppTitle"s, proc.name);
       app.put("ID", proc.id);
 
+      json json_cmds;
+
+      for (auto &cmd : proc.menu_cmds) {
+        json json_cmd;
+        json_cmd["id"] = cmd.id;
+        json_cmd["name"] = cmd.name;
+        json_cmd["do_cmd"] = cmd.do_cmd;
+        json_cmd["elevated"] = cmd.elevated;
+
+        json_cmds.push_back(json_cmd);
+      }
+
+      app.put("SuperCmds"s, json_cmds.dump(4));
+
       apps.push_back(std::make_pair("App", std::move(app)));
     }
   }
@@ -1100,9 +1117,28 @@ namespace nvhttp {
       BOOST_LOG(info) << "Executing sleep cmd ["sv << cmd << "]"sv;
       child.detach();
     }
-    
+
     pt::ptree tree;
     tree.put("root.pcsleep", 1);
+    tree.put("root.<xmlattr>.status_code", 200);
+
+    std::ostringstream data;
+
+    pt::write_xml(data, tree);
+    response->write(data.str());
+    response->close_connection_after_response = true;
+  }
+
+  void
+  execSuperCmd(resp_https_t response, req_https_t request) {
+    print_req<SimpleWeb::HTTPS>(request);
+
+    auto args = request->parse_query_string();
+    auto cmdId = get_arg(args, "cmdId", "");
+    proc::proc.run_menu_cmd(cmdId);
+
+    pt::ptree tree;
+    tree.put("root.supercmd", 1);
     tree.put("root.<xmlattr>.status_code", 200);
 
     std::ostringstream data;
@@ -1224,6 +1260,7 @@ namespace nvhttp {
     https_server.resource["^/resume$"]["GET"] = [&host_audio](auto resp, auto req) { resume(host_audio, resp, req); };
     https_server.resource["^/cancel$"]["GET"] = cancel;
     https_server.resource["^/pcsleep$"]["GET"] = sleep;
+    https_server.resource["^/supercmd$"]["GET"] = execSuperCmd;
 
     https_server.config.reuse_address = true;
     https_server.config.address = net::af_to_any_address_string(address_family);
